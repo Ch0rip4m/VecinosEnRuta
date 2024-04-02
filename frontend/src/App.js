@@ -1,4 +1,8 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import React, {useState} from "react";
+import Register from "./pages/Register"
+import Login from "./pages/Login"
+import RecuperarCont from "./pages/RecuperarCont"
 import Inicio from "./pages/Inicio";
 import MiPerfil from "./pages/MiPerfil";
 import MisRutas from "./pages/MisRutas";
@@ -9,11 +13,17 @@ import Comunidades from "./pages/Comunidades";
 import PersistentDrawerLeft from "./components/navBar";
 
 export default function App() {
+  const [isLoggedIn, setIsloggedIn] = useState(false)
+
   return (
     <BrowserRouter>
-    <PersistentDrawerLeft />
+      {isLoggedIn && <PersistentDrawerLeft />}
       <Routes>
-        <Route path="/" element={<Inicio/>}/>
+        <Route path="/" element={isLoggedIn ? <Navigate to="/inicio"/> : <Navigate to="/login"/>}/>
+        <Route path="/register" element={<Register/>}/>
+        <Route path="/login" element={<Login/>}/>
+        <Route path="/recuperar-pass" element={<RecuperarCont/>}/>
+        <Route path="/inicio" element={<Inicio/>}/>
         <Route path="/mi-perfil" element={<MiPerfil/>}/>
         <Route path="/mis-rutas" element={<MisRutas/>}/>
         <Route path="/mis-viajes" element={<MisViajes/>}/>

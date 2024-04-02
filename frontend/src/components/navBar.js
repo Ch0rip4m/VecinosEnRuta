@@ -27,7 +27,7 @@ import HomeIcon from '@mui/icons-material/Home';
 const elements = [
   {"name": "Inicio",
   "icon": <HomeIcon/>,
-  "url": "/"
+  "url": "/inicio"
   },
   {"name": "Mi Perfil",
   "icon": <AccountBoxIcon/>,
