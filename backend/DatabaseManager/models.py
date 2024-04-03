@@ -21,6 +21,9 @@ class Usuario(models.Model):
         verbose_name = 'Usuario'
         verbose_name_plural = 'Usuarios'
         
+    def __str__(self):
+        return self.email
+        
 class Comunidades(models.Model):
     id_comunidad = models.AutoField(primary_key=True, verbose_name='ID de la comunidad')
     nombre_comunidad = models.CharField(max_length=100, verbose_name='Nombre de la comunidad')
@@ -30,6 +33,9 @@ class Comunidades(models.Model):
     class Meta:
         verbose_name = 'Comunidad'
         verbose_name_plural = 'Comunidades'
+        
+    def __str__(self):
+        return self.nombre_comunidad
     
 class ComunidadesUsuario(models.Model):
     id_usuario = models.ForeignKey(Usuario, to_field='id_usuario',on_delete=models.CASCADE, verbose_name='ID del usuario')
@@ -39,6 +45,9 @@ class ComunidadesUsuario(models.Model):
         verbose_name = 'ComunidadesUsuario'
         verbose_name_plural = 'ComunidadesUsuarios'
         
+    def __str__(self):
+        return f"{self.id_usuario} - {self.id_comunidad}"
+        
 class Roles(models.Model):
     id_rol = models.AutoField(primary_key=True, verbose_name='ID del rol')
     nombre_rol = models.CharField(max_length=30, verbose_name='Nombre del rol')
@@ -46,6 +55,9 @@ class Roles(models.Model):
     class Meta:
         verbose_name = 'Rol'
         verbose_name_plural = 'Roles'
+        
+    def __str__(self):
+        return self.nombre_rol
 
 class RolUsuario(models.Model):
     id_usuario = models.ForeignKey(Usuario, to_field='id_usuario',on_delete=models.CASCADE, verbose_name='ID del usuario')
@@ -54,6 +66,9 @@ class RolUsuario(models.Model):
     class Meta:
         verbose_name = 'RolUsuario'
         verbose_name_plural = 'RolUsuarios'
+    
+    def __str__(self):
+            return f"{self.id_usuario} - {self.id_rol}"
     
 class Vehiculos(models.Model):
     id_vehiculo = models.AutoField(primary_key=True, verbose_name='ID del vehiculo')
@@ -69,6 +84,9 @@ class Vehiculos(models.Model):
     class Meta:
         verbose_name = 'Vehiculo'
         verbose_name_plural = 'Vehiculos'
+        
+    def __str__(self):
+            return self.modelo_vehiculo
     
 class VehiculoUsuario(models.Model):
     id_usuario = models.ForeignKey(Usuario, to_field='id_usuario',on_delete=models.CASCADE, verbose_name='ID del usuario')
@@ -77,6 +95,9 @@ class VehiculoUsuario(models.Model):
     class Meta:
         verbose_name = 'VehiculoUsuario'
         verbose_name_plural = 'VehiculoUsuarios'
+        
+    def __str__(self):
+            return f"{self.id_usuario} - {self.id_vehiculo}"
         
 class Calificaciones(models.Model):
     id_calificacion = models.AutoField(primary_key=True, verbose_name='ID de la calificacion')
@@ -88,9 +109,12 @@ class Calificaciones(models.Model):
     class Meta:
         verbose_name = 'Calificacion'
         verbose_name_plural = 'Calificaciones'
+        
+    def __str__(self):
+            return f"{self.id_calificacion} - {self.comentario}"
     
 class CategoriasCalificacion(models.Model):
-    id_calificador = models.ForeignKey(Calificaciones, to_field='id_calificacion', on_delete=models.CASCADE, verbose_name='ID de la calificacion')
+    id_calificacion = models.ForeignKey(Calificaciones, to_field='id_calificacion', on_delete=models.CASCADE, verbose_name='ID de la calificacion')
     seguridad = models.IntegerField(verbose_name='Seguridad del viaje')
     limpieza = models.IntegerField(verbose_name='Limpieza del vehiculo')
     comodidad = models.IntegerField(verbose_name='Comodidad del viaje')
@@ -99,6 +123,9 @@ class CategoriasCalificacion(models.Model):
     class Meta:
         verbose_name = 'Categoriascalificacion'
         verbose_name_plural = 'CategoriasCalificaciones'
+        
+    def __str__(self):
+            return f"{self.id_calificacion} - {self.seguridad} - {self.limpieza} - {self.comodidad} - {self.puntualidad}"
     
 class Chat(models.Model):
     id_mensaje = models.AutoField(primary_key=True, verbose_name='ID del mensaje')
@@ -110,6 +137,9 @@ class Chat(models.Model):
     class Meta:
         verbose_name = 'Chat'
         verbose_name_plural = 'Chats'
+        
+    def __str__(self):
+            return f"{self.id_mensaje} - {self.id_emisor} - {self.id_receptor} - {self.mensaje}"
 
 # PLANIFICACIÓN
    
@@ -126,6 +156,9 @@ class Rutas(models.Model):
     class Meta:
         verbose_name = 'Ruta'
         verbose_name_plural = 'Rutas'
+        
+    def __str__(self):
+            return self.nombre_ruta
     
 class Dias(models.Model):
     id_dia = models.AutoField(primary_key=True, verbose_name='ID del dia de la semana')
@@ -134,6 +167,9 @@ class Dias(models.Model):
     class Meta:
         verbose_name = 'Dia'
         verbose_name_plural = 'Dias'
+        
+    def __str__(self):
+            return self.nombre_dia
     
 class DiasRutas(models.Model):
     id_dia = models.ForeignKey(Dias, to_field='id_dia', on_delete=models.CASCADE, verbose_name='ID del dia de la semana')
@@ -143,6 +179,9 @@ class DiasRutas(models.Model):
         verbose_name = 'DiasRuta'
         verbose_name_plural = 'DiasRutas'
         
+    def __str__(self):
+            return f"{self.id_dia} - {self.id_ruta}"
+        
 class Trayectoria(models.Model):
     id_trayectoria = models.AutoField(primary_key=True, verbose_name='ID de la trayectoria')
     id_ruta = models.ForeignKey(Rutas, to_field='id_ruta', on_delete=models.CASCADE, verbose_name='ID de la ruta')
@@ -151,6 +190,9 @@ class Trayectoria(models.Model):
     class Meta:
         verbose_name = 'Trayectoria'
         verbose_name_plural = 'Trayectorias'
+        
+    def __str__(self):
+            return self.id_trayectoria
          
 class OrdenTrayectoria(models.Model):
     id_trayectoria = models.ForeignKey(Trayectoria, to_field='id_trayectoria', on_delete=models.CASCADE, verbose_name='ID de la trayectoria')
@@ -161,6 +203,9 @@ class OrdenTrayectoria(models.Model):
     class Meta:
         verbose_name = 'OrdenTrayectoria'
         verbose_name_plural = 'OrdenTrayectorias'
+        
+    def __str__(self):
+            return f"{self.orden} - {self.latitud} - {self.longitud}"
     
 class RecepcionPasajeros(models.Model):
     id_recepcion = models.AutoField(primary_key=True, verbose_name='ID del a recepcion')
@@ -174,6 +219,9 @@ class RecepcionPasajeros(models.Model):
         verbose_name = 'RecepcionPasajero'
         verbose_name_plural = 'RecepcionPasajeros'
         
+    def __str__(self):
+            return f"{self.id_recepcion} - {self.latitud} - {self.longitud}"
+        
 # EJECUCIÓN 
 
 class TrayectoriaReal(models.Model):
@@ -184,6 +232,9 @@ class TrayectoriaReal(models.Model):
     class Meta:
         verbose_name = 'TrayectoriaReal'
         verbose_name_plural = 'TrayectoriasReales'
+    
+    def __str__(self):
+            return self.id_trayectoria
         
 class OrdenTrayectoriaReal(models.Model):
     id_trayec_real = models.AutoField(primary_key=True, verbose_name='ID de la trayectoria real')
@@ -195,6 +246,9 @@ class OrdenTrayectoriaReal(models.Model):
     class Meta:
         verbose_name = 'OrdenTrayectoriaReal'
         verbose_name_plural = 'OrdenTrayectoriasReales'
+        
+    def __str__(self):
+            return f"{self.orden_real} - {self.latitud} - {self.longitud}"
     
 @receiver(post_save, sender=TrayectoriaReal)
 def reiniciar_contador(sender, instance, created, **kwargs):
@@ -215,6 +269,9 @@ class RecepecionReal(models.Model):
         verbose_name = 'RecepecionReal'
         verbose_name_plural = 'RecepcionesReales'
         
+    def __str__(self):
+            return f"{self.id_recepecion_real} - {self.latitud} - {self.longitud}"
+        
 class RutasEjecutadas(models.Model):
     id_ruta = models.ForeignKey(Rutas, to_field='id_ruta', on_delete=models.CASCADE, verbose_name='ID de la ruta')
     id_conductor = models.ForeignKey(Usuario, to_field='id_usuario', on_delete=models.CASCADE, verbose_name='ID del usuario')
@@ -224,3 +281,6 @@ class RutasEjecutadas(models.Model):
     class Meta:
         verbose_name = 'RutaEjecutada'
         verbose_name_plural = 'RutasEjecutadas'
+        
+    def __str__(self):
+            return f"{self.id_ruta} - {self.flag_inicio} - {self.inicio_real}"

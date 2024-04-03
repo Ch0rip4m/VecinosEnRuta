@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class VerConfig(AppConfig):
+class DatabaseManagerConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'VER'
+    name = 'DatabaseManager'
