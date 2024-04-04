@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState , useEffect } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -8,60 +8,69 @@ import Box from "@mui/material/Box";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import axios from 'axios'
-import SimpleSelector from '../components/SimpleSelector';
-
-const requiredFields = [
-  "descripcion",
-  "nombre",
-  "apellido",
-  "telefono",
-  "sexo",
-  "password",
-  "email",
-  "sponsor",
-  "edad"
-];
+import axios from "axios";
+import SimpleSelector from "../components/SimpleSelector";
 
 export default function Register() {
   const [formData, setformData] = useState({});
-  const [submitEnabled, setSubmitEnabled] = useState(false);
+  const [formErrors, setFormErrors] = useState({});
 
-  const handleFormReady = () => {
-    if (isFormReady(requiredFields)) {
-      setSubmitEnabled(true);
-      handleSubmit();
-    }
-  };
+  useEffect(() => {
+    console.log('formData',formData);
+  }, [formData]);
 
   const handleSubmit = async (event) => {
-    event ? event.preventDefault() : null;
-    if (submitEnabled === false) {
-      return false;
-    }
-    await axios
-      .post("http://localhost:8080/")
-  };
+    event.preventDefault();
+    const requiredFields = [
+      "nombre_usuario",
+      "apellido_usuario",
+      "edad",
+      "telefono",
+      "email",
+      "clave",
+      "sexo",
+      "descripcion_usuario"
+    ];
+    const errors = {};
+    let hasErrors = false;
 
-  const isFormReady = (required) => {
-    const requiredFieldsRedy = required;
-    const formDataValid = requiredFieldsRedy.every((field) => {
-      if (formData[field] == null) {
-        return false;
+    requiredFields.forEach((field) => {
+      if (!formData[field]) {
+        errors[field] = "Este campo es obligatorio";
+        hasErrors = true;
       }
     });
-    return formDataValid;
+
+    if (hasErrors) {
+      setFormErrors(errors);
+    } else {
+      await axios
+        .post("http://localhost:8080/db-manager/usuarios/", formData)
+        .then((response) => {
+          console.log("formulario enviado", response.data);
+        })
+        .catch((error) => {
+          console.error("Error al enviar formulario", error)
+        })
+    }
+  };
+
+  const handleDataChange = (event, name) => {
+    setformData({ ...formData, [name]: event });
+    setFormErrors({ ...formErrors, [name]: null });
   };
 
   const handleTextChange = (event) => {
     const { name, value } = event.target;
     setformData({ ...formData, [name]: value });
+    setFormErrors({ ...formErrors, [name]: null });
   };
 
   const handleNumericText = (event) => {
     const { name, value } = event.target;
     const inputValue = value.replace(/[^0-9]/g, "");
     setformData((currentData) => ({ ...currentData, [name]: inputValue }));
+    setFormErrors({ ...formErrors, [name]: null });
   };
 
   return (
@@ -75,34 +84,36 @@ export default function Register() {
           alignItems: "center",
         }}
       >
-        <Avatar sx={{ m:1,bgcolor: "secondary.main" }}>
+        <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
           <HowToRegIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
           Registro de nuevo vecino!
         </Typography>
-        <Box component="form" noValidate id="register-form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
+        <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <TextField
-                value={formData.nombre || null}
-                name="nombre"
+                value={formData.nombre_usuario || null}
+                name="nombre_usuario"
                 required
                 fullWidth
-                id="nombre"
                 onChange={handleTextChange}
                 label="Nombre(s)"
+                error={Boolean(formErrors.nombre_usuario)}
+                helperText={formErrors.nombre_usuario}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
-                value={formData.Apellido || null}
+                value={formData.apellido_usuario || null}
                 required
                 fullWidth
-                id="apellido"
                 onChange={handleTextChange}
                 label="Apellidos"
-                name="apellido"
+                name="apellido_usuario"
+                error={Boolean(formErrors.apellido_usuario)}
+                helperText={formErrors.apellido_usuario}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -110,21 +121,24 @@ export default function Register() {
                 value={formData.edad || ""}
                 required
                 fullWidth
-                id="edad"
                 onChange={handleNumericText}
                 label="Edad"
                 name="edad"
+                error={Boolean(formErrors.edad)}
+                helperText={formErrors.edad}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
               <SimpleSelector
-                values={["Masculino","Femenino","Prefiero no decir"]}
+                values={["Masculino", "Femenino", "Prefiero no decir"]}
                 formData={formData}
+                onChange={handleDataChange}
                 required
                 fullWidth
-                id="sexo"
                 label="Sexo"
                 name="sexo"
+                error={Boolean(formErrors.sexo)}
+                helperText={formErrors.sexo}
               />
             </Grid>
             <Grid item xs={12}>
@@ -132,10 +146,11 @@ export default function Register() {
                 value={formData.telefono || ""}
                 required
                 fullWidth
-                id="telefono"
                 onChange={handleNumericText}
                 label="Celular"
                 name="telefono"
+                error={Boolean(formErrors.telefono)}
+                helperText={formErrors.telefono}
               />
             </Grid>
             <Grid item xs={12}>
@@ -143,35 +158,38 @@ export default function Register() {
                 value={formData.email || null}
                 required
                 fullWidth
-                id="email"
                 onChange={handleTextChange}
                 label="Correo Electrónico"
                 name="email"
+                error={Boolean(formErrors.email)}
+                helperText={formErrors.email}
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
-                value={formData.password || null}
+                value={formData.clave || null}
                 required
                 fullWidth
                 onChange={handleTextChange}
-                name="password"
+                name="clave"
                 label="Contraseña"
                 type="password"
-                id="password"
+                error={Boolean(formErrors.clave)}
+                helperText={formErrors.clave}
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
-                value={formData.descripcion || null}
+                value={formData.descripcion_usuario || null}
                 required
                 fullWidth
                 onChange={handleTextChange}
                 multiline
-                maxRows='5'
-                name="descripcion"
+                maxRows="5"
+                name="descripcion_usuario"
                 label="¡Describe como eres! (lo que te gusta y no)"
-                id="descripcion"
+                error={Boolean(formErrors.descripcion_usuario)}
+                helperText={formErrors.descripcion_usuario}
               />
             </Grid>
           </Grid>
@@ -180,7 +198,6 @@ export default function Register() {
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
-            onClick={(event) => handleFormReady(event)}
           >
             Registrarse
           </Button>

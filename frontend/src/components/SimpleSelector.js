@@ -8,11 +8,9 @@ export default function SimpleSelector(props) {
   const [value, setValue] = React.useState(props.formData[name] || '');
 
   const handleChange = (event) => {
-    const {
-      target: { value },
-    } = event;
-    setValue(value);
-    props.onChange(value, name);
+    const selectedValue = event.target.value;
+    setValue(selectedValue);
+    props.onChange(selectedValue, name);
   }
 
   return (

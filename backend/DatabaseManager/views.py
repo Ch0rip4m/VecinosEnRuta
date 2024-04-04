@@ -1,3 +1,8 @@
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from django.contrib.auth import authenticate
+from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import viewsets
 from .models import *
 from .serializers import *
@@ -83,3 +88,19 @@ class OrdenTrayectoriaViewSet(viewsets.ModelViewSet):
 class OrdenTrayectoriaRealViewSet(viewsets.ModelViewSet):
     queryset = OrdenTrayectoriaReal.objects.all()
     serializer_class = OrdenTrayectoriaRealSerializer
+    
+class CustomTokenObtainPairView(APIView):
+    def post(self, request, *args, **kwargs):
+        email = request.data.get('email')
+        password = request.data.get('password')
+
+        user = authenticate(email=email, password=password)
+        if not user:
+            return Response({"error": "Credenciales inválidas"}, status=status.HTTP_401_UNAUTHORIZED)
+        
+        refresh = RefreshToken.for_user(user)
+
+        return Response({
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        })
