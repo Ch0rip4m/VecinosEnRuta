@@ -1,21 +1,47 @@
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-# Create your models here.
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
 # INTERACCIÓN DE USUARIOS
 
-class Usuario(models.Model):
+class UsuarioManager(BaseUserManager):
+    def create_user(self, email, nombre_usuario, apellido_usuario, password, **extra_fields):
+        if not email:
+            raise ValueError('El email debe ser proporcionado')
+        email = self.normalize_email(email)
+        user = self.model(email=email, nombre_usuario=nombre_usuario, apellido_usuario=apellido_usuario, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, nombre_usuario, apellido_usuario, password, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('El superusuario debe tener is_staff=True.')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('El superusuario debe tener is_superuser=True.')
+
+        return self.create_user(email, nombre_usuario, apellido_usuario, password, **extra_fields)
+
+class Usuario(AbstractBaseUser, PermissionsMixin):
     id_usuario = models.AutoField(primary_key=True, verbose_name='ID del usuario')
-    nombre_usuario = models.CharField(max_length=100, verbose_name='Nombre del usuario')
-    apellido_usuario = models.CharField(max_length=100, verbose_name='Apellido del usuario')
-    edad = models.CharField(max_length=30, verbose_name='Edad del usuario', default='')
-    sexo = models.CharField(max_length=30, verbose_name='Sexo del usuario', default='')
-    email = models.EmailField(max_length=100, verbose_name='Correo electronico', default='')
-    clave = models.CharField(max_length=50, verbose_name='Password')
-    telefono = models.CharField(max_length=12, verbose_name='Telefono del usuario')
-    descripcion_usuario = models.TextField(max_length=500, verbose_name='Descripcion del usuario')
+    nombre_usuario = models.CharField(max_length=255, verbose_name='Nombre del usuario')
+    apellido_usuario = models.CharField(max_length=255, verbose_name='Apellido del usuario')
+    edad = models.CharField(max_length=255, verbose_name='Edad del usuario', default='')
+    sexo = models.CharField(max_length=255, verbose_name='Sexo del usuario', default='')
+    email = models.EmailField(max_length=255, verbose_name='Correo electronico', default='',unique=True)
+    password = models.CharField(max_length=255, verbose_name='Password', default='')
+    telefono = models.CharField(max_length=255, verbose_name='Telefono del usuario')
+    descripcion_usuario = models.TextField(max_length=1000, verbose_name='Descripcion del usuario')
     tiempo_registro = models.DateTimeField(auto_now_add=True, verbose_name='Registro de creacion')
+    
+    is_staff = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+
+    objects = UsuarioManager()
 
     class Meta:
         verbose_name = 'Usuario'
@@ -23,6 +49,15 @@ class Usuario(models.Model):
         
     def __str__(self):
         return self.email
+    
+    def id(self):
+        return self.id_usuario
+    
+    REQUIRED_FIELDS = ['nombre_usuario', 'apellido_usuario',
+                       'edad', 'sexo', 'password',
+                       'telefono', 'descripcion_usuario']
+    
+    USERNAME_FIELD = 'email'
         
 class Comunidades(models.Model):
     id_comunidad = models.AutoField(primary_key=True, verbose_name='ID de la comunidad')

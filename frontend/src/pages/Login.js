@@ -11,7 +11,7 @@ import Container from '@mui/material/Container';
 import HolidayVillageIcon from '@mui/icons-material/HolidayVillage';
 import axios from 'axios'
 
-export default function Login() {
+export default function Login({setIsLoggedIn}) {
   const [formData, setformData] = useState({});
   const [formErrors, setFormErrors] = useState({});
 
@@ -21,7 +21,7 @@ export default function Login() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const requiredFields = ["email","clave"];
+    const requiredFields = ["email","password"];
     const errors = {};
     let hasErrors = false;
 
@@ -36,8 +36,9 @@ export default function Login() {
       setFormErrors(errors);
     } else {
       try {
-        const response = await axios.post('http://localhost:8080/login/', formData);
+        const response = await axios.post('http://localhost:8080/auth/token/', formData);
         console.log('Respuesta del backend:', response.data);
+        setIsLoggedIn(true)
         window.location.href = '/inicio'
         // Aquí puedes manejar la respuesta del backend, por ejemplo, redirigiendo al usuario a otra página
       } catch (error) {
@@ -88,13 +89,13 @@ export default function Login() {
                 <TextField
                   required
                   fullWidth
-                  name="clave"
+                  name="password"
                   label="Contraseña"
                   type="password"
-                  value={formData.clave}
+                  value={formData.password}
                   onChange={handleTextChange}
-                  error={Boolean(formErrors.clave)}
-                  helperText={formErrors.clave}
+                  error={Boolean(formErrors.password)}
+                  helperText={formErrors.password}
                 />
               </Grid>
             </Grid>

@@ -27,7 +27,7 @@ export default function Register() {
       "edad",
       "telefono",
       "email",
-      "clave",
+      "password",
       "sexo",
       "descripcion_usuario"
     ];
@@ -167,15 +167,15 @@ export default function Register() {
             </Grid>
             <Grid item xs={12}>
               <TextField
-                value={formData.clave || null}
+                value={formData.password || null}
                 required
                 fullWidth
                 onChange={handleTextChange}
-                name="clave"
+                name="password"
                 label="Contraseña"
                 type="password"
-                error={Boolean(formErrors.clave)}
-                helperText={formErrors.clave}
+                error={Boolean(formErrors.password)}
+                helperText={formErrors.password}
               />
             </Grid>
             <Grid item xs={12}>

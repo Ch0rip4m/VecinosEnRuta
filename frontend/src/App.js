@@ -14,14 +14,14 @@ import PersistentDrawerLeft from "./components/navBar";
 
 export default function App() {
   const [isLoggedIn, setIsloggedIn] = useState(false)
-  
+
   return (
     <BrowserRouter>
       {isLoggedIn && <PersistentDrawerLeft />}
       <Routes>
         <Route path="/" element={isLoggedIn ? <Navigate to="/inicio"/> : <Navigate to="/login"/>}/>
         <Route path="/register" element={<Register/>}/>
-        <Route path="/login" element={<Login/>}/>
+        <Route path="/login" element={<Login setIsLoggedIn={setIsloggedIn}/>}/>
         <Route path="/recuperar-pass" element={<RecuperarCont/>}/>
         <Route path="/inicio" element={<Inicio/>}/>
         <Route path="/mi-perfil" element={<MiPerfil/>}/>
