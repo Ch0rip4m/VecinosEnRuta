@@ -1,4 +1,5 @@
 import { Link as RouterLink } from 'react-router-dom'
+import { useState, useEffect} from 'react'
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -11,14 +12,45 @@ import HolidayVillageIcon from '@mui/icons-material/HolidayVillage';
 import axios from 'axios'
 
 export default function Login() {
+  const [formData, setformData] = useState({});
+  const [formErrors, setFormErrors] = useState({});
 
-  const handleSubmit = (event) => {
+  useEffect(() => {
+    console.log('formData',formData);
+  }, [formData]);
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
+    const requiredFields = ["email","clave"];
+    const errors = {};
+    let hasErrors = false;
+
+    requiredFields.forEach((field) => {
+      if (!formData[field]) {
+        errors[field] = "Este campo es obligatorio";
+        hasErrors = true;
+      }
     });
+
+    if (hasErrors) {
+      setFormErrors(errors);
+    } else {
+      try {
+        const response = await axios.post('http://localhost:8080/login/', formData);
+        console.log('Respuesta del backend:', response.data);
+        window.location.href = '/inicio'
+        // Aquí puedes manejar la respuesta del backend, por ejemplo, redirigiendo al usuario a otra página
+      } catch (error) {
+        console.error('Error al iniciar sesión:', error.response.data);
+        // Aquí puedes manejar el error de autenticación, por ejemplo, mostrando un mensaje de error al usuario
+      }
+    }
+  };
+  
+  const handleTextChange = (event) => {
+    const { name, value } = event.target;
+    setformData({ ...formData, [name]: value });
+    setFormErrors({ ...formErrors, [name]: null });
   };
 
   return (
@@ -44,19 +76,25 @@ export default function Login() {
                 <TextField
                   required
                   fullWidth
-                  id="email"
                   label="Correo Electronico"
                   name="email"
+                  value={formData.email}
+                  onChange={handleTextChange}
+                  error={Boolean(formErrors.email)}
+                  helperText={formErrors.email}
                 />
               </Grid>
               <Grid item xs={12}>
                 <TextField
                   required
                   fullWidth
-                  name="password"
+                  name="clave"
                   label="Contraseña"
                   type="password"
-                  id="password"
+                  value={formData.clave}
+                  onChange={handleTextChange}
+                  error={Boolean(formErrors.clave)}
+                  helperText={formErrors.clave}
                 />
               </Grid>
             </Grid>

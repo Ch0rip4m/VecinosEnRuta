@@ -14,7 +14,7 @@ import PersistentDrawerLeft from "./components/navBar";
 
 export default function App() {
   const [isLoggedIn, setIsloggedIn] = useState(false)
-
+  
   return (
     <BrowserRouter>
       {isLoggedIn && <PersistentDrawerLeft />}
