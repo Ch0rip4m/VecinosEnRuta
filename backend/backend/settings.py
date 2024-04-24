@@ -116,7 +116,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Santiago'
 
 USE_I18N = True
 
@@ -149,5 +149,5 @@ CORS_ALLOWED_ORIGINS = [
 AUTH_USER_MODEL = 'DatabaseManager.Usuario'
 
 JWT_AUTH = {
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1), # Configura la expiración del token según tus necesidades
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(hours=1), # Configura la expiración del token según tus necesidades
 }

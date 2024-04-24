@@ -1,4 +1,4 @@
-import { useState , useEffect } from "react";
+import { useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -14,10 +14,6 @@ import SimpleSelector from "../components/SimpleSelector";
 export default function Register() {
   const [formData, setformData] = useState({});
   const [formErrors, setFormErrors] = useState({});
-
-  useEffect(() => {
-    console.log('formData',formData);
-  }, [formData]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();

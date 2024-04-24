@@ -1,4 +1,4 @@
-import { Link as RouterLink } from 'react-router-dom'
+import {Link as RouterLink } from 'react-router-dom'
 import { useState, useEffect} from 'react'
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
@@ -15,10 +15,6 @@ export default function Login({setIsLoggedIn}) {
   const [formData, setformData] = useState({});
   const [formErrors, setFormErrors] = useState({});
 
-  useEffect(() => {
-    console.log('formData',formData);
-  }, [formData]);
-
   const handleSubmit = async (event) => {
     event.preventDefault();
     const requiredFields = ["email","password"];
@@ -31,22 +27,36 @@ export default function Login({setIsLoggedIn}) {
         hasErrors = true;
       }
     });
-
     if (hasErrors) {
       setFormErrors(errors);
     } else {
       try {
         const response = await axios.post('http://localhost:8080/auth/token/', formData);
         console.log('Respuesta del backend:', response.data);
-        setIsLoggedIn(true)
-        window.location.href = '/inicio'
+        if (response.data.access) {
+          localStorage.setItem('token', response.data.access);
+          setIsLoggedIn(true);
+          localStorage.setItem('isLoggedIn', true);
+          localStorage.setItem('selectedElementName','Inicio')
+        }
         // Aquí puedes manejar la respuesta del backend, por ejemplo, redirigiendo al usuario a otra página
       } catch (error) {
         console.error('Error al iniciar sesión:', error.response.data);
+        localStorage.setItem('isLoggedIn', false);
         // Aquí puedes manejar el error de autenticación, por ejemplo, mostrando un mensaje de error al usuario
       }
     }
   };
+
+  // useEffect(() => {
+  //   const token = localStorage.getItem('token');
+  //   console.log('token', token)
+  //   if (token) {
+  //     setIsLoggedIn(true)
+  //   } else{
+  //     setIsLoggedIn(false)
+  //   }
+  // });
   
   const handleTextChange = (event) => {
     const { name, value } = event.target;
