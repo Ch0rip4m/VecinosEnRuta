@@ -148,6 +148,7 @@ CORS_ALLOWED_ORIGINS = [
 
 AUTH_USER_MODEL = 'DatabaseManager.Usuario'
 
-JWT_AUTH = {
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(hours=1), # Configura la expiración del token según tus necesidades
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(hours=1),
+    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(hours=2)# Configura la expiración del token según tus necesidades
 }

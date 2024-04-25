@@ -1,7 +1,93 @@
-import React from "react";
+import { useState } from "react";
+import Button from "@mui/material/Button";
+import CssBaseline from "@mui/material/CssBaseline";
+import TextField from "@mui/material/TextField";
+import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Container from "@mui/material/Container";
+import Mapa from "../components/Mapas"
+import axios from "axios";
+
 
 export default function Inicio() {
-    return(
-        <div>INICIO</div>
-    )
+  const [formData, setformData] = useState({});
+  const [formErrors, setFormErrors] = useState({});
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const requiredFields = ["origen", "destino"];
+    const errors = {};
+    let hasErrors = false;
+
+    requiredFields.forEach((field) => {
+      if (!formData[field]) {
+        errors[field] = "Este campo es obligatorio";
+        hasErrors = true;
+      }
+    });
+    if (hasErrors) {
+      setFormErrors(errors);
+    }
+  };
+
+  const handleTextChange = (event) => {
+    const { name, value } = event.target;
+    setformData({ ...formData, [name]: value });
+    setFormErrors({ ...formErrors, [name]: null });
+  };
+
+  return (
+    <Container component="main" maxWidth="xs">
+      <CssBaseline />
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <Typography component="h1" variant="h5">
+          ¿A donde vas?
+        </Typography>
+        <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                label="Origen"
+                name="origen"
+                value={formData.origen}
+                onChange={handleTextChange}
+                error={Boolean(formErrors.origen)}
+                helperText={formErrors.origen}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                name="destino"
+                label="Destino"
+                value={formData.destino}
+                onChange={handleTextChange}
+                error={Boolean(formErrors.destino)}
+                helperText={formErrors.destino}
+              />
+            </Grid>
+          </Grid>
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+          >
+            Buscar
+          </Button>
+          <Mapa width="100%" height="400px"/>
+        </Box>
+      </Box>
+    </Container>
+  );
 }

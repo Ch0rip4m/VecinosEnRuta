@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
-import { jwtDecode } from "jwt-decode"
+import { jwtDecode } from "jwt-decode";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import RecuperarCont from "./pages/RecuperarCont";
@@ -17,18 +17,17 @@ export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(
     localStorage.getItem("isLoggedIn")
   );
-
-  useEffect(
-    () => {
-      console.log("isLoggedIn", isLoggedIn);
-      console.log("localStorage", localStorage);
-    },
-    [isLoggedIn],
-    [localStorage]
-  );
+  // useEffect(
+  //   () => {
+  //     console.log("isLoggedIn", isLoggedIn);
+  //     console.log("localStorage", localStorage);
+  //   },
+  //   [isLoggedIn],
+  //   [localStorage]
+  // );
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (token) {
       try {
         const tokenPayload = jwtDecode(token);
@@ -38,34 +37,34 @@ export default function App() {
           setIsLoggedIn(true);
         } else {
           setIsLoggedIn(false);
-          localStorage.removeItem('token');
+          localStorage.removeItem("token");
+          localStorage.removeItem("isLoggedIn");
         }
       } catch (error) {
-        console.error('Error al decodificar el token:', error);
+        console.error("Error al decodificar el token:", error);
         setIsLoggedIn(false);
-        localStorage.removeItem('token');
+        localStorage.removeItem("isLoggedIn");
+        localStorage.removeItem("token");
       }
     } else {
       setIsLoggedIn(false);
+      localStorage.removeItem("isLoggedIn");
     }
   }, []);
-  
 
   const renderRoutes = () => {
     if (isLoggedIn) {
       return (
-        <PersistentDrawerLeft>
-          <Routes>
-            <Route path="/inicio" element={<Inicio />} />
-            <Route path="/mi-perfil" element={<MiPerfil />} />
-            <Route path="/mis-rutas" element={<MisRutas />} />
-            <Route path="/mis-viajes" element={<MisViajes />} />
-            <Route path="/mis-chats" element={<MisChats />} />
-            <Route path="/mi-vehiculo" element={<MiVehiculo />} />
-            <Route path="/comunidades" element={<Comunidades />} />
-            <Route path="*" element={<Navigate to="/inicio" />} />
-          </Routes>
-        </PersistentDrawerLeft>
+        <Routes>
+          <Route path="/inicio" element={<Inicio />} />
+          <Route path="/mi-perfil" element={<MiPerfil />} />
+          <Route path="/mis-rutas" element={<MisRutas />} />
+          <Route path="/mis-viajes" element={<MisViajes />} />
+          <Route path="/mis-chats" element={<MisChats />} />
+          <Route path="/mi-vehiculo" element={<MiVehiculo />} />
+          <Route path="/comunidades" element={<Comunidades />} />
+          <Route path="*" element={<Navigate to="/inicio" />} />
+        </Routes>
       );
     } else {
       return (
@@ -83,5 +82,10 @@ export default function App() {
     }
   };
 
-  return <BrowserRouter>{renderRoutes()}</BrowserRouter>;
+  return (
+    <div>
+      {isLoggedIn && <PersistentDrawerLeft />}
+      {renderRoutes()}
+    </div>
+  );
 }
