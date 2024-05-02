@@ -6,9 +6,9 @@ import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import Mapa from "../components/Mapas"
+import Mapa from "../components/Mapas";
+import ContentListTable from "../components/Lista";
 import axios from "axios";
-
 
 export default function Inicio() {
   const [formData, setformData] = useState({});
@@ -50,7 +50,7 @@ export default function Inicio() {
         <Typography component="h1" variant="h5">
           ¿A donde vas?
         </Typography>
-        <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+        <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 , textAlign:"center"}}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
@@ -79,14 +79,14 @@ export default function Inicio() {
           </Grid>
           <Button
             type="submit"
-            fullWidth
             variant="contained"
-            sx={{ mt: 3, mb: 2 }}
+            sx={{ mt: 2, mb: 2}}
           >
             Buscar
           </Button>
-          <Mapa width="100%" height="400px"/>
         </Box>
+        <Mapa width="100%" height="250px" />
+        <ContentListTable />
       </Box>
     </Container>
   );
