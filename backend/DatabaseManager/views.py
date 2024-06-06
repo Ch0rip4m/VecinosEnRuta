@@ -1,4 +1,5 @@
 from rest_framework import viewsets
+from rest_framework.decorators import api_view
 from .models import *
 from .serializers import *
 from rest_framework.response import Response
@@ -62,6 +63,7 @@ class UsuarioViewSet(viewsets.ViewSet):
         usuario = Usuario.objects.get(pk=pk)
         usuario.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
     
 class ComunidadViewSet(viewsets.ModelViewSet):
     queryset = Comunidades.objects.all()
@@ -139,3 +141,19 @@ class OrdenTrayectoriaRealViewSet(viewsets.ModelViewSet):
     queryset = OrdenTrayectoriaReal.objects.all()
     serializer_class = OrdenTrayectoriaRealSerializer
     
+@api_view(['GET'])
+def info_usuario(request, email):
+    try:
+        usuario = get_object_or_404(Usuario, email=email)
+        serializer = UsuarioSerializer(usuario)
+        
+        roles = usuario.rolusuario_set.values_list('id_rol__nombre_rol', flat=True)
+        roles = list(roles)
+        
+        data = {
+            'usuario': serializer.data,
+            'roles': roles
+        }
+        return Response(data)
+    except Usuario.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)

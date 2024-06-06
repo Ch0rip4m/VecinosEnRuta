@@ -1,5 +1,6 @@
 import {Link as RouterLink } from 'react-router-dom'
 import { useState } from 'react'
+import { BACKEND_URL } from '../Utils/Variables';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -31,10 +32,11 @@ export default function Login({setIsLoggedIn}) {
       setFormErrors(errors);
     } else {
       try {
-        const response = await axios.post('http://localhost:8080/auth/token/', formData);
-        console.log('Respuesta del backend:', response.data);
+        const response = await axios.post(BACKEND_URL + '/auth/token/', formData);
         if (response.data.access) {
+          localStorage.setItem('email', formData.email);
           localStorage.setItem('token', response.data.access);
+          localStorage.setItem('rtoken', response.data.refresh);
           setIsLoggedIn(true);
           localStorage.setItem('isLoggedIn', true);
           localStorage.setItem('selectedElementName','Inicio')

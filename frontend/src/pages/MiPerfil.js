@@ -1,21 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { BACKEND_URL } from "../Utils/Variables";
 import {
   Avatar,
   Button,
   Container,
   TextField,
-  Typography,
   Box
 } from "@mui/material";
 
 export default function MiPerfil() {
   // Datos de ejemplo para el usuario
   const [user, setUser] = useState({
-    name: "Nombre del Usuario",
-    email: "usuario@example.com",
-    phone: "123456789",
-    role: "Rol del Usuario",
-    community: "Comunidad del Usuario",
+    nombre_usuario: "Nombre del Usuario",
+    apellido_usuario: "usuario@example.com",
+    telefono: "123456789",
+    rol: "Rol del Usuario",
+    comunidad: "Comunidad del Usuario",
     description: "Descripción del Usuario",
     // URL de la foto de perfil del usuario
     avatarUrl: "https://example.com/avatar.png",
@@ -23,6 +24,15 @@ export default function MiPerfil() {
 
   // Estado para controlar si se está editando el perfil o no
   const [isEditing, setIsEditing] = useState(false);
+
+  useEffect(() => {
+    const email = localStorage.getItem('email');
+    if (email) {
+      axios.get( BACKEND_URL + "/db-manager/usuarios/email/" + email + "/")
+        .then(response => {console.log("respuesta:",response.data)})
+        .catch(error => console.error('Error al obtener los datos del usuario:', error));
+    }
+  }, []);
 
   // Función para manejar el cambio en los campos editables
   const handleChange = (e) => {

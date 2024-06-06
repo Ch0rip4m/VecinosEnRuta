@@ -1,4 +1,5 @@
-import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import { BACKEND_URL } from "./Utils/Variables";
+import { Route, Routes, Navigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 import Register from "./pages/Register";
@@ -12,19 +13,12 @@ import MiVehiculo from "./pages/MiVehiculo";
 import MisChats from "./pages/MisChats";
 import Comunidades from "./pages/Comunidades";
 import PersistentDrawerLeft from "./components/navBar";
+import axios from "axios";
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(
     localStorage.getItem("isLoggedIn")
   );
-  // useEffect(
-  //   () => {
-  //     console.log("isLoggedIn", isLoggedIn);
-  //     console.log("localStorage", localStorage);
-  //   },
-  //   [isLoggedIn],
-  //   [localStorage]
-  // );
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -36,21 +30,42 @@ export default function App() {
         if (currentTime < expiration) {
           setIsLoggedIn(true);
         } else {
-          setIsLoggedIn(false);
-          localStorage.removeItem("token");
-          localStorage.removeItem("isLoggedIn");
+          refreshAccessToken();
         }
       } catch (error) {
         console.error("Error al decodificar el token:", error);
-        setIsLoggedIn(false);
-        localStorage.removeItem("isLoggedIn");
-        localStorage.removeItem("token");
+        logout();
       }
     } else {
       setIsLoggedIn(false);
       localStorage.removeItem("isLoggedIn");
     }
   }, []);
+
+  const refreshAccessToken = async () => {
+    const rtoken = localStorage.getItem("rtoken");
+    if (rtoken) {
+      try {
+        const response = await axios.post(BACKEND_URL + "/auth/refresh/", { refresh: rtoken });
+        console.log(response.data)
+        const { access } = response.data;
+        localStorage.setItem('token', access);
+        setIsLoggedIn(true);
+      } catch (error) {
+        console.error("Error al refrescar el token de acceso:", error);
+        logout();
+      }
+    } else {
+      logout();
+    }
+  };
+
+  const logout = () => {
+    setIsLoggedIn(false);
+    localStorage.removeItem("token");
+    localStorage.removeItem("rtoken");
+    localStorage.removeItem("isLoggedIn");
+  };
 
   const renderRoutes = () => {
     if (isLoggedIn) {
@@ -84,7 +99,7 @@ export default function App() {
 
   return (
     <div>
-      {isLoggedIn && <PersistentDrawerLeft />}
+      {isLoggedIn && <PersistentDrawerLeft setIsLoggedIn={setIsLoggedIn}/>}
       {renderRoutes()}
     </div>
   );

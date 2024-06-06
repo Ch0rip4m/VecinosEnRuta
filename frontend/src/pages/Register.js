@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { BACKEND_URL } from "../Utils/Variables";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -41,7 +42,7 @@ export default function Register() {
       setFormErrors(errors);
     } else {
       await axios
-        .post("http://localhost:8080/db-manager/usuarios/", formData)
+        .post(BACKEND_URL + "/db-manager/usuarios/", formData)
         .then((response) => {
           console.log("formulario enviado", response.data);
         })

@@ -23,6 +23,7 @@ import EditCalendarIcon from '@mui/icons-material/EditCalendar';
 import ChatIcon from '@mui/icons-material/Chat';
 import PeopleIcon from '@mui/icons-material/People';
 import HomeIcon from '@mui/icons-material/Home';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 const elements = [
   {"name": "Inicio",
@@ -102,7 +103,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   justifyContent: "flex-end",
 }));
 
-export default function PersistentDrawerLeft() {
+export default function PersistentDrawerLeft({setIsLoggedIn}) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
   const [selectedElementName, setSelectedElementName] = React.useState(() => {
@@ -119,6 +120,13 @@ export default function PersistentDrawerLeft() {
     setOpen(false);
   };
 
+  const handleLogOut = () => {
+    setIsLoggedIn(false);
+    localStorage.removeItem("token");
+    localStorage.removeItem("rtoken");
+    localStorage.removeItem("isLoggedIn");
+  };
+
   const handleElementSelect = (element) => {
     setSelectedElementName(element.name);
     localStorage.setItem("selectedElementName", element.name); // Guarda el elemento seleccionado en el almacenamiento local
@@ -129,7 +137,7 @@ export default function PersistentDrawerLeft() {
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
       <AppBar position="fixed" open={open}>
-        <Toolbar sx={{bgcolor: '#6571ac'}}>
+        <Toolbar sx={{bgcolor: '#5FB3A4'}}>
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -142,6 +150,14 @@ export default function PersistentDrawerLeft() {
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1, textAlign: 'center' }}>
             {selectedElementName}
           </Typography>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            onClick={handleLogOut}
+            sx={{ mr: 2, ...(open && { display: "none" }) }}
+          >
+            <LogoutIcon />
+          </IconButton>
         </Toolbar>
       </AppBar>
       <Drawer
@@ -151,14 +167,14 @@ export default function PersistentDrawerLeft() {
           "& .MuiDrawer-paper": {
             width: drawerWidth,
             boxSizing: "border-box",
-            bgcolor: '#6571ac'
+            bgcolor: '#5FB3A4'
           }
         }}
         variant="persistent"
         anchor="left"
         open={open}
       >
-        <DrawerHeader sx={{bgcolor: '#6571ac'}}>
+        <DrawerHeader sx={{bgcolor: '#5FB3A4'}}>
           <IconButton onClick={handleDrawerClose} sx={{color: 'white'}}>
             {theme.direction === "ltr" ? (
               <ChevronLeftIcon />
@@ -167,9 +183,9 @@ export default function PersistentDrawerLeft() {
             )}
           </IconButton>
         </DrawerHeader>
-        <List sx={{bgcolor: '#6571ac'}}>
+        <List sx={{bgcolor: '#5FB3A4'}}>
           {elements.map((element, index) => (
-            <ListItem key={element.name} sx={{bgcolor: '#6571ac'}}>
+            <ListItem key={element.name} sx={{bgcolor: '#5FB3A4'}}>
               <ListItemButton onClick={() => handleElementSelect(element)}>
                 <div className="navBar-row-elemnts">
                   <ListItemIcon sx={{color:'white'}}>
