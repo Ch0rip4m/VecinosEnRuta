@@ -150,9 +150,13 @@ def info_usuario(request, email):
         roles = usuario.rolusuario_set.values_list('id_rol__nombre_rol', flat=True)
         roles = list(roles)
         
+        comunidad = ComunidadesUsuario.objects.filter(id_usuario=usuario).values_list('id_comunidad__nombre_comunidad', flat=True)
+        comunidad = list(comunidad)
+        
         data = {
             'usuario': serializer.data,
-            'roles': roles
+            'roles': roles,
+            'comunidad': comunidad
         }
         return Response(data)
     except Usuario.DoesNotExist:
