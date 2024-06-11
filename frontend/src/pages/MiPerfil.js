@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { BACKEND_URL } from "../Utils/Variables";
-import { Avatar, Button, Container, TextField, Box } from "@mui/material";
+import { Avatar, Button, Container, TextField, Box, Grid } from "@mui/material";
 
 export default function MiPerfil() {
   const [userData, setUserData] = useState(null);
@@ -46,7 +46,7 @@ export default function MiPerfil() {
         })
         .catch((error) =>
           console.error("Error al obtener los datos del usuario:", error)
-        )
+        );
     }
   }, []);
 
@@ -64,7 +64,7 @@ export default function MiPerfil() {
   };
 
   return (
-    <Container maxWidth="sm">
+    <Container component="main" maxWidth="sm">
       <Box
         sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
       >
@@ -91,78 +91,103 @@ export default function MiPerfil() {
           </Button>
         )}
       </Box>
-      <form onSubmit={handleSubmit}>
-        <TextField
-          fullWidth
-          label="Nombre"
-          name="nombre_usuario"
-          value={user.nombre_usuario}
-          onChange={handleChange}
-          disabled={!isEditing}
-          margin="normal"
-        />
-        <TextField
-          fullWidth
-          label="Apellido"
-          name="apellido_usuario"
-          value={user.apellido_usuario}
-          onChange={handleChange}
-          disabled={!isEditing}
-          margin="normal"
-        />
-        <TextField
-          fullWidth
-          label="Email"
-          name="email"
-          value={user.email}
-          onChange={handleChange}
-          disabled={!isEditing}
-          margin="normal"
-        />
-        <TextField
-          fullWidth
-          label="Teléfono"
-          name="telefono"
-          value={user.telefono}
-          onChange={handleChange}
-          disabled={!isEditing}
-          margin="normal"
-        />
-        <TextField
-          fullWidth
-          label="Descripción"
-          name="descripcion_usuario"
-          value={user.descripcion}
-          onChange={handleChange}
-          disabled={!isEditing}
-          margin="normal"
-          multiline
-          rows={4}
-        />
-        <TextField
-          fullWidth
-          label="Roles"
-          name="roles"
-          value={user.roles}
-          onChange={handleChange}
-          disabled
-          margin="normal"
-        />
-        <TextField
-          fullWidth
-          label="Comunidad"
-          name="comunidad"
-          value={user.comunidad}
-          onChange={handleChange}
-          disabled={!isEditing}
-          margin="normal"
-        />
+      <Box
+        component="form"
+        noValidate
+        onSubmit={handleSubmit}
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <Grid container spacing={1} sx={{ mt: 0 }}>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label="Nombre"
+              name="nombre_usuario"
+              value={user.nombre_usuario}
+              onChange={handleChange}
+              disabled={!isEditing}
+              margin="normal"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label="Apellido"
+              name="apellido_usuario"
+              value={user.apellido_usuario}
+              onChange={handleChange}
+              disabled={!isEditing}
+              margin="normal"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label="Email"
+              name="email"
+              value={user.email}
+              onChange={handleChange}
+              disabled={!isEditing}
+              margin="normal"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label="Teléfono"
+              name="telefono"
+              value={user.telefono}
+              onChange={handleChange}
+              disabled={!isEditing}
+              margin="normal"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label="Roles"
+              name="roles"
+              value={user.roles}
+              onChange={handleChange}
+              disabled
+              margin="normal"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label="Comunidad"
+              name="comunidad"
+              value={user.comunidad}
+              onChange={handleChange}
+              disabled
+              margin="normal"
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Descripción"
+              name="descripcion_usuario"
+              value={user.descripcion}
+              onChange={handleChange}
+              disabled={!isEditing}
+              margin="normal"
+              multiline
+              rows={4}
+            />
+          </Grid>
+        </Grid>
         {isEditing && (
           <Button type="submit" variant="contained" color="primary">
             Guardar Cambios
           </Button>
         )}
-      </form>
+      </Box>
     </Container>
   );
 }

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BACKEND_URL } from "../Utils/Variables";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
@@ -11,10 +11,15 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import axios from "axios";
 import SimpleSelector from "../components/SimpleSelector";
+import MultipleSelectChip from "../components/MultiSelector";
 
 export default function Register() {
   const [formData, setformData] = useState({});
   const [formErrors, setFormErrors] = useState({});
+
+  useEffect(() => {
+    console.log("formData: ",formData)
+  }, [formData]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -26,6 +31,7 @@ export default function Register() {
       "email",
       "password",
       "sexo",
+      "nombre_rol",
       "descripcion_usuario"
     ];
     const errors = {};
@@ -173,6 +179,19 @@ export default function Register() {
                 type="password"
                 error={Boolean(formErrors.password)}
                 helperText={formErrors.password}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <MultipleSelectChip
+                values={["Pasajero", "Conductor"]}
+                formData={formData}
+                onChange={handleDataChange}
+                required
+                fullWidth
+                label="¿Qué rol(es) tomarias en la app?"
+                name="nombre_rol"
+                error={Boolean(formErrors.nombre_rol)}
+                helperText={formErrors.nombre_rol}
               />
             </Grid>
             <Grid item xs={12}>

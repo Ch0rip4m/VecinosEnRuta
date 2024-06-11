@@ -1,3 +1,7 @@
+:root {
+    --navbar-color: #5FB3A4;
+  }
+
 .navBar-row-elemnts {
     display: flex ;
     color: white

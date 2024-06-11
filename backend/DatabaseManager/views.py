@@ -20,6 +20,7 @@ class RegistroUsuarioView(APIView):
             telefono = serializer.validated_data.get('telefono', '')
             sexo = serializer.validated_data.get('sexo', '')
             descripcion_usuario = serializer.validated_data.get('descripcion_usuario', '')
+            nombre_rol = serializer.validated_data.get('nombre_rol', [])
 
             user = Usuario.objects.create_user(
                 email=email,
@@ -31,6 +32,8 @@ class RegistroUsuarioView(APIView):
                 sexo=sexo,
                 descripcion_usuario=descripcion_usuario
             )
+            
+            user.assign_roles(nombre_rol)
 
             return Response({'message': 'Usuario registrado exitosamente'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -153,10 +156,17 @@ def info_usuario(request, email):
         comunidad = ComunidadesUsuario.objects.filter(id_usuario=usuario).values_list('id_comunidad__nombre_comunidad', flat=True)
         comunidad = list(comunidad)
         
+        vehiculo_usuario = VehiculoUsuario.objects.filter(id_usuario=usuario).first()
+        vehiculo = None
+        if vehiculo_usuario:
+            vehiculo = vehiculo_usuario.id_vehiculo
+            vehiculo_serializer = VehiculoSerializer(vehiculo).data
+        
         data = {
             'usuario': serializer.data,
             'roles': roles,
-            'comunidad': comunidad
+            'comunidad': comunidad,
+            'vehiculo' : vehiculo_serializer
         }
         return Response(data)
     except Usuario.DoesNotExist:

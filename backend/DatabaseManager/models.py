@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
 # INTERACCIÓN DE USUARIOS
@@ -13,6 +14,7 @@ class UsuarioManager(BaseUserManager):
         user = self.model(email=email, nombre_usuario=nombre_usuario, apellido_usuario=apellido_usuario, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
+        
         return user
 
     def create_superuser(self, email, nombre_usuario, apellido_usuario, password, **extra_fields):
@@ -25,6 +27,11 @@ class UsuarioManager(BaseUserManager):
             raise ValueError('El superusuario debe tener is_superuser=True.')
 
         return self.create_user(email, nombre_usuario, apellido_usuario, password, **extra_fields)
+    
+    def assign_roles(self, user, roles):
+        for role_name in roles:
+            role = Roles.objects.get(nombre_rol=role_name)
+            RolUsuario.objects.create(id_usuario=user.id_usuario ,id_rol=role.id_rol)
 
 class Usuario(AbstractBaseUser, PermissionsMixin):
     id_usuario = models.AutoField(primary_key=True, verbose_name='ID del usuario')
@@ -58,6 +65,15 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
                        'telefono', 'descripcion_usuario']
     
     USERNAME_FIELD = 'email'
+    
+    def assign_roles(self, roles):
+        for role_name in roles:
+            try:
+                role = Roles.objects.get(nombre_rol=role_name)
+                print(role)
+                RolUsuario.objects.create(id_usuario=self, id_rol=role)
+            except ObjectDoesNotExist:
+                raise ValueError(f'Rol {role_name} no existe')
         
 class Comunidades(models.Model):
     id_comunidad = models.AutoField(primary_key=True, verbose_name='ID de la comunidad')

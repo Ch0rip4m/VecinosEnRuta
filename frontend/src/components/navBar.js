@@ -125,6 +125,7 @@ export default function PersistentDrawerLeft({setIsLoggedIn}) {
     localStorage.removeItem("token");
     localStorage.removeItem("rtoken");
     localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("email");
   };
 
   const handleElementSelect = (element) => {
@@ -137,7 +138,7 @@ export default function PersistentDrawerLeft({setIsLoggedIn}) {
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
       <AppBar position="fixed" open={open}>
-        <Toolbar sx={{bgcolor: '#5FB3A4'}}>
+        <Toolbar sx={{bgcolor: "var(--navbar-color)"}}>
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -167,14 +168,14 @@ export default function PersistentDrawerLeft({setIsLoggedIn}) {
           "& .MuiDrawer-paper": {
             width: drawerWidth,
             boxSizing: "border-box",
-            bgcolor: '#5FB3A4'
+            bgcolor: "var(--navbar-color)"
           }
         }}
         variant="persistent"
         anchor="left"
         open={open}
       >
-        <DrawerHeader sx={{bgcolor: '#5FB3A4'}}>
+        <DrawerHeader sx={{bgcolor: "var(--navbar-color)"}}>
           <IconButton onClick={handleDrawerClose} sx={{color: 'white'}}>
             {theme.direction === "ltr" ? (
               <ChevronLeftIcon />
@@ -183,9 +184,9 @@ export default function PersistentDrawerLeft({setIsLoggedIn}) {
             )}
           </IconButton>
         </DrawerHeader>
-        <List sx={{bgcolor: '#5FB3A4'}}>
+        <List sx={{bgcolor: "var(--navbar-color)"}}>
           {elements.map((element, index) => (
-            <ListItem key={element.name} sx={{bgcolor: '#5FB3A4'}}>
+            <ListItem key={element.name} sx={{bgcolor: "var(--navbar-color)"}}>
               <ListItemButton onClick={() => handleElementSelect(element)}>
                 <div className="navBar-row-elemnts">
                   <ListItemIcon sx={{color:'white'}}>

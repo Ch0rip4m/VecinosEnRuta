@@ -65,6 +65,7 @@ export default function App() {
     localStorage.removeItem("token");
     localStorage.removeItem("rtoken");
     localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("email");
   };
 
   const renderRoutes = () => {

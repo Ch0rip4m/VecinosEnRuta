@@ -2,9 +2,20 @@ from rest_framework import serializers
 from .models import *
 
 class UsuarioSerializer(serializers.ModelSerializer):
+    nombre_rol = serializers.ListField(child=serializers.CharField(), write_only=True)
+    
     class Meta:
         model = Usuario
-        fields = '__all__'
+        fields = ['email', 'nombre_usuario', 'apellido_usuario', 'edad', 'telefono', 'sexo', 'descripcion_usuario', 'password', 'nombre_rol']
+        extra_kwargs = {
+            'password': {'write_only': True}
+        }
+        
+    def create(self, validated_data):
+        roles_data = validated_data.pop('nombre_rol', [])
+        user = Usuario.objects.create_user(**validated_data)
+        user.assign_roles(roles_data)
+        return user
 
 class ComunidadSerializer(serializers.ModelSerializer):
     class Meta:
