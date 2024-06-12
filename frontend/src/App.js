@@ -46,10 +46,12 @@ export default function App() {
     const rtoken = localStorage.getItem("rtoken");
     if (rtoken) {
       try {
-        const response = await axios.post(BACKEND_URL + "/auth/refresh/", { refresh: rtoken });
-        console.log(response.data)
+        const response = await axios.post(BACKEND_URL + "/auth/refresh/", {
+          refresh: rtoken,
+        });
+        console.log(response.data);
         const { access } = response.data;
-        localStorage.setItem('token', access);
+        localStorage.setItem("token", access);
         setIsLoggedIn(true);
       } catch (error) {
         console.error("Error al refrescar el token de acceso:", error);
@@ -100,7 +102,7 @@ export default function App() {
 
   return (
     <div>
-      {isLoggedIn && <PersistentDrawerLeft setIsLoggedIn={setIsLoggedIn}/>}
+      {isLoggedIn && <PersistentDrawerLeft setIsLoggedIn={setIsLoggedIn} />}
       {renderRoutes()}
     </div>
   );

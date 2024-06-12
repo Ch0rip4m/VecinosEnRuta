@@ -1,4 +1,4 @@
-import '../styles/navBar.css'
+import "../styles/navBar.css";
 import * as React from "react";
 import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
@@ -16,45 +16,24 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import AccountBoxIcon from '@mui/icons-material/AccountBox';
-import AltRouteIcon from '@mui/icons-material/AltRoute';
-import MinorCrashIcon from '@mui/icons-material/MinorCrash';
-import EditCalendarIcon from '@mui/icons-material/EditCalendar';
-import ChatIcon from '@mui/icons-material/Chat';
-import PeopleIcon from '@mui/icons-material/People';
-import HomeIcon from '@mui/icons-material/Home';
-import LogoutIcon from '@mui/icons-material/Logout';
+import AccountBoxIcon from "@mui/icons-material/AccountBox";
+import AltRouteIcon from "@mui/icons-material/AltRoute";
+import MinorCrashIcon from "@mui/icons-material/MinorCrash";
+import EditCalendarIcon from "@mui/icons-material/EditCalendar";
+import ChatIcon from "@mui/icons-material/Chat";
+import PeopleIcon from "@mui/icons-material/People";
+import HomeIcon from "@mui/icons-material/Home";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 const elements = [
-  {"name": "Inicio",
-  "icon": <HomeIcon/>,
-  "url": "/inicio"
-  },
-  {"name": "Mi Perfil",
-  "icon": <AccountBoxIcon/>,
-  "url": "/mi-perfil"
-  },
-  {"name": "Mis Rutas",
-  "icon": <AltRouteIcon/>,
-  "url": "/mis-rutas"
-  },
-  {"name": "Mi Vehículo",
-  "icon": <MinorCrashIcon/>,
-  "url": "/mi-vehiculo"
-  },
-  {"name": "Mis Viajes",
-  "icon": <EditCalendarIcon/>,
-  "url": "/mis-viajes"
-  },
-  {"name": "Mis Chats",
-  "icon": <ChatIcon/>,
-  "url": "/mis-chats"
-  },
-  {"name": "Comunidades",
-  "icon": <PeopleIcon/>,
-  "url": "/comunidades"
-  }
-]
+  { name: "Inicio", icon: <HomeIcon />, url: "/inicio" },
+  { name: "Mi Perfil", icon: <AccountBoxIcon />, url: "/mi-perfil" },
+  { name: "Mis Rutas", icon: <AltRouteIcon />, url: "/mis-rutas" },
+  { name: "Mi Vehículo", icon: <MinorCrashIcon />, url: "/mi-vehiculo" },
+  { name: "Mis Viajes", icon: <EditCalendarIcon />, url: "/mis-viajes" },
+  { name: "Mis Chats", icon: <ChatIcon />, url: "/mis-chats" },
+  { name: "Comunidades", icon: <PeopleIcon />, url: "/comunidades" },
+];
 
 const drawerWidth = 240;
 
@@ -103,7 +82,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   justifyContent: "flex-end",
 }));
 
-export default function PersistentDrawerLeft({setIsLoggedIn}) {
+export default function PersistentDrawerLeft({ setIsLoggedIn }) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
   const [selectedElementName, setSelectedElementName] = React.useState(() => {
@@ -138,7 +117,7 @@ export default function PersistentDrawerLeft({setIsLoggedIn}) {
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
       <AppBar position="fixed" open={open}>
-        <Toolbar sx={{bgcolor: "var(--navbar-color)"}}>
+        <Toolbar sx={{ bgcolor: "var(--navbar-color)" }}>
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -148,7 +127,12 @@ export default function PersistentDrawerLeft({setIsLoggedIn}) {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1, textAlign: 'center' }}>
+          <Typography
+            variant="h6"
+            noWrap
+            component="div"
+            sx={{ flexGrow: 1, textAlign: "center" }}
+          >
             {selectedElementName}
           </Typography>
           <IconButton
@@ -168,15 +152,15 @@ export default function PersistentDrawerLeft({setIsLoggedIn}) {
           "& .MuiDrawer-paper": {
             width: drawerWidth,
             boxSizing: "border-box",
-            bgcolor: "var(--navbar-color)"
-          }
+            bgcolor: "var(--navbar-color)",
+          },
         }}
         variant="persistent"
         anchor="left"
         open={open}
       >
-        <DrawerHeader sx={{bgcolor: "var(--navbar-color)"}}>
-          <IconButton onClick={handleDrawerClose} sx={{color: 'white'}}>
+        <DrawerHeader sx={{ bgcolor: "var(--navbar-color)" }}>
+          <IconButton onClick={handleDrawerClose} sx={{ color: "white" }}>
             {theme.direction === "ltr" ? (
               <ChevronLeftIcon />
             ) : (
@@ -184,12 +168,15 @@ export default function PersistentDrawerLeft({setIsLoggedIn}) {
             )}
           </IconButton>
         </DrawerHeader>
-        <List sx={{bgcolor: "var(--navbar-color)"}}>
+        <List sx={{ bgcolor: "var(--navbar-color)" }}>
           {elements.map((element, index) => (
-            <ListItem key={element.name} sx={{bgcolor: "var(--navbar-color)"}}>
+            <ListItem
+              key={element.name}
+              sx={{ bgcolor: "var(--navbar-color)" }}
+            >
               <ListItemButton onClick={() => handleElementSelect(element)}>
                 <div className="navBar-row-elemnts">
-                  <ListItemIcon sx={{color:'white'}}>
+                  <ListItemIcon sx={{ color: "white" }}>
                     {element.icon}
                   </ListItemIcon>
                   <ListItemText primary={element.name} />
@@ -199,7 +186,7 @@ export default function PersistentDrawerLeft({setIsLoggedIn}) {
           ))}
         </List>
       </Drawer>
-      <Main open={open} >
+      <Main open={open}>
         <DrawerHeader />
       </Main>
     </Box>

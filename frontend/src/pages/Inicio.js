@@ -10,6 +10,33 @@ import Mapa from "../components/Mapas";
 import ContentListTable from "../components/Lista";
 import axios from "axios";
 
+const columns = [
+  { id: "id_ruta", label: "Nombre Ruta", minWidth: 170 },
+  { id: "solicitud", label: "Solicitud", minWidth: 100 },
+];
+
+function createData(id_ruta, solicitud) {
+  return { id_ruta, solicitud };
+}
+
+const rows = [
+  createData("India", "IN"),
+  createData("China", "CN"),
+  createData("Italy", "IT"),
+  createData("United States", "US"),
+  createData("Canada", "CA"),
+  createData("Australia", "AU"),
+  createData("Germany", "DE"),
+  createData("Ireland", "IE"),
+  createData("Mexico", "MX"),
+  createData("Japan", "JP"),
+  createData("France", "FR"),
+  createData("United Kingdom", "GB"),
+  createData("Russia", "RU"),
+  createData("Nigeria", "NG"),
+  createData("Brazil", "BR"),
+];
+
 export default function Inicio() {
   const [formData, setformData] = useState({});
   const [formErrors, setFormErrors] = useState({});
@@ -50,7 +77,12 @@ export default function Inicio() {
         <Typography component="h1" variant="h5">
           ¿A donde vas?
         </Typography>
-        <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 , textAlign:"center"}}>
+        <Box
+          component="form"
+          noValidate
+          onSubmit={handleSubmit}
+          sx={{ mt: 3, textAlign: "center" }}
+        >
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
@@ -77,16 +109,12 @@ export default function Inicio() {
               />
             </Grid>
           </Grid>
-          <Button
-            type="submit"
-            variant="contained"
-            sx={{ mt: 2, mb: 2}}
-          >
+          <Button type="submit" variant="contained" sx={{ mt: 2, mb: 2 }}>
             Buscar
           </Button>
         </Box>
         <Mapa width="100%" height="250px" />
-        <ContentListTable />
+        <ContentListTable columns={columns} rows={rows} />
       </Box>
     </Container>
   );

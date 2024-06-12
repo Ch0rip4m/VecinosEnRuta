@@ -18,7 +18,7 @@ export default function Register() {
   const [formErrors, setFormErrors] = useState({});
 
   useEffect(() => {
-    console.log("formData: ",formData)
+    console.log("formData: ", formData);
   }, [formData]);
 
   const handleSubmit = async (event) => {
@@ -32,7 +32,7 @@ export default function Register() {
       "password",
       "sexo",
       "nombre_rol",
-      "descripcion_usuario"
+      "descripcion_usuario",
     ];
     const errors = {};
     let hasErrors = false;
@@ -53,8 +53,8 @@ export default function Register() {
           console.log("formulario enviado", response.data);
         })
         .catch((error) => {
-          console.error("Error al enviar formulario", error)
-        })
+          console.error("Error al enviar formulario", error);
+        });
     }
   };
 
