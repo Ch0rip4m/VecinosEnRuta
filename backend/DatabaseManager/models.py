@@ -7,11 +7,11 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 # INTERACCIÓN DE USUARIOS
 
 class UsuarioManager(BaseUserManager):
-    def create_user(self, email, nombre_usuario, apellido_usuario, password, **extra_fields):
+    def create_user(self, email, nombre_usuario, apellido_usuario, password, imagen_perfil, **extra_fields):
         if not email:
             raise ValueError('El email debe ser proporcionado')
         email = self.normalize_email(email)
-        user = self.model(email=email, nombre_usuario=nombre_usuario, apellido_usuario=apellido_usuario, **extra_fields)
+        user = self.model(email=email, nombre_usuario=nombre_usuario, apellido_usuario=apellido_usuario, imagen_perfil=imagen_perfil, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         
@@ -27,11 +27,6 @@ class UsuarioManager(BaseUserManager):
             raise ValueError('El superusuario debe tener is_superuser=True.')
 
         return self.create_user(email, nombre_usuario, apellido_usuario, password, **extra_fields)
-    
-    def assign_roles(self, user, roles):
-        for role_name in roles:
-            role = Roles.objects.get(nombre_rol=role_name)
-            RolUsuario.objects.create(id_usuario=user.id_usuario ,id_rol=role.id_rol)
 
 class Usuario(AbstractBaseUser, PermissionsMixin):
     id_usuario = models.AutoField(primary_key=True, verbose_name='ID del usuario')
@@ -43,6 +38,7 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
     password = models.CharField(max_length=255, verbose_name='Password', default='')
     telefono = models.CharField(max_length=255, verbose_name='Telefono del usuario')
     descripcion_usuario = models.TextField(max_length=1000, verbose_name='Descripcion del usuario')
+    imagen_perfil = models.ImageField(upload_to='perfil/', null=True, blank=True, verbose_name='Imagen de perfil Usuarios')
     tiempo_registro = models.DateTimeField(auto_now_add=True, verbose_name='Registro de creacion')
     
     is_staff = models.BooleanField(default=False)
@@ -130,6 +126,7 @@ class Vehiculos(models.Model):
     color_vehiculo = models.CharField(max_length=20, verbose_name='Color del vehiculo')
     patente = models.CharField(max_length=10, verbose_name='Patente del vehiculo')
     ano_vehiculo = models.CharField(max_length=4, verbose_name='Año del vehiculo')
+    imagen_perfil = models.ImageField(upload_to='vehiculo/', null=True, blank=True, verbose_name='Imagen de perfil vehiculo')
     tiempo_registro = models.DateTimeField(auto_now_add=True, verbose_name='Registro de creacion')
     
     class Meta:

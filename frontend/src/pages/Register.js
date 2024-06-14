@@ -16,10 +16,13 @@ import MultipleSelectChip from "../components/MultiSelector";
 export default function Register() {
   const [formData, setformData] = useState({});
   const [formErrors, setFormErrors] = useState({});
+  const [profileImage, setProfileImage] = useState(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
 
   useEffect(() => {
     console.log("formData: ", formData);
-  }, [formData]);
+    console.log("profileImage:", profileImage);
+  }, [formData, profileImage]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -47,8 +50,19 @@ export default function Register() {
     if (hasErrors) {
       setFormErrors(errors);
     } else {
+      const formDataToSend = new FormData();
+      Object.keys(formData).forEach((key) => {
+        formDataToSend.append(key, formData[key]);
+      });
+      if (profileImage) {
+        formDataToSend.append("imagen_perfil", profileImage);
+        console.log("formatDataToSend", formDataToSend);
+      }
+
       await axios
-        .post(BACKEND_URL + "/db-manager/usuarios/", formData)
+        .post(BACKEND_URL + "/db-manager/usuarios/", formDataToSend, {
+          headers: { "Content-Type": "multipart/form-data" },
+        })
         .then((response) => {
           console.log("formulario enviado", response.data);
         })
@@ -74,6 +88,18 @@ export default function Register() {
     const inputValue = value.replace(/[^0-9]/g, "");
     setformData((currentData) => ({ ...currentData, [name]: inputValue }));
     setFormErrors({ ...formErrors, [name]: null });
+  };
+
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    setProfileImage(file);
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreviewUrl(reader.result);
+    };
+    reader.readAsDataURL(file);
+    console.log(reader)
   };
 
   return (
@@ -207,6 +233,38 @@ export default function Register() {
                 error={Boolean(formErrors.descripcion_usuario)}
                 helperText={formErrors.descripcion_usuario}
               />
+            </Grid>
+            <Grid item xs={12}>
+              <input
+                accept="image/*"
+                id="profile-image-upload"
+                type="file"
+                style={{ display: "none" }}
+                onChange={handleImageChange}
+              />
+              <label htmlFor="profile-image-upload">
+                <Button
+                  variant="contained"
+                  color={profileImage ? "success" : "primary"}
+                  component="span"
+                  fullWidth
+                >
+                  {profileImage ? "Imagen Lista" : "Subir Foto de Perfil"}
+                </Button>
+              </label>
+              {imagePreviewUrl && (
+                <Box mt={2} textAlign="center">
+                  <img
+                    src={imagePreviewUrl}
+                    alt="Vista previa de la imagen"
+                    style={{
+                      width: "100%",
+                      maxHeight: "200px",
+                      objectFit: "cover",
+                    }}
+                  />
+                </Box>
+              )}
             </Grid>
           </Grid>
           <Button

@@ -28,4 +28,4 @@ router.register(r'orden-trayectorias-reales', OrdenTrayectoriaRealViewSet, basen
 urlpatterns = [
     path("", include(router.urls)),
     path('usuarios/email/<str:email>/', info_usuario, name='info_usuario')
-]
+] 

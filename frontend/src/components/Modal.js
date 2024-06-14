@@ -7,7 +7,7 @@ import Modal from "@mui/material/Modal";
 import axios from "axios";
 import { BACKEND_URL } from "../Utils/Variables";
 import SimpleSelector from "./SimpleSelector";
-import SelectorSearch from "./SelectorSearch";
+//import SelectorSearch from "./SelectorSearch";
 
 const style = {
   position: "absolute",
@@ -26,6 +26,8 @@ export default function BasicModal(props) {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const [inputData, setInputData] = useState({});
+  const [profileImage, setProfileImage] = useState(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -36,14 +38,33 @@ export default function BasicModal(props) {
     setInputData({ ...inputData, [name]: event });
   };
 
+  const handleImageChange = (event, name) => {
+    const file = event.target.files[0];
+    setProfileImage(file);
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreviewUrl(reader.result);
+    };
+    reader.readAsDataURL(file);
+    setInputData({ ...inputData,[name]: event})
+  };
+
   useEffect(() => {
     console.log("inputData", inputData);
   }, [inputData]);
 
   const handleSubmit = () => {
-    console.log("inputData", inputData);
+    const formDataToSend = new FormData()
+    Object.keys(inputData).forEach((key) => {
+      formDataToSend.append(key, inputData[key]);
+    });
+    if (profileImage) {
+      formDataToSend.append("imagen_perfil", profileImage);
+      console.log("formatDataToSend", formDataToSend);
+    }
     axios
-      .post(props.url, inputData)
+      .post(props.url, formDataToSend)
       .then((response) => {
         handleClose();
       })
@@ -79,7 +100,7 @@ export default function BasicModal(props) {
             </Typography>
           </div>
           <Box component="form" noValidate>
-            <Grid container spacing={3} sx={{ mb: 5 }}>
+            <Grid container spacing={1} sx={{ mb: 2 }}>
               {props.columns.map((column) => {
                 if (!column.createable) {
                   return null;
@@ -93,6 +114,9 @@ export default function BasicModal(props) {
                     handleInputChange={handleInputChange}
                     values={column.values}
                     handleDataSelectorChange={handleDataSelectorChange}
+                    handleImageChange={handleImageChange}
+                    profileImage={profileImage}
+                    imagePreviewUrl={imagePreviewUrl}
                   />
                 );
               })}
@@ -112,7 +136,6 @@ export default function BasicModal(props) {
               color="primary"
               type="submit"
               variant="contained"
-              disabled
               fullWidth
               onClick={handleSubmit}
             >
@@ -131,6 +154,8 @@ export function getField({ type }) {
       return gridFieldText;
     case "gridFieldForeignKey":
       return gridFieldForeignKey;
+    case "gridFieldImage":
+      return gridFieldImage;
     // case "gridFieldSearchSelector":
     //   return gridFieldSearchSelector;
     default:
@@ -155,6 +180,52 @@ export function gridFieldText({
         value={inputData[accessorKey] || null}
         onChange={handleInputChange}
       />
+    </Grid>
+  );
+}
+
+export function gridFieldImage({
+  header,
+  accessorKey,
+  inputData,
+  profileImage,
+  imagePreviewUrl,
+  handleImageChange,
+}) {
+  return (
+    <Grid item xs={12}>
+      <input
+        accept="image/*"
+        id="profile-image-upload"
+        type="file"
+        name={accessorKey}
+        value={inputData[accessorKey] || null}
+        style={{ display: "none" }}
+        onChange={handleImageChange}
+      />
+      <label htmlFor="profile-image-upload">
+        <Button
+          variant="contained"
+          color={profileImage ? "success" : "primary"}
+          component="span"
+          fullWidth
+        >
+          {profileImage ? "Imagen Lista" : header}
+        </Button>
+      </label>
+      {imagePreviewUrl && (
+        <Box mt={2} textAlign="center">
+          <img
+            src={imagePreviewUrl}
+            alt="Vista previa de la imagen"
+            style={{
+              width: "100%",
+              maxHeight: "200px",
+              objectFit: "cover",
+            }}
+          />
+        </Box>
+      )}
     </Grid>
   );
 }

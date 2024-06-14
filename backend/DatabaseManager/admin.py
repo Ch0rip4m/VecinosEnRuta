@@ -4,10 +4,10 @@ from .models import *
 
 @admin.register(Usuario)
 class UsuarioAdmin(admin.ModelAdmin):
-    list_display = ('id_usuario','nombre_usuario', 'apellido_usuario','edad','sexo','email','password','telefono','descripcion_usuario','tiempo_registro')
-    search_fields = ('id_usuario','nombre_usuario', 'apellido_usuario','edad','sexo','email','password','telefono','descripcion_usuario','tiempo_registro')
-    list_filter = ('id_usuario','nombre_usuario', 'apellido_usuario','edad','sexo','email','password','telefono','descripcion_usuario','tiempo_registro')
-    ordering = ('id_usuario','nombre_usuario', 'apellido_usuario','edad','sexo','email','password','telefono','descripcion_usuario','tiempo_registro')
+    list_display = ('id_usuario','nombre_usuario', 'apellido_usuario','edad','sexo','email','password','telefono','descripcion_usuario','imagen_perfil','tiempo_registro')
+    search_fields = ('id_usuario','nombre_usuario', 'apellido_usuario','edad','sexo','email','password','telefono','descripcion_usuario','imagen_perfil','tiempo_registro')
+    list_filter = ('id_usuario','nombre_usuario', 'apellido_usuario','edad','sexo','email','password','telefono','descripcion_usuario','imagen_perfil','tiempo_registro')
+    ordering = ('id_usuario','nombre_usuario', 'apellido_usuario','edad','sexo','email','password','telefono','descripcion_usuario','imagen_perfil','tiempo_registro')
     
 @admin.register(Comunidades)
 class ComunidadesAdmin(admin.ModelAdmin):
@@ -39,10 +39,10 @@ class RolUsuarioAdmin(admin.ModelAdmin):
 
 @admin.register(Vehiculos)
 class VehiculoAdmin(admin.ModelAdmin):
-    list_display = ('id_vehiculo','marca_vehiculo','modelo_vehiculo','tipo_de_vehiculo','nro_asientos_disp','color_vehiculo','patente','ano_vehiculo','tiempo_registro')
-    search_fields = ('id_vehiculo','marca_vehiculo','modelo_vehiculo','tipo_de_vehiculo','nro_asientos_disp','color_vehiculo','patente','ano_vehiculo','tiempo_registro')
-    list_filter = ('id_vehiculo','marca_vehiculo','modelo_vehiculo','tipo_de_vehiculo','nro_asientos_disp','color_vehiculo','patente','ano_vehiculo','tiempo_registro')
-    ordering = ('id_vehiculo','marca_vehiculo','modelo_vehiculo','tipo_de_vehiculo','nro_asientos_disp','color_vehiculo','patente','ano_vehiculo','tiempo_registro')
+    list_display = ('id_vehiculo','marca_vehiculo','modelo_vehiculo','tipo_de_vehiculo','nro_asientos_disp','color_vehiculo','patente','ano_vehiculo', 'imagen_perfil','tiempo_registro')
+    search_fields = ('id_vehiculo','marca_vehiculo','modelo_vehiculo','tipo_de_vehiculo','nro_asientos_disp','color_vehiculo','patente','ano_vehiculo', 'imagen_perfil','tiempo_registro')
+    list_filter = ('id_vehiculo','marca_vehiculo','modelo_vehiculo','tipo_de_vehiculo','nro_asientos_disp','color_vehiculo','patente','ano_vehiculo', 'imagen_perfil','tiempo_registro')
+    ordering = ('id_vehiculo','marca_vehiculo','modelo_vehiculo','tipo_de_vehiculo','nro_asientos_disp','color_vehiculo','patente','ano_vehiculo', 'imagen_perfil','tiempo_registro')
 
 @admin.register(VehiculoUsuario)
 class VehiculoUsuarioAdmin(admin.ModelAdmin):

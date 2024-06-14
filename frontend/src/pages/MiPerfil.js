@@ -4,11 +4,7 @@ import { BACKEND_URL } from "../Utils/Variables";
 import { Avatar, Button, Container, TextField, Box, Grid } from "@mui/material";
 
 export default function MiPerfil() {
-  const [userData, setUserData] = useState(null);
-  const [roles, setRoles] = useState([]);
-  const [comunidad, setComunidad] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
-
   const [user, setUser] = useState({
     nombre_usuario: "",
     apellido_usuario: "",
@@ -17,7 +13,7 @@ export default function MiPerfil() {
     roles: "",
     comunidad: "",
     descripcion: "",
-    avatarUrl: "https://example.com/avatar.png",
+    imagen_perfil: "",
   });
 
   useEffect(() => {
@@ -30,18 +26,17 @@ export default function MiPerfil() {
           const usuario = response.data.usuario;
           const roles = response.data.roles;
           const comunidad = response.data.comunidad;
-          setUserData(usuario);
-          setRoles(roles);
-          setComunidad(comunidad);
           setUser({
             nombre_usuario: usuario.nombre_usuario,
             apellido_usuario: usuario.apellido_usuario,
             email: usuario.email,
             telefono: usuario.telefono,
             roles: roles.join(", "),
-            comunidad: comunidad[0] || "", // Suponiendo que hay un campo comunidad
+            comunidad: comunidad[0] || "",
             descripcion: usuario.descripcion_usuario,
-            avatarUrl: usuario.avatarUrl || "https://example.com/avatar.png",
+            imagen_perfil:
+              BACKEND_URL + usuario.imagen_perfil ||
+              "https://example.com/avatar.png",
           });
         })
         .catch((error) =>
@@ -70,7 +65,7 @@ export default function MiPerfil() {
       >
         <Avatar
           alt={user.nombre_usuario}
-          src={user.avatarUrl}
+          src={user.imagen_perfil}
           style={{ width: "100px", height: "100px", marginBottom: "15px" }}
         />
         {isEditing ? (
