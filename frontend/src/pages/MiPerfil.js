@@ -71,7 +71,7 @@ export default function MiPerfil() {
         {isEditing ? (
           <Button
             variant="contained"
-            color="primary"
+            sx={{'&:hover': { bgcolor: "red" } }}
             onClick={() => setIsEditing(false)}
           >
             Cancelar Edición
@@ -79,7 +79,7 @@ export default function MiPerfil() {
         ) : (
           <Button
             variant="contained"
-            color="primary"
+            sx={{bgcolor: "var(--navbar-color)",'&:hover': { bgcolor: "var(--navbar-color)" } }}
             onClick={() => setIsEditing(true)}
           >
             Editar Perfil
@@ -148,7 +148,7 @@ export default function MiPerfil() {
               name="roles"
               value={user.roles}
               onChange={handleChange}
-              disabled
+              disabled={!isEditing}
               margin="normal"
             />
           </Grid>
@@ -178,7 +178,7 @@ export default function MiPerfil() {
           </Grid>
         </Grid>
         {isEditing && (
-          <Button type="submit" variant="contained" color="primary">
+          <Button type="submit" variant="contained" sx={{bgcolor: "var(--navbar-color)"}}>
             Guardar Cambios
           </Button>
         )}

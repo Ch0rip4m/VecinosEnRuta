@@ -99,7 +99,6 @@ export default function Register() {
       setImagePreviewUrl(reader.result);
     };
     reader.readAsDataURL(file);
-    console.log(reader)
   };
 
   return (
@@ -248,6 +247,7 @@ export default function Register() {
                   color={profileImage ? "success" : "primary"}
                   component="span"
                   fullWidth
+                  sx={{bgcolor:"var(--navbar-color)"}}
                 >
                   {profileImage ? "Imagen Lista" : "Subir Foto de Perfil"}
                 </Button>
@@ -271,7 +271,7 @@ export default function Register() {
             type="submit"
             fullWidth
             variant="contained"
-            sx={{ mt: 3, mb: 2 }}
+            sx={{ mt: 3, mb: 2, bgcolor: "var(--navbar-color)"}}
           >
             Registrarse
           </Button>

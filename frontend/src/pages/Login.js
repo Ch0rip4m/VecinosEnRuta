@@ -1,15 +1,13 @@
 import { Link as RouterLink } from "react-router-dom";
 import { useState } from "react";
 import { BACKEND_URL } from "../Utils/Variables";
-import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
-import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import HolidayVillageIcon from "@mui/icons-material/HolidayVillage";
+import LogoRedondoVER from "../styles/LogoRedondo";
 import axios from "axios";
 
 export default function Login({ setIsLoggedIn }) {
@@ -69,7 +67,6 @@ export default function Login({ setIsLoggedIn }) {
 
   return (
     <Container component="main" maxWidth="xs">
-      <CssBaseline />
       <Box
         sx={{
           marginTop: 8,
@@ -78,11 +75,9 @@ export default function Login({ setIsLoggedIn }) {
           alignItems: "center",
         }}
       >
-        <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-          <HolidayVillageIcon />
-        </Avatar>
-        <Typography component="h1" variant="h5">
-          Inicio de sesión VecinosEnRuta
+        <LogoRedondoVER width="150px" height="150px"/>
+        <Typography component="h1" variant="h5" sx={{mt: 3}}>
+          ¡Bienvenido a VecinosEnRuta!
         </Typography>
         <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
           <Grid container spacing={2}>
@@ -116,7 +111,7 @@ export default function Login({ setIsLoggedIn }) {
             type="submit"
             fullWidth
             variant="contained"
-            sx={{ mt: 3, mb: 2 }}
+            sx={{ mt: 3, mb: 2, bgcolor: "var(--navbar-color)" }}
           >
             Iniciar sesión
           </Button>

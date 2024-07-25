@@ -7,6 +7,8 @@ export default function MiVehiculo() {
   const [isEditing, setIsEditing] = useState(false);
   const [isConductor, setIsConductor] = useState(false);
   const [carExist, setCarExist] = useState(false);
+  const [profileImage, setProfileImage] = useState(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
   const [carData, setCarData] = useState({
     marca_vehiculo: "",
     modelo_vehiculo: "",
@@ -56,6 +58,17 @@ export default function MiVehiculo() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setCarData({ ...carData, [name]: value });
+  };
+
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    setProfileImage(file);
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreviewUrl(reader.result);
+    };
+    reader.readAsDataURL(file);
   };
 
   // Función para manejar el envío del formulario de edición
@@ -315,7 +328,7 @@ export default function MiVehiculo() {
                     margin="normal"
                   />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
                     label="Año del vehículo"
@@ -325,6 +338,40 @@ export default function MiVehiculo() {
                     disabled={!isEditing}
                     margin="normal"
                   />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <input
+                    accept="image/*"
+                    id="profile-image-upload"
+                    type="file"
+                    style={{ display: "none" }}
+                    onChange={handleImageChange}
+                    disabled={!isEditing}
+                  />
+                  <label htmlFor="profile-image-upload">
+                    <Button
+                      variant="contained"
+                      color={profileImage ? "success" : "primary"}
+                      component="span"
+                      fullWidth
+                      disabled={!isEditing}
+                    >
+                      {profileImage ? "Imagen Lista" : "Subir Foto de Perfil"}
+                    </Button>
+                  </label>
+                  {imagePreviewUrl && (
+                    <Box mt={2} textAlign="center">
+                      <img
+                        src={imagePreviewUrl}
+                        alt="Vista previa de la imagen"
+                        style={{
+                          width: "100%",
+                          maxHeight: "200px",
+                          objectFit: "cover",
+                        }}
+                      />
+                    </Box>
+                  )}
                 </Grid>
               </Grid>
               {isEditing && (

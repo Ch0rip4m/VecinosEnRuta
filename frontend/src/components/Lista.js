@@ -41,13 +41,13 @@ export default function ContentListTable(props) {
           <TableBody>
             {props.rows
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row) => {
+              .map((row, rowIndex) => {
                 return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
+                  <TableRow hover role="checkbox" tabIndex={-1} key={row.code || rowIndex}>
                     {props.columns.map((column) => {
                       const value = row[column.id];
                       return (
-                        <TableCell key={column.id} align={column.align}>
+                        <TableCell key={`${column.id}-${rowIndex}`} align={column.align}>
                           {column.format && typeof value === "number"
                             ? column.format(value)
                             : value}

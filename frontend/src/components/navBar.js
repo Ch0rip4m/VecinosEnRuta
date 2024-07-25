@@ -1,5 +1,6 @@
 import "../styles/navBar.css";
-import * as React from "react";
+import React, { useState, useEffect } from "react";
+import { BACKEND_URL } from "../Utils/Variables";
 import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
@@ -24,6 +25,9 @@ import ChatIcon from "@mui/icons-material/Chat";
 import PeopleIcon from "@mui/icons-material/People";
 import HomeIcon from "@mui/icons-material/Home";
 import LogoutIcon from "@mui/icons-material/Logout";
+import LogoRedondoVER from "../styles/LogoRedondo";
+import axios from "axios";
+import { Avatar } from "@mui/material";
 
 const elements = [
   { name: "Inicio", icon: <HomeIcon />, url: "/inicio" },
@@ -40,7 +44,7 @@ const drawerWidth = 240;
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open }) => ({
     flexGrow: 1,
-    padding: theme.spacing(3),
+    padding: theme.spacing(1),
     transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
@@ -90,6 +94,16 @@ export default function PersistentDrawerLeft({ setIsLoggedIn }) {
     const storedSelectedElement = localStorage.getItem("selectedElementName");
     return storedSelectedElement ? storedSelectedElement : "Inicio"; // Si no hay nada en el almacenamiento local, establece el valor predeterminado como "Inicio"
   });
+  const [user, setUser] = useState({
+    nombre_usuario: "",
+    apellido_usuario: "",
+    email: "",
+    telefono: "",
+    roles: "",
+    comunidad: "",
+    descripcion: "",
+    imagen_perfil: "",
+  });
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -112,6 +126,36 @@ export default function PersistentDrawerLeft({ setIsLoggedIn }) {
     localStorage.setItem("selectedElementName", element.name); // Guarda el elemento seleccionado en el almacenamiento local
     window.location.href = element.url;
   };
+
+  useEffect(() => {
+    const email = localStorage.getItem("email");
+    if (email) {
+      axios
+        .get(BACKEND_URL + "/db-manager/usuarios/email/" + email + "/")
+        .then((response) => {
+          console.log("respuesta:", response.data);
+          const usuario = response.data.usuario;
+          const roles = response.data.roles;
+          const comunidad = response.data.comunidad;
+          setUser({
+            nombre_usuario: usuario.nombre_usuario,
+            apellido_usuario: usuario.apellido_usuario,
+            email: usuario.email,
+            telefono: usuario.telefono,
+            roles: roles.join(", "),
+            comunidad: comunidad[0] || "",
+            descripcion: usuario.descripcion_usuario,
+            imagen_perfil:
+              BACKEND_URL + usuario.imagen_perfil ||
+              "https://example.com/avatar.png",
+          });
+          console.log(user.roles);
+        })
+        .catch((error) =>
+          console.error("Error al obtener los datos del usuario:", error)
+        );
+    }
+  }, []);
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -139,7 +183,7 @@ export default function PersistentDrawerLeft({ setIsLoggedIn }) {
             color="inherit"
             aria-label="open drawer"
             onClick={handleLogOut}
-            sx={{ mr: 2, ...(open && { display: "none" }) }}
+            sx={{ ...(open && { display: "none" }) }}
           >
             <LogoutIcon />
           </IconButton>
@@ -160,6 +204,14 @@ export default function PersistentDrawerLeft({ setIsLoggedIn }) {
         open={open}
       >
         <DrawerHeader sx={{ bgcolor: "var(--navbar-color)" }}>
+          <Avatar
+            src={user.imagen_perfil}
+            alt={user.nombre_usuario}
+            sx={{ mr: 3, mt: 1 }}
+          />
+          <Box sx={{mt:2, flexDirection: "column", display: "flex", color:"white", fontSize: 12}}>
+            {user.nombre_usuario} {user.apellido_usuario} <br />{user.roles}
+          </Box>
           <IconButton onClick={handleDrawerClose} sx={{ color: "white" }}>
             {theme.direction === "ltr" ? (
               <ChevronLeftIcon />
@@ -184,6 +236,7 @@ export default function PersistentDrawerLeft({ setIsLoggedIn }) {
               </ListItemButton>
             </ListItem>
           ))}
+          <LogoRedondoVER width="235px" height="200px" />
         </List>
       </Drawer>
       <Main open={open}>

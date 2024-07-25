@@ -1,6 +1,5 @@
 import { useState } from "react";
 import Button from "@mui/material/Button";
-import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
@@ -66,7 +65,6 @@ export default function Inicio() {
 
   return (
     <Container component="main" maxWidth="xs">
-      <CssBaseline />
       <Box
         sx={{
           display: "flex",
@@ -74,19 +72,20 @@ export default function Inicio() {
           alignItems: "center",
         }}
       >
-        <Typography component="h1" variant="h5">
-          ¿A donde vas?
+        <Typography variant="overline" sx={{ mt: 1 }}>
+          ¡Busca tu ruta!
         </Typography>
         <Box
           component="form"
           noValidate
           onSubmit={handleSubmit}
-          sx={{ mt: 3, textAlign: "center" }}
+          sx={{ mt: 1, textAlign: "center" }}
         >
-          <Grid container spacing={2}>
+          <Grid container spacing={1}>
             <Grid item xs={12}>
               <TextField
                 required
+                margin="dense"
                 fullWidth
                 label="Origen"
                 name="origen"
@@ -99,6 +98,7 @@ export default function Inicio() {
             <Grid item xs={12}>
               <TextField
                 required
+                margin="dense"
                 fullWidth
                 name="destino"
                 label="Destino"
@@ -109,7 +109,11 @@ export default function Inicio() {
               />
             </Grid>
           </Grid>
-          <Button type="submit" variant="contained" sx={{ mt: 2, mb: 2 }}>
+          <Button
+            type="submit"
+            variant="contained"
+            sx={{ mt: 1, mb: 2, bgcolor: "var(--navbar-color)" }}
+          >
             Buscar
           </Button>
         </Box>
