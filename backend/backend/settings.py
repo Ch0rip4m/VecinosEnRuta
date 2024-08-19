@@ -54,7 +54,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware'
+    'corsheaders.middleware.CorsMiddleware',
+    'Middleware.middleware.TokenRefreshMiddleware',
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -146,12 +147,15 @@ REST_FRAMEWORK = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000"  # Agrega aquí la URL de tu aplicación frontend
 ]
-
+CSRF_TRUSTED_ORIGINS = [ "http://localhost:8000"]
+CORS_ALLOW_CREDENTIALS = True
 AUTH_USER_MODEL = 'DatabaseManager.Usuario'
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(hours=1),
-    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(hours=2)# Configura la expiración del token según tus necesidades
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=5),
+    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(hours=24),# Configura la expiración del token según tus necesidades
+    'BLACKLIST_AFTER_ROTATION': True,
+    'ALGORITHM': 'HS256'
 }
 
 MEDIA_URL = '/media/'

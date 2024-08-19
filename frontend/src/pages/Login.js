@@ -32,12 +32,10 @@ export default function Login({ setIsLoggedIn }) {
       try {
         const response = await axios.post(
           BACKEND_URL + "/auth/token/",
-          formData
+          formData, {withCredentials: true}
         );
         if (response.data.access) {
           localStorage.setItem("email", formData.email);
-          localStorage.setItem("token", response.data.access);
-          localStorage.setItem("rtoken", response.data.refresh);
           setIsLoggedIn(true);
           localStorage.setItem("isLoggedIn", true);
           localStorage.setItem("selectedElementName", "Inicio");

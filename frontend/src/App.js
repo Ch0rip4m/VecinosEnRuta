@@ -13,6 +13,7 @@ import MiVehiculo from "./pages/MiVehiculo";
 import MisChats from "./pages/MisChats";
 import Comunidades from "./pages/Comunidades";
 import PersistentDrawerLeft from "./components/navBar";
+import ManageAccess from "./components/ManageAccess"
 import axios from "axios";
 
 export default function App() {
@@ -20,55 +21,57 @@ export default function App() {
     localStorage.getItem("isLoggedIn")
   );
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const tokenPayload = jwtDecode(token);
-        const expiration = tokenPayload.exp * 1000;
-        const currentTime = new Date().getTime();
-        if (currentTime < expiration) {
-          setIsLoggedIn(true);
-        } else {
-          refreshAccessToken();
-        }
-      } catch (error) {
-        console.error("Error al decodificar el token:", error);
-        logout();
-      }
-    } else {
-      setIsLoggedIn(false);
-      localStorage.removeItem("isLoggedIn");
-    }
-  }, []);
+  // useEffect(() => {
+  //   const token = localStorage.getItem("access");
+  //   if (token) {
+  //     try {
+  //       const tokenPayload = jwtDecode(token);
+  //       const expiration = tokenPayload.exp * 1000;
+  //       const currentTime = new Date().getTime();
+  //       if (currentTime < expiration) {
+  //         setIsLoggedIn(true);
+  //       }// } else {
+  //       //   refreshAccessToken();
+  //       //   console.log("TOKEN REFRESCADO")
+  //       // }
+  //     } catch (error) {
+  //       console.error("Error al decodificar el token:", error);
+  //       logout();
+  //     }
+  //   } else {
+  //     setIsLoggedIn(false);
+  //     localStorage.removeItem("isLoggedIn");
+  //   }
+  // }, []);
 
-  const refreshAccessToken = async () => {
-    const rtoken = localStorage.getItem("rtoken");
-    if (rtoken) {
-      try {
-        const response = await axios.post(BACKEND_URL + "/auth/refresh/", {
-          refresh: rtoken,
-        });
-        console.log(response.data);
-        const { access } = response.data;
-        localStorage.setItem("token", access);
-        setIsLoggedIn(true);
-      } catch (error) {
-        console.error("Error al refrescar el token de acceso:", error);
-        logout();
-      }
-    } else {
-      logout();
-    }
-  };
+  // const refreshAccessToken = async () => {
+  //   const rtoken = localStorage.getItem("rtoken");
+  //   if (rtoken) {
+  //     try {
+  //       const response = await axios.post(BACKEND_URL + "/auth/refresh/", {
+  //         refresh: rtoken,
+  //       });
+  //       console.log(response.data);
+  //       const { access, refresh } = response.data;
+  //       localStorage.setItem("token", access);
+  //       if (refresh) {
+  //         localStorage.setItem("rtoken", refresh);
+  //       }
+  //       setIsLoggedIn(true);
+  //     } catch (error) {
+  //       console.error("Error al refrescar el token de acceso:", error);
+  //       logout();
+  //     }
+  //   } else {
+  //     logout();
+  //   }
+  // };
 
-  const logout = () => {
-    setIsLoggedIn(false);
-    localStorage.removeItem("token");
-    localStorage.removeItem("rtoken");
-    localStorage.removeItem("isLoggedIn");
-    localStorage.removeItem("email");
-  };
+  // const logout = () => {
+  //   setIsLoggedIn(false);
+  //   localStorage.removeItem("isLoggedIn");
+  //   localStorage.removeItem("email");
+  // };
 
   const renderRoutes = () => {
     if (isLoggedIn) {

@@ -113,12 +113,24 @@ export default function PersistentDrawerLeft({ setIsLoggedIn }) {
     setOpen(false);
   };
 
-  const handleLogOut = () => {
-    setIsLoggedIn(false);
-    localStorage.removeItem("token");
-    localStorage.removeItem("rtoken");
-    localStorage.removeItem("isLoggedIn");
-    localStorage.removeItem("email");
+  const handleLogOut = async () => {
+    // setIsLoggedIn(false);
+    // localStorage.removeItem("isLoggedIn");
+    // localStorage.removeItem("email");
+    try {
+      const response = await axios.post(`${BACKEND_URL}/auth/logout/`, {}, {
+          withCredentials: true,  // Asegúrate de enviar cookies con la solicitud
+      });
+      if (response.status === 204) {
+          // Redirige o realiza alguna otra acción después de un logout exitoso
+          window.location.href = '/login';
+      } else {
+          console.error('Logout failed');
+      }
+  } catch (error) {
+      console.error('An error occurred during logout', error);
+  }
+
   };
 
   const handleElementSelect = (element) => {
