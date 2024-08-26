@@ -10,7 +10,7 @@ import Container from "@mui/material/Container";
 import LogoRedondoVER from "../styles/LogoRedondo";
 import axios from "axios";
 
-export default function Login({ setIsLoggedIn }) {
+export default function Login({ setCheckTokens }) {
   const [formData, setformData] = useState({});
   const [formErrors, setFormErrors] = useState({});
 
@@ -36,26 +36,14 @@ export default function Login({ setIsLoggedIn }) {
         );
         if (response.data.access) {
           localStorage.setItem("email", formData.email);
-          setIsLoggedIn(true);
-          localStorage.setItem("isLoggedIn", true);
+          setCheckTokens(true);
           localStorage.setItem("selectedElementName", "Inicio");
         }
       } catch (error) {
         console.error("Error al iniciar sesión:", error.response.data);
-        localStorage.setItem("isLoggedIn", false);
       }
     }
   };
-
-  // useEffect(() => {
-  //   const token = localStorage.getItem('token');
-  //   console.log('token', token)
-  //   if (token) {
-  //     setIsLoggedIn(true)
-  //   } else{
-  //     setIsLoggedIn(false)
-  //   }
-  // });
 
   const handleTextChange = (event) => {
     const { name, value } = event.target;

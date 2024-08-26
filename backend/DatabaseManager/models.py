@@ -70,11 +70,26 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
                 RolUsuario.objects.create(id_usuario=self, id_rol=role)
             except ObjectDoesNotExist:
                 raise ValueError(f'Rol {role_name} no existe')
+
+class Region(models.Model):
+    id_region = models.AutoField(primary_key=True, verbose_name='ID de la Región')
+    nombre_region = models.CharField(max_length=50, verbose_name='Nombre de la región')
+    
+    class Meta:
+        verbose_name = 'Region'
+        verbose_name_plural = 'Regiones'
+            
+class Comuna(models.Model):
+    id_comuna = models.AutoField(primary_key=True, verbose_name='ID de la comuna')
+    nombre_comuna = models.CharField(max_length=50, verbose_name='Nombre de la comuna')
+    
+    class Meta:
+        verbose_name = 'Comuna'
+        verbose_name_plural = 'Comunas'
         
 class Comunidades(models.Model):
     id_comunidad = models.AutoField(primary_key=True, verbose_name='ID de la comunidad')
     nombre_comunidad = models.CharField(max_length=100, verbose_name='Nombre de la comunidad')
-    comuna = models.CharField(max_length=50, verbose_name='Nombre de la comuna')
     tiempo_registro = models.DateTimeField(auto_now_add=True, verbose_name='Registro de creacion')
     
     class Meta:
@@ -83,6 +98,22 @@ class Comunidades(models.Model):
         
     def __str__(self):
         return self.nombre_comunidad
+
+class ComunaRegion(models.Model):
+    id_region = models.ForeignKey(Region, to_field='id_region', on_delete=models.CASCADE, verbose_name='ID de la region')
+    id_comuna = models.ForeignKey(Comuna, to_field='id_comuna', on_delete=models.CASCADE, verbose_name='ID de la comuna')
+    
+    class Meta:
+        verbose_name = 'ComunaRegion'
+        verbose_name_plural = 'ComunaRegiones'
+    
+class ComunaComunidad(models.Model):
+    id_comuna = models.ForeignKey(Comuna, to_field='id_comuna', on_delete=models.CASCADE, verbose_name='ID de la comuna')
+    id_comunidad = models.ForeignKey(Comunidades, to_field='id_comunidad', on_delete=models.CASCADE, verbose_name='ID de la comunidad')
+    
+    class Meta:
+        verbose_name = 'ComunaComunidad'
+        verbose_name_plural = 'ComunaComunidades'
     
 class ComunidadesUsuario(models.Model):
     id_usuario = models.ForeignKey(Usuario, to_field='id_usuario',on_delete=models.CASCADE, verbose_name='ID del usuario')

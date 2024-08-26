@@ -111,3 +111,23 @@ class OrdenTrayectoriaRealSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrdenTrayectoriaReal
         fields = '__all__'
+
+class ComunaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comuna
+        field = '__all__'
+
+class RegionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Region
+        field = '__all__'
+
+class ComunaComunidadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ComunaComunidad
+        field = '__all__'
+
+class ComunaRegionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ComunaRegion
+        field = '__all__'

@@ -86,7 +86,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   justifyContent: "flex-end",
 }));
 
-export default function PersistentDrawerLeft({ setIsLoggedIn }) {
+export default function PersistentDrawerLeft() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
   const [selectedElementName, setSelectedElementName] = React.useState(() => {
@@ -114,9 +114,6 @@ export default function PersistentDrawerLeft({ setIsLoggedIn }) {
   };
 
   const handleLogOut = async () => {
-    // setIsLoggedIn(false);
-    // localStorage.removeItem("isLoggedIn");
-    // localStorage.removeItem("email");
     try {
       const response = await axios.post(`${BACKEND_URL}/auth/logout/`, {}, {
           withCredentials: true,  // Asegúrate de enviar cookies con la solicitud
@@ -143,7 +140,7 @@ export default function PersistentDrawerLeft({ setIsLoggedIn }) {
     const email = localStorage.getItem("email");
     if (email) {
       axios
-        .get(BACKEND_URL + "/db-manager/usuarios/email/" + email + "/")
+        .get(BACKEND_URL + "/db-manager/usuarios/email/" + email + "/", { withCredentials:true})
         .then((response) => {
           console.log("respuesta:", response.data);
           const usuario = response.data.usuario;

@@ -8,13 +8,27 @@ class UsuarioAdmin(admin.ModelAdmin):
     search_fields = ('id_usuario','nombre_usuario', 'apellido_usuario','edad','sexo','email','password','telefono','descripcion_usuario','imagen_perfil','tiempo_registro')
     list_filter = ('id_usuario','nombre_usuario', 'apellido_usuario','edad','sexo','email','password','telefono','descripcion_usuario','imagen_perfil','tiempo_registro')
     ordering = ('id_usuario','nombre_usuario', 'apellido_usuario','edad','sexo','email','password','telefono','descripcion_usuario','imagen_perfil','tiempo_registro')
-    
+
+@admin.register(Region)
+class RegionAdmin(admin.ModelAdmin):
+    list_display = ('id_region','nombre_region')
+    search_fields = ('id_region','nombre_region')
+    list_filter = ('id_region','nombre_region')
+    ordering = ('id_region','nombre_region')
+
+@admin.register(Comuna)
+class ComunaAdmin(admin.ModelAdmin):
+    list_display = ('id_comuna','nombre_comuna')
+    search_fields = ('id_comuna','nombre_comuna')
+    list_filter = ('id_comuna','nombre_comuna')
+    ordering = ('id_comuna','nombre_comuna')
+
 @admin.register(Comunidades)
 class ComunidadesAdmin(admin.ModelAdmin):
-    list_display = ('id_comunidad','nombre_comunidad','comuna','tiempo_registro')
-    search_fields = ('id_comunidad','nombre_comunidad','comuna','tiempo_registro')
-    list_filter = ('id_comunidad','nombre_comunidad','comuna','tiempo_registro')
-    ordering = ('id_comunidad','nombre_comunidad','comuna','tiempo_registro')
+    list_display = ('id_comunidad','nombre_comunidad','tiempo_registro')
+    search_fields = ('id_comunidad','nombre_comunidad','tiempo_registro')
+    list_filter = ('id_comunidad','nombre_comunidad','tiempo_registro')
+    ordering = ('id_comunidad','nombre_comunidad','tiempo_registro')
 
 @admin.register(ComunidadesUsuario)
 class ComunidadesUsuarioAdmin(admin.ModelAdmin):
@@ -22,6 +36,20 @@ class ComunidadesUsuarioAdmin(admin.ModelAdmin):
     search_fields = ('id_usuario','id_comunidad')
     list_filter = ('id_usuario','id_comunidad')
     ordering = ('id_usuario','id_comunidad')
+
+@admin.register(ComunaComunidad)
+class ComunaComunidadAdmin(admin.ModelAdmin):
+    list_display = ('id_comuna','id_comunidad')
+    search_fields = ('id_comuna','id_comunidad')
+    list_filter = ('id_comuna','id_comunidad')
+    ordering = ('id_comuna','id_comunidad')
+    
+@admin.register(ComunaRegion)
+class ComunaRegionAdmin(admin.ModelAdmin):
+    list_display = ('id_region','id_comuna')
+    search_fields = ('id_region','id_comuna')
+    list_filter = ('id_region','id_comuna')
+    ordering = ('id_region','id_comuna')
 
 @admin.register(Roles)
 class RolesAdmin(admin.ModelAdmin):

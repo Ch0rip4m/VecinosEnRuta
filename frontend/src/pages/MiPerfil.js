@@ -20,7 +20,7 @@ export default function MiPerfil() {
     const email = localStorage.getItem("email");
     if (email) {
       axios
-        .get(BACKEND_URL + "/db-manager/usuarios/email/" + email + "/")
+        .get(BACKEND_URL + "/db-manager/usuarios/email/" + email + "/", {withCredentials:true})
         .then((response) => {
           console.log("respuesta:", response.data);
           const usuario = response.data.usuario;

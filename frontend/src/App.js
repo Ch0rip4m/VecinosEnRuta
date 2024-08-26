@@ -1,7 +1,6 @@
 import { BACKEND_URL } from "./Utils/Variables";
 import { Route, Routes, Navigate } from "react-router-dom";
-import React, { useState, useEffect } from "react";
-import { jwtDecode } from "jwt-decode";
+import React, { useState } from "react";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import RecuperarCont from "./pages/RecuperarCont";
@@ -13,100 +12,37 @@ import MiVehiculo from "./pages/MiVehiculo";
 import MisChats from "./pages/MisChats";
 import Comunidades from "./pages/Comunidades";
 import PersistentDrawerLeft from "./components/navBar";
-import ManageAccess from "./components/ManageAccess"
-import axios from "axios";
+import ManageAccess from "./components/ManageAccess";
 
 export default function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(
-    localStorage.getItem("isLoggedIn")
-  );
-
-  // useEffect(() => {
-  //   const token = localStorage.getItem("access");
-  //   if (token) {
-  //     try {
-  //       const tokenPayload = jwtDecode(token);
-  //       const expiration = tokenPayload.exp * 1000;
-  //       const currentTime = new Date().getTime();
-  //       if (currentTime < expiration) {
-  //         setIsLoggedIn(true);
-  //       }// } else {
-  //       //   refreshAccessToken();
-  //       //   console.log("TOKEN REFRESCADO")
-  //       // }
-  //     } catch (error) {
-  //       console.error("Error al decodificar el token:", error);
-  //       logout();
-  //     }
-  //   } else {
-  //     setIsLoggedIn(false);
-  //     localStorage.removeItem("isLoggedIn");
-  //   }
-  // }, []);
-
-  // const refreshAccessToken = async () => {
-  //   const rtoken = localStorage.getItem("rtoken");
-  //   if (rtoken) {
-  //     try {
-  //       const response = await axios.post(BACKEND_URL + "/auth/refresh/", {
-  //         refresh: rtoken,
-  //       });
-  //       console.log(response.data);
-  //       const { access, refresh } = response.data;
-  //       localStorage.setItem("token", access);
-  //       if (refresh) {
-  //         localStorage.setItem("rtoken", refresh);
-  //       }
-  //       setIsLoggedIn(true);
-  //     } catch (error) {
-  //       console.error("Error al refrescar el token de acceso:", error);
-  //       logout();
-  //     }
-  //   } else {
-  //     logout();
-  //   }
-  // };
-
-  // const logout = () => {
-  //   setIsLoggedIn(false);
-  //   localStorage.removeItem("isLoggedIn");
-  //   localStorage.removeItem("email");
-  // };
-
-  const renderRoutes = () => {
-    if (isLoggedIn) {
-      return (
-        <Routes>
-          <Route path="/inicio" element={<Inicio />} />
-          <Route path="/mi-perfil" element={<MiPerfil />} />
-          <Route path="/mis-rutas" element={<MisRutas />} />
-          <Route path="/mis-viajes" element={<MisViajes />} />
-          <Route path="/mis-chats" element={<MisChats />} />
-          <Route path="/mi-vehiculo" element={<MiVehiculo />} />
-          <Route path="/comunidades" element={<Comunidades />} />
-          <Route path="*" element={<Navigate to="/inicio" />} />
-        </Routes>
-      );
-    } else {
-      return (
-        <Routes>
-          <Route
-            path="/login"
-            element={<Login setIsLoggedIn={setIsLoggedIn} />}
-          />
-          <Route path="/register" element={<Register />} />
-          <Route path="/recuperar-pass" element={<RecuperarCont />} />
-          {/* Redirige al inicio de sesión si no está autenticado */}
-          <Route path="*" element={<Navigate to="/login" />} />
-        </Routes>
-      );
-    }
-  };
+  const [checkTokens, setCheckTokens] = useState(null); // Inicializa en null para manejar el estado de carga
 
   return (
     <div>
-      {isLoggedIn && <PersistentDrawerLeft setIsLoggedIn={setIsLoggedIn} />}
-      {renderRoutes()}
+      {checkTokens !== null && checkTokens && <PersistentDrawerLeft />} {/* Renderiza el drawer solo si los tokens están verificados */}
+      <Routes>
+        {checkTokens === false ? (
+          // Rutas públicas
+          <>
+            <Route path="/login" element={<Login setCheckTokens={setCheckTokens} />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/recuperar-pass" element={<RecuperarCont />} />
+            <Route path="*" element={<Navigate to="/login" />} />
+          </>
+        ) : (
+          // Rutas protegidas
+          <>
+            <Route path="/inicio" element={<ManageAccess Component={Inicio} setCheckTokens={setCheckTokens} />} />
+            <Route path="/mi-perfil" element={<ManageAccess Component={MiPerfil} setCheckTokens={setCheckTokens} />} />
+            <Route path="/mis-rutas" element={<ManageAccess Component={MisRutas} setCheckTokens={setCheckTokens} />} />
+            <Route path="/mis-viajes" element={<ManageAccess Component={MisViajes} setCheckTokens={setCheckTokens} />} />
+            <Route path="/mis-chats" element={<ManageAccess Component={MisChats} setCheckTokens={setCheckTokens} />} />
+            <Route path="/mi-vehiculo" element={<ManageAccess Component={MiVehiculo} setCheckTokens={setCheckTokens} />} />
+            <Route path="/comunidades" element={<ManageAccess Component={Comunidades} setCheckTokens={setCheckTokens} />} />
+            <Route path="*" element={<Navigate to="/inicio" />} />
+          </>
+        )}
+      </Routes>
     </div>
   );
 }
