@@ -6,7 +6,7 @@ class UsuarioSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Usuario
-        fields = ['email', 'nombre_usuario', 'apellido_usuario', 'edad', 'telefono', 'sexo', 'imagen_perfil', 'descripcion_usuario', 'password', 'nombre_rol']
+        fields = ['id_usuario','email', 'nombre_usuario', 'apellido_usuario', 'edad', 'telefono', 'sexo', 'imagen_perfil', 'descripcion_usuario', 'password', 'nombre_rol']
         extra_kwargs = {
             'password': {'write_only': True}
         }
@@ -16,12 +16,46 @@ class UsuarioSerializer(serializers.ModelSerializer):
         user = Usuario.objects.create_user(**validated_data)
         user.assign_roles(roles_data)
         return user
+    
+    def update(self, instance, validated_data):
+        roles_data = validated_data.pop('nombre_rol', None)
+        instance.email = validated_data.get('email', instance.email)
+        instance.nombre_usuario = validated_data.get('nombre_usuario', instance.nombre_usuario)
+        instance.apellido_usuario = validated_data.get('apellido_usuario', instance.apellido_usuario)
+        instance.edad = validated_data.get('edad', instance.edad)
+        instance.telefono = validated_data.get('telefono', instance.telefono)
+        instance.sexo = validated_data.get('sexo', instance.sexo)
+        instance.descripcion_usuario = validated_data.get('descripcion_usuario', instance.descripcion_usuario)
+        instance.imagen_perfil = validated_data.get('imagen_perfil', instance.imagen_perfil)
+        if validated_data.get('password'):
+            instance.set_password(validated_data.get('password'))
+        instance.save()
+
+        if roles_data:
+            instance.assign_roles(roles_data)
+
+        return instance
 
 class ComunidadSerializer(serializers.ModelSerializer):
+    nombre_comuna = serializers.CharField(write_only=True)
+    
     class Meta:
         model = Comunidades
         fields = '__all__'
 
+    def create(self,validated_data):
+        nombre_comuna = validated_data.pop('nombre_comuna', None)
+        comunidad = Comunidades.objects.create(**validated_data)
+        
+        if nombre_comuna:
+            try:
+                comuna = Comuna.objects.get(nombre_comuna=nombre_comuna)
+                ComunaComunidad.objects.create(id_comunidad=comunidad, id_comuna=comuna)
+            except Comuna.DoesNotExist:
+                raise serializers.ValidationError(f'La comuna {nombre_comuna} no existe')
+            
+        return comunidad
+    
 class VehiculoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vehiculos
@@ -115,19 +149,19 @@ class OrdenTrayectoriaRealSerializer(serializers.ModelSerializer):
 class ComunaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comuna
-        field = '__all__'
+        fields = '__all__'
 
 class RegionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Region
-        field = '__all__'
+        fields = '__all__'
 
 class ComunaComunidadSerializer(serializers.ModelSerializer):
     class Meta:
         model = ComunaComunidad
-        field = '__all__'
+        fields = '__all__'
 
 class ComunaRegionSerializer(serializers.ModelSerializer):
     class Meta:
         model = ComunaRegion
-        field = '__all__'
+        fields = '__all__'

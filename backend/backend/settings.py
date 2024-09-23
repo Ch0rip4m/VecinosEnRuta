@@ -148,7 +148,20 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000"  # Agrega aquí la URL de tu aplicación frontend
 ]
 CSRF_TRUSTED_ORIGINS = [ "http://localhost:8000"]
+
+CSRF_COOKIE_NAME = 'csrftoken'
+CSRF_HEADER_NAME = 'X-CSRFToken'
+
 CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOW_METHODS = [
+    'GET',
+    'POST',
+    'PUT',
+    'DELETE',
+    'OPTIONS',
+]
+
 AUTH_USER_MODEL = 'DatabaseManager.Usuario'
 
 SIMPLE_JWT = {

@@ -1,4 +1,4 @@
-import { React, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import { Grid, TextField } from "@mui/material";
 import Button from "@mui/material/Button";
@@ -7,7 +7,7 @@ import Modal from "@mui/material/Modal";
 import axios from "axios";
 import { BACKEND_URL } from "../Utils/Variables";
 import SimpleSelector from "./SimpleSelector";
-//import SelectorSearch from "./SelectorSearch";
+import SelectorSearch from "./SelectorSearch";
 
 const style = {
   position: "absolute",
@@ -154,10 +154,10 @@ export function getField({ type }) {
       return gridFieldText;
     case "gridFieldForeignKey":
       return gridFieldForeignKey;
-    case "gridFieldImage":
-      return gridFieldImage;
-    // case "gridFieldSearchSelector":
-    //   return gridFieldSearchSelector;
+    case "gridFieldSearchSelector":
+      return GridFieldSearchSelector;
+    // case "gridFieldImage":
+    //   return gridFieldImage;
     default:
       return gridFieldText;
   }
@@ -184,84 +184,86 @@ export function gridFieldText({
   );
 }
 
-export function gridFieldImage({
-  header,
-  accessorKey,
-  inputData,
-  profileImage,
-  imagePreviewUrl,
-  handleImageChange,
-}) {
-  return (
-    <Grid item xs={12}>
-      <input
-        accept="image/*"
-        id="profile-image-upload"
-        type="file"
-        name={accessorKey}
-        value={inputData[accessorKey] || null}
-        style={{ display: "none" }}
-        onChange={handleImageChange}
-      />
-      <label htmlFor="profile-image-upload">
-        <Button
-          variant="contained"
-          color={profileImage ? "success" : "primary"}
-          component="span"
-          fullWidth
-        >
-          {profileImage ? "Imagen Lista" : header}
-        </Button>
-      </label>
-      {imagePreviewUrl && (
-        <Box mt={2} textAlign="center">
-          <img
-            src={imagePreviewUrl}
-            alt="Vista previa de la imagen"
-            style={{
-              width: "100%",
-              maxHeight: "200px",
-              objectFit: "cover",
-            }}
-          />
-        </Box>
-      )}
-    </Grid>
-  );
-}
-
-// export function gridFieldSearchSelector({
+// export function gridFieldImage({
 //   header,
 //   accessorKey,
 //   inputData,
-//   handleDataSelectorChange,
-//   requestData,
+//   profileImage,
+//   imagePreviewUrl,
+//   handleImageChange,
 // }) {
-//   const [values, setValues] = React.useState([]);
-//   useEffect(() => {
-//     axios
-//       .get(BACKEND_URL + "/db-manager/" + accessorKey + "/")
-//       .then((response) => {
-//         const getData = response.data.map((item) => item[requestData]);
-//         setValues(getData);
-//       })
-//       .catch((error) => {
-//         console.error("Error al obtener los datos:", error);
-//       });
-//   }, []);
 //   return (
 //     <Grid item xs={12}>
-//       <SelectorSearch
-//         required
-//         values={values}
-//         label={header}
+//       <input
+//         accept="image/*"
+//         id="profile-image-upload"
+//         type="file"
 //         name={accessorKey}
-//         onChange={handleDataSelectorChange}
-//         formData={inputData}
+//         value={inputData[accessorKey] || null}
+//         style={{ display: "none" }}
+//         onChange={handleImageChange}
 //       />
+//       <label htmlFor="profile-image-upload">
+//         <Button
+//           variant="contained"
+//           color={profileImage ? "success" : "primary"}
+//           component="span"
+//           fullWidth
+//         >
+//           {profileImage ? "Imagen Lista" : header}
+//         </Button>
+//       </label>
+//       {imagePreviewUrl && (
+//         <Box mt={2} textAlign="center">
+//           <img
+//             src={imagePreviewUrl}
+//             alt="Vista previa de la imagen"
+//             style={{
+//               width: "100%",
+//               maxHeight: "200px",
+//               objectFit: "cover",
+//             }}
+//           />
+//         </Box>
+//       )}
 //     </Grid>
 //   );
-//}
+// }
+
+export function GridFieldSearchSelector({
+  header,
+  accessorKey,
+  inputData,
+  handleDataSelectorChange,
+  requestData,
+  requestTable,
+}) {
+  const [values, setValues] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get(BACKEND_URL + "/db-manager/" + requestTable + "/", {withCredentials: true})
+      .then((response) => {
+        const getData = response.data.map((item) => item[requestData]);
+        setValues(getData);
+      })
+      .catch((error) => {
+        console.error("Error al obtener los datos:", error);
+      });
+  }, []);
+  return (
+    <Grid item xs={12}>
+      <SelectorSearch
+        required
+        values={values}
+        label={header}
+        name={accessorKey}
+        onChange={handleDataSelectorChange}
+        formData={inputData}
+      />
+    </Grid>
+  );
+}
 
 export function gridFieldForeignKey({
   header,

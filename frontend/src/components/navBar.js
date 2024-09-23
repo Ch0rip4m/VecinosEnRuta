@@ -29,6 +29,10 @@ import LogoRedondoVER from "../styles/LogoRedondo";
 import axios from "axios";
 import { Avatar } from "@mui/material";
 
+const csrfToken = document.cookie.split('; ')
+  .find(row => row.startsWith('csrftoken='))
+  ?.split('=')[1];
+
 const elements = [
   { name: "Inicio", icon: <HomeIcon />, url: "/inicio" },
   { name: "Mi Perfil", icon: <AccountBoxIcon />, url: "/mi-perfil" },
@@ -115,7 +119,7 @@ export default function PersistentDrawerLeft() {
 
   const handleLogOut = async () => {
     try {
-      const response = await axios.post(`${BACKEND_URL}/auth/logout/`, {}, {
+      const response = await axios.post(`${BACKEND_URL}/auth/logout/`, {}, { headers: {'X-CSRFToken': csrfToken}, //OJO AQUI
           withCredentials: true,  // Asegúrate de enviar cookies con la solicitud
       });
       if (response.status === 204) {
@@ -142,7 +146,7 @@ export default function PersistentDrawerLeft() {
       axios
         .get(BACKEND_URL + "/db-manager/usuarios/email/" + email + "/", { withCredentials:true})
         .then((response) => {
-          console.log("respuesta:", response.data);
+          //console.log("respuesta:", response.data);
           const usuario = response.data.usuario;
           const roles = response.data.roles;
           const comunidad = response.data.comunidad;

@@ -59,7 +59,7 @@ class UsuarioViewSet(viewsets.ViewSet):
 
     def update(self, request, pk=None):
         usuario = Usuario.objects.get(pk=pk)
-        serializer = UsuarioSerializer(usuario, data=request.data)
+        serializer = UsuarioSerializer(usuario, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -74,7 +74,7 @@ class UsuarioViewSet(viewsets.ViewSet):
 class ComunidadViewSet(viewsets.ModelViewSet):
     queryset = Comunidades.objects.all()
     serializer_class = ComunidadSerializer
-    
+        
 class VehiculoViewSet(viewsets.ModelViewSet):
     queryset = Vehiculos.objects.all()
     serializer_class = VehiculoSerializer
@@ -146,6 +146,22 @@ class OrdenTrayectoriaViewSet(viewsets.ModelViewSet):
 class OrdenTrayectoriaRealViewSet(viewsets.ModelViewSet):
     queryset = OrdenTrayectoriaReal.objects.all()
     serializer_class = OrdenTrayectoriaRealSerializer
+
+class ComunaViewSet(viewsets.ModelViewSet):
+    queryset = Comuna.objects.all()
+    serializer_class = ComunaSerializer
+    
+class RegionViewSet(viewsets.ModelViewSet):
+    queryset = Region.objects.all()
+    serializer_class = RegionSerializer
+
+class ComunaRegionViewSet(viewsets.ModelViewSet):
+    queryset = ComunaRegion
+    serializer_class = ComunaRegionSerializer
+    
+class ComunaComunidadViewSet(viewsets.ModelViewSet):
+    queryset = ComunaComunidad
+    serializer_class = ComunaComunidadSerializer
     
 @api_view(['GET'])
 def info_usuario(request, email):

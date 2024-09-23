@@ -19,10 +19,10 @@ const MenuProps = {
   },
 };
 
-function getStyles(val, label, theme) {
+function getStyles(val, selectedValues, theme) {
   return {
     fontWeight:
-      label.indexOf(val) === -1
+      selectedValues.indexOf(val) === -1
         ? theme.typography.fontWeightRegular
         : theme.typography.fontWeightMedium,
   };
@@ -31,26 +31,37 @@ function getStyles(val, label, theme) {
 export default function MultipleSelectChip(props) {
   const theme = useTheme();
   const name = props.name || "";
-  const [label, setLabel] = React.useState(props.formData[name] || []);
+  
+  // Inicializamos el estado con los valores de selección que sean proporcionados en props
+  const [selectedValues, setSelectedValues] = React.useState(props.formData[name] || []);
+
+  // Usamos useEffect para actualizar el estado si los valores de props cambian
+  React.useEffect(() => {
+    setSelectedValues(props.formData[name] || []);
+  }, [props.formData, name]);
 
   const handleChange = (event) => {
     const {
       target: { value },
     } = event;
-    setLabel(
-      // On autofill we get a stringified value.
-      typeof value === "string" ? value.split(",") : value
-    );
-    props.onChange(value, name);
+    
+    // Eliminamos duplicados utilizando Set para cualquier tipo de valores
+    const uniqueValues = [...new Set(typeof value === "string" ? value.split(",") : value)];
+
+    // Actualizamos el estado local con los valores únicos
+    setSelectedValues(uniqueValues);
+
+    // Enviamos los valores únicos al componente padre
+    props.onChange(uniqueValues, name);
   };
 
   return (
     <div>
-      <FormControl sx={{ width: "100%" }}>
-        <InputLabel required>{props.label}</InputLabel>
+      <FormControl sx={{ width: "100%" }} disabled={props.disabled}>
+        <InputLabel>{props.label}</InputLabel>
         <Select
           multiple
-          value={label}
+          value={selectedValues}
           onChange={handleChange}
           input={<OutlinedInput label={props.label} />}
           renderValue={(selected) => (
@@ -62,11 +73,12 @@ export default function MultipleSelectChip(props) {
           )}
           MenuProps={MenuProps}
         >
+          {/* Mapeamos todos los posibles valores */}
           {props.values.map((val) => (
             <MenuItem
               key={val}
               value={val}
-              style={getStyles(val, label, theme)}
+              style={getStyles(val, selectedValues, theme)}
             >
               {val}
             </MenuItem>

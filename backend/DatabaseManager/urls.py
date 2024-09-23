@@ -23,6 +23,10 @@ router.register(r'categoria-calificaciones', CategoriaCalificacionViewSet, basen
 router.register(r'dias-rutas', DiasRutaViewSet, basename='dias-rutas')
 router.register(r'orden-trayectorias', OrdenTrayectoriaViewSet, basename='orden-trayectorias')
 router.register(r'orden-trayectorias-reales', OrdenTrayectoriaRealViewSet, basename='orden-trayectorias-reales')
+router.register(r'comunas', ComunaViewSet, basename='comunas')
+router.register(r'regiones', RegionViewSet, basename='regiones')
+router.register(r'comuna-region', ComunaRegionViewSet, basename='comuna-region')
+router.register(r'comuna-comunidad', ComunaComunidadViewSet, basename='comuna-comunidad')
 
 
 urlpatterns = [

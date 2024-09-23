@@ -30,8 +30,9 @@ class VerifyTokenExistView(APIView):
         else:
             return Response({"detail": "Tokens do not exist"}, status=status.HTTP_401_UNAUTHORIZED)
         
+
 class LogOutView(APIView):
-    
+        
     def post(self, request, *args, **kwargs):
         response = Response(status=status.HTTP_204_NO_CONTENT)  # 204 No Content
         response.delete_cookie('access')

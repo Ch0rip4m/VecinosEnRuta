@@ -19,7 +19,7 @@ export default function App() {
 
   return (
     <div>
-      {checkTokens !== null && checkTokens && <PersistentDrawerLeft />} {/* Renderiza el drawer solo si los tokens están verificados */}
+      {checkTokens !== null && checkTokens && <ManageAccess Component={PersistentDrawerLeft} setCheckTokens={setCheckTokens} />} {/* Renderiza el drawer solo si los tokens están verificados */}
       <Routes>
         {checkTokens === false ? (
           // Rutas públicas

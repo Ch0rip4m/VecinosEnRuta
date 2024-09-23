@@ -78,6 +78,9 @@ class Region(models.Model):
     class Meta:
         verbose_name = 'Region'
         verbose_name_plural = 'Regiones'
+        
+    def __str__(self):
+        return self.nombre_region
             
 class Comuna(models.Model):
     id_comuna = models.AutoField(primary_key=True, verbose_name='ID de la comuna')
@@ -86,6 +89,9 @@ class Comuna(models.Model):
     class Meta:
         verbose_name = 'Comuna'
         verbose_name_plural = 'Comunas'
+    
+    def __str__(self):
+        return self.nombre_comuna
         
 class Comunidades(models.Model):
     id_comunidad = models.AutoField(primary_key=True, verbose_name='ID de la comunidad')
@@ -106,6 +112,9 @@ class ComunaRegion(models.Model):
     class Meta:
         verbose_name = 'ComunaRegion'
         verbose_name_plural = 'ComunaRegiones'
+        
+    def __str__(self):
+        return f"{self.id_region} - {self.id_comuna}"
     
 class ComunaComunidad(models.Model):
     id_comuna = models.ForeignKey(Comuna, to_field='id_comuna', on_delete=models.CASCADE, verbose_name='ID de la comuna')
@@ -114,6 +123,9 @@ class ComunaComunidad(models.Model):
     class Meta:
         verbose_name = 'ComunaComunidad'
         verbose_name_plural = 'ComunaComunidades'
+        
+    def __str__(self):
+        return f"{self.id_comuna} - {self.id_comunidad}"
     
 class ComunidadesUsuario(models.Model):
     id_usuario = models.ForeignKey(Usuario, to_field='id_usuario',on_delete=models.CASCADE, verbose_name='ID del usuario')

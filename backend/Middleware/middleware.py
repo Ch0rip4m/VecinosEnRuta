@@ -4,15 +4,15 @@ from django.conf import settings
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.utils.deprecation import MiddlewareMixin
 from django.utils.timezone import make_aware
+from django.http import HttpResponse
+from django.shortcuts import redirect
 
 class TokenRefreshMiddleware(MiddlewareMixin):
     def process_request(self, request):
-        print("ENTRO AL MIDDLEWARE")
         access_token = request.COOKIES.get("access")
         refresh_token = request.COOKIES.get("refresh")
 
         if access_token and refresh_token:
-            print("EXISTEN TOKENS EN COOKIES")
             try:
                 # Intenta decodificar el token de acceso
                 payload = jwt.decode(access_token, settings.SECRET_KEY, algorithms=["HS256"])
@@ -35,11 +35,20 @@ class TokenRefreshMiddleware(MiddlewareMixin):
                 except Exception as inner_e:
                     print('FALLO AL RENOVAR EL TOKEN:', str(inner_e))
                     request.new_access_token = None
+                    request.logout_user = True
 
     def process_response(self, request, response):
-        if hasattr(request, 'new_access_token') and request.new_access_token:
-            # Establece el nuevo token de acceso en una cookie
-            response.set_cookie('access', request.new_access_token, httponly=True, path='/', samesite='Lax')
-            print("COOKIES ACTUALIZADO")
+        if hasattr(request, 'logout_user') and request.logout_user:
+            # Asegúrate de que no se esté redirigiendo a sí mismo
+            if not request.path.startswith('/auth/logout/'):
+                response = redirect('/auth/logout/')
+                return response
+            
+            # Si no rediriges, simplemente elimina las cookies
+            response.delete_cookie('access', path='/')
+            response.delete_cookie('refresh', path='/')
+            return HttpResponse("Refresh token inválido", status=401)
 
+        if hasattr(request, 'new_access_token') and request.new_access_token:
+            response.set_cookie('access', request.new_access_token, httponly=True, path='/', samesite='Lax')
         return response
