@@ -168,12 +168,14 @@ def info_usuario(request, email):
     try:
         usuario = get_object_or_404(Usuario, email=email)
         serializer = UsuarioSerializer(usuario)
-        
+        #print(serializer)
         roles = usuario.rolusuario_set.values_list('id_rol__nombre_rol', flat=True)
         roles = list(roles)
+        #print(roles)
         
         comunidad = ComunidadesUsuario.objects.filter(id_usuario=usuario).values_list('id_comunidad__nombre_comunidad', flat=True)
         comunidad = list(comunidad)
+        print(comunidad)
         
         vehiculo_usuario = VehiculoUsuario.objects.filter(id_usuario=usuario).first()
         vehiculo = None

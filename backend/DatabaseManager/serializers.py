@@ -20,7 +20,7 @@ class UsuarioSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         roles_data = validated_data.pop('nombre_rol', None)
         instance.email = validated_data.get('email', instance.email)
-        instance.nombre_usuario = validated_data.get('nombre_usuario', instance.nombre_usuario)
+        instance.id_usuario = validated_data.get('id_usuario', instance.id_usuario)
         instance.apellido_usuario = validated_data.get('apellido_usuario', instance.apellido_usuario)
         instance.edad = validated_data.get('edad', instance.edad)
         instance.telefono = validated_data.get('telefono', instance.telefono)
@@ -45,11 +45,13 @@ class ComunidadSerializer(serializers.ModelSerializer):
 
     def create(self,validated_data):
         nombre_comuna = validated_data.pop('nombre_comuna', None)
+        #print('nombre_comuna: ',nombre_comuna)
         comunidad = Comunidades.objects.create(**validated_data)
-        
+        #print('comunidad: ', comunidad)
         if nombre_comuna:
             try:
                 comuna = Comuna.objects.get(nombre_comuna=nombre_comuna)
+                #print('comuna: ', comuna)
                 ComunaComunidad.objects.create(id_comunidad=comunidad, id_comuna=comuna)
             except Comuna.DoesNotExist:
                 raise serializers.ValidationError(f'La comuna {nombre_comuna} no existe')
@@ -60,6 +62,23 @@ class VehiculoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vehiculos
         fields = '__all__'
+        
+    def create(self,validated_data):
+        request = self.context['request']
+        id_usuario = request.data.get('id_usuario')
+        print('id_usuario: ',id_usuario)
+        vehiculo = Vehiculos.objects.create(**validated_data)
+        print('vehiculo: ',vehiculo)
+        
+        if id_usuario:
+            try:
+                usuario = Usuario.objects.get(id_usuario=id_usuario)
+                print('id_usuario: ',usuario)
+                VehiculoUsuario.objects.create(id_vehiculo=vehiculo, id_usuario=usuario)
+            except Comuna.DoesNotExist:
+                raise serializers.ValidationError(f'La comuna {id_usuario} no existe')
+            
+        return vehiculo
 
 class CalificacionSerializer(serializers.ModelSerializer):
     class Meta:

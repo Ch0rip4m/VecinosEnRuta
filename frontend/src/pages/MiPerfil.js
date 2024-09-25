@@ -21,9 +21,11 @@ export default function MiPerfil() {
     descripcion_usuario: "",
     imagen_perfil: "",
   });
+
   useEffect(() => {
     console.log("USER", user);
   }, [user]);
+  
   useEffect(() => {
     const email = localStorage.getItem("email");
     if (email) {
@@ -71,12 +73,12 @@ export default function MiPerfil() {
 
     const user_id = localStorage.getItem("user_id");
 
-    const updatedUser = user;
+    const updatedUser = { ...user};
     delete updatedUser.imagen_perfil;
     
     axios
       .put(`${BACKEND_URL}/db-manager/usuarios/${user_id}/`, updatedUser, {
-         // headers: { "X-CSRFToken": csrfToken }, OJO AQUI
+        headers: { "X-CSRFToken": csrfToken }, // OJO AQUI
         withCredentials: true, // Asegúrate de enviar cookies con la solicitud
       })
       .then((response) => {

@@ -12,12 +12,33 @@ import Container from "@mui/material/Container";
 import axios from "axios";
 import SimpleSelector from "../components/SimpleSelector";
 import MultipleSelectChip from "../components/MultiSelector";
+import SelectorSearch from "../components/SelectorSearch";
+import LogoRedondoVER from "../styles/LogoRedondo";
+
+function GetSelectorData() {
+  // función para obtener la data para componentes especificos, retorna una lista de strings
+  const [values, setValues] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get(BACKEND_URL + "/db-manager/comunas/", { withCredentials: true })
+      .then((response) => {
+        const getComunas = response.data.map((item) => item.nombre_comuna);
+        setValues(getComunas);
+      })
+      .catch((error) => {
+        console.error("Error al obtener los datos:", error);
+      });
+  }, []);
+  return values;
+}
 
 export default function Register() {
   const [formData, setformData] = useState({});
   const [formErrors, setFormErrors] = useState({});
   const [profileImage, setProfileImage] = useState(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
+  const comunas = GetSelectorData();
 
   useEffect(() => {
     console.log("formData: ", formData);
@@ -35,6 +56,7 @@ export default function Register() {
       "password",
       "sexo",
       "nombre_rol",
+      "comuna",
       "descripcion_usuario",
     ];
     const errors = {};
@@ -112,11 +134,9 @@ export default function Register() {
           alignItems: "center",
         }}
       >
-        <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-          <HowToRegIcon />
-        </Avatar>
-        <Typography component="h1" variant="h5">
-          Registro de nuevo vecino!
+        <LogoRedondoVER width="100px" height="100px" />
+        <Typography component="h1" variant="overline" sx={{ mt: 1 }}>
+          ¡Registro de nuevo vecino!
         </Typography>
         <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
           <Grid container spacing={2}>
@@ -169,7 +189,7 @@ export default function Register() {
                 helperText={formErrors.sexo}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 value={formData.telefono || ""}
                 required
@@ -179,6 +199,19 @@ export default function Register() {
                 name="telefono"
                 error={Boolean(formErrors.telefono)}
                 helperText={formErrors.telefono}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <SelectorSearch
+                values={comunas}
+                required
+                fullWidth
+                formData={formData}
+                onChange={handleDataChange}
+                label="Comuna"
+                name="comuna"
+                error={Boolean(formErrors.comuna)}
+                helperText={formErrors.comuna}
               />
             </Grid>
             <Grid item xs={12}>

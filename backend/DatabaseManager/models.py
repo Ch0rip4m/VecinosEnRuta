@@ -63,11 +63,28 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
     
     def assign_roles(self, roles):
-        for role_name in roles:
+        # Obtener los roles actuales del usuario
+        roles_actuales = RolUsuario.objects.filter(id_usuario=self).values_list('id_rol__nombre_rol', flat=True)
+
+    # Filtrar los roles que deben ser agregados
+        nuevos_roles = [role_name for role_name in roles if role_name not in roles_actuales]
+
+    # Filtrar los roles que deben ser eliminados
+        roles_a_eliminar = [role_name for role_name in roles_actuales if role_name not in roles]
+
+    # Agregar nuevos roles
+        for role_name in nuevos_roles:
             try:
                 role = Roles.objects.get(nombre_rol=role_name)
-                print(role)
                 RolUsuario.objects.create(id_usuario=self, id_rol=role)
+            except ObjectDoesNotExist:
+                raise ValueError(f'Rol {role_name} no existe')
+
+    # Eliminar roles que ya no están en la lista
+        for role_name in roles_a_eliminar:
+            try:
+                role = Roles.objects.get(nombre_rol=role_name)
+                RolUsuario.objects.filter(id_usuario=self, id_rol=role).delete()
             except ObjectDoesNotExist:
                 raise ValueError(f'Rol {role_name} no existe')
 
@@ -85,6 +102,8 @@ class Region(models.Model):
 class Comuna(models.Model):
     id_comuna = models.AutoField(primary_key=True, verbose_name='ID de la comuna')
     nombre_comuna = models.CharField(max_length=50, verbose_name='Nombre de la comuna')
+    latitud = models.FloatField(verbose_name='Latitud', default=0)
+    longitud = models.FloatField(verbose_name='Longitud', default=0)
     
     class Meta:
         verbose_name = 'Comuna'
@@ -92,7 +111,18 @@ class Comuna(models.Model):
     
     def __str__(self):
         return self.nombre_comuna
+
+class ComunaUsuario(models.Model):
+    id_usuario = models.ForeignKey(Usuario, to_field='id_usuario', on_delete=models.CASCADE, verbose_name='ID del usuario')
+    id_comuna = models.ForeignKey(Comuna, to_field='id_comuna', on_delete=models.CASCADE, verbose_name='ID de la comuna')
+    
+    class Meta:
+        verbose_name = 'ComunaUsuario'
+        verbose_name_plural = 'ComunaUsuario'
         
+    def __str__(self):
+        return f"{self.id_usuario} - {self.id_comuna}"
+            
 class Comunidades(models.Model):
     id_comunidad = models.AutoField(primary_key=True, verbose_name='ID de la comunidad')
     nombre_comunidad = models.CharField(max_length=100, verbose_name='Nombre de la comunidad')
@@ -177,7 +207,7 @@ class Vehiculos(models.Model):
         verbose_name_plural = 'Vehiculos'
         
     def __str__(self):
-            return self.modelo_vehiculo
+            return self.marca_vehiculo
     
 class VehiculoUsuario(models.Model):
     id_usuario = models.ForeignKey(Usuario, to_field='id_usuario',on_delete=models.CASCADE, verbose_name='ID del usuario')

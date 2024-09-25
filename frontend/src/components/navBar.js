@@ -119,7 +119,7 @@ export default function PersistentDrawerLeft() {
 
   const handleLogOut = async () => {
     try {
-      const response = await axios.post(`${BACKEND_URL}/auth/logout/`, {}, { headers: {'X-CSRFToken': csrfToken}, //OJO AQUI
+      const response = await axios.post(`${BACKEND_URL}/auth/logout/`, {}, { headers: {'X-Csrftoken': csrfToken}, //OJO AQUI
           withCredentials: true,  // Asegúrate de enviar cookies con la solicitud
       });
       if (response.status === 204) {

@@ -3,6 +3,11 @@ import axios from "axios";
 import { BACKEND_URL } from "../Utils/Variables";
 import { Avatar, Button, Container, TextField, Box, Grid } from "@mui/material";
 
+const csrfToken = document.cookie
+  .split("; ")
+  .find((row) => row.startsWith("csrftoken="))
+  ?.split("=")[1];
+
 export default function MiVehiculo() {
   const [isEditing, setIsEditing] = useState(false);
   const [isConductor, setIsConductor] = useState(false);
@@ -21,6 +26,10 @@ export default function MiVehiculo() {
   });
 
   useEffect(() => {
+    console.log("carData", carData);
+  }, [carData]);
+
+  useEffect(() => {
     const email = localStorage.getItem("email");
     if (email) {
       axios
@@ -28,6 +37,7 @@ export default function MiVehiculo() {
         .then((response) => {
           console.log("respuesta:", response.data);
           const vehiculo = response.data.vehiculo;
+          localStorage.setItem("car_id", response.data.vehiculo.id_vehiculo);
           if (vehiculo) {
             setCarData({
               marca_vehiculo: vehiculo.marca_vehiculo,
@@ -74,14 +84,56 @@ export default function MiVehiculo() {
   // Función para manejar el envío del formulario de edición
   const handleUpdate = (e) => {
     e.preventDefault();
+
+    const car_id = localStorage.getItem("car_id");
+
+    const updatedCarData = { ...carData};
+    delete updatedCarData.imagen_perfil;
+    
+    axios
+      .put(`${BACKEND_URL}/db-manager/vehiculos/${car_id}/`, updatedCarData, {
+        headers: { "X-CSRFToken": csrfToken }, // OJO AQUI
+        withCredentials: true, // Asegúrate de enviar cookies con la solicitud
+      })
+      .then((response) => {
+        console.log("Datos Actualizados", response.data);
+        setIsEditing(false);
+      })
+      .catch((error) => {
+        console.error("Error al acualizar", error);
+      });
     // Aquí puedes enviar los datos actualizados del usuario a tu servidor
     setIsEditing(false);
   };
 
-  const handleCreate = (e) => {
+  const handleCreate = async (e) => {
     e.preventDefault();
-    // Aquí puedes enviar los datos actualizados del usuario a tu servidor
-    setIsEditing(false);
+    const user_id = localStorage.getItem('user_id')
+    const formDataToSend = new FormData();
+    const carWithIdData = { ...carData, 'id_usuario': user_id};
+    Object.keys(carWithIdData).forEach((key) => {
+      formDataToSend.append(key, carWithIdData[key]);
+    });
+    if (profileImage) {
+      formDataToSend.append("imagen_perfil", profileImage);
+      console.log("formatDataToSend", formDataToSend.get('id_usuario'));
+    }
+
+    await axios
+      .post(BACKEND_URL + "/db-manager/vehiculos/", formDataToSend, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          "X-CSRFToken": csrfToken,
+        },
+        withCredentials: true,
+      })
+      .then((response) => {
+        console.log("formulario enviado", response.data);
+        setIsEditing(false);
+      })
+      .catch((error) => {
+        console.error("Error al enviar formulario", error);
+      });
   };
 
   return (
