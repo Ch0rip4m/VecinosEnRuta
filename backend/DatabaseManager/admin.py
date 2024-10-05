@@ -30,6 +30,13 @@ class ComunidadesAdmin(admin.ModelAdmin):
     list_filter = ('id_comunidad','nombre_comunidad','tiempo_registro')
     ordering = ('id_comunidad','nombre_comunidad','tiempo_registro')
 
+@admin.register(ComunaUsuario)
+class ComunaUsuarioAdmin(admin.ModelAdmin):
+    list_display = ('id_usuario','id_comuna')
+    search_fields = ('id_usuario','id_comuna')
+    list_filter = ('id_usuario','id_comuna')
+    ordering = ('id_usuario','id_comuna')
+    
 @admin.register(ComunidadesUsuario)
 class ComunidadesUsuarioAdmin(admin.ModelAdmin):
     list_display = ('id_usuario','id_comunidad')

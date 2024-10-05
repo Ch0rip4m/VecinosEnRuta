@@ -87,6 +87,32 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
                 RolUsuario.objects.filter(id_usuario=self, id_rol=role).delete()
             except ObjectDoesNotExist:
                 raise ValueError(f'Rol {role_name} no existe')
+    
+    def assign_location(self, location):
+        # Obtener los roles actuales del usuario
+        comuna_actual = ComunaUsuario.objects.filter(id_usuario=self).values_list('id_comuna__nombre_comuna', flat=True)
+
+    # Filtrar los roles que deben ser agregados
+        nueva_comuna = [nombre_comuna for nombre_comuna in location if nombre_comuna not in comuna_actual]
+
+    # Filtrar los roles que deben ser eliminados
+        comuna_a_eliminar = [nombre_comuna for nombre_comuna in comuna_actual if nombre_comuna not in location]
+
+    # Agregar nuevos roles
+        for nombre_comuna in nueva_comuna:
+            try:
+                comuna = Comuna.objects.get(nombre_comuna=nombre_comuna)
+                ComunaUsuario.objects.create(id_usuario=self, id_comuna=comuna)
+            except ObjectDoesNotExist:
+                raise ValueError(f'Rol {nombre_comuna} no existe')
+
+    # Eliminar roles que ya no están en la lista
+        for nombre_comuna in comuna_a_eliminar:
+            try:
+                comuna = Comuna.objects.get(nombre_comuna=nombre_comuna)
+                ComunaUsuario.objects.filter(id_usuario=self, id_comuna=comuna).delete()
+            except ObjectDoesNotExist:
+                raise ValueError(f'Rol {nombre_comuna} no existe')
 
 class Region(models.Model):
     id_region = models.AutoField(primary_key=True, verbose_name='ID de la Región')

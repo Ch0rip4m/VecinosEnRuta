@@ -35,11 +35,9 @@ export default function MiPerfil() {
         })
         .then((response) => {
           console.log("respuesta:", response.data);
-          localStorage.setItem("user_id", response.data.usuario.id_usuario);
           const usuario = response.data.usuario;
           const roles = response.data.roles;
           setUser({
-            //id_usuario: usuario.id_usuario,
             nombre_usuario: usuario.nombre_usuario,
             apellido_usuario: usuario.apellido_usuario,
             email: usuario.email,
@@ -72,8 +70,10 @@ export default function MiPerfil() {
     e.preventDefault();
 
     const user_id = localStorage.getItem("user_id");
+    console.log(user_id)
 
     const updatedUser = { ...user};
+    console.log("updatedUSER", updatedUser)
     delete updatedUser.imagen_perfil;
     
     axios

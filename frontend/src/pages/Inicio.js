@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/Grid";
@@ -6,39 +6,65 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Mapa from "../components/Mapas";
-import ContentListTable from "../components/Lista";
+import TableRequest from "../components/ListaBoton";
 import axios from "axios";
+import { BACKEND_URL } from "../Utils/Variables";
 
 const columns = [
   { id: "id_ruta", label: "Nombre Ruta", minWidth: 170 },
   { id: "solicitud", label: "Solicitud", minWidth: 100 },
 ];
 
-function createData(id_ruta, solicitud) {
-  return { id_ruta, solicitud };
+function createData(id_ruta, solicitud, ubicacion) {
+  const lista = {id_ruta, solicitud, ubicacion}
+  return lista;
 }
 
 const rows = [
-  createData("India", "IN"),
-  createData("China", "CN"),
-  createData("Italy", "IT"),
-  createData("United States", "US"),
-  createData("Canada", "CA"),
-  createData("Australia", "AU"),
-  createData("Germany", "DE"),
-  createData("Ireland", "IE"),
-  createData("Mexico", "MX"),
-  createData("Japan", "JP"),
-  createData("France", "FR"),
-  createData("United Kingdom", "GB"),
-  createData("Russia", "RU"),
-  createData("Nigeria", "NG"),
-  createData("Brazil", "BR"),
+  createData("India", "IN", "Tierra"),
+  createData("China", "CN", "Tierra"),
+  createData("Italy", "IT", "Tierra"),
+  createData("United States", "US", "Tierra"),
+  createData("Canada", "CA", "Tierra"),
+  createData("Australia", "AU", "Tierra"),
+  createData("Germany", "DE", "Tierra"),
+  createData("Ireland", "IE", "Tierra"),
+  createData("Mexico", "MX", "Tierra"),
+  createData("Japan", "JP", "Tierra"),
+  createData("France", "FR", "Tierra"),
+  createData("United Kingdom", "GB", "Tierra"),
+  createData("Russia", "RU", "Tierra"),
+  createData("Nigeria", "NG", "Tierra"),
+  createData("Brazil", "BR", "Tierra"),
 ];
 
 export default function Inicio() {
   const [formData, setformData] = useState({});
   const [formErrors, setFormErrors] = useState({});
+
+  useEffect(() => {
+    const email = localStorage.getItem("email");
+    if (email) {
+      axios
+        .get(BACKEND_URL + "/db-manager/usuarios/email/" + email + "/")
+        .then((response) => {
+          console.log("respuesta:", response.data);
+          const usuario = response.data.usuario;
+          const vehiculo = response.data.vehiculo;
+          localStorage.setItem('user_id', usuario.id_usuario)
+          if (vehiculo) {
+            localStorage.setItem("car_id", vehiculo.id_vehiculo);
+          }
+        })
+        .catch((error) =>
+          console.error("Error al obtener los datos del usuario:", error)
+        );
+    }
+  }, []);
+
+  useEffect(() => {
+    console.log("ROWS: ", rows);
+  }, [rows]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -118,7 +144,7 @@ export default function Inicio() {
           </Button>
         </Box>
         <Mapa width="100%" height="250px" />
-        <ContentListTable columns={columns} rows={rows} />
+        <TableRequest columns={columns} rows={rows} buttonLabel='Unirse' />
       </Box>
     </Container>
   );

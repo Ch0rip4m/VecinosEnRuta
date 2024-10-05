@@ -74,11 +74,15 @@ export default function Register() {
     } else {
       const formDataToSend = new FormData();
       Object.keys(formData).forEach((key) => {
+        if (key === 'comuna') {
+          formDataToSend.append(key, [formData[key]])
+        }
         formDataToSend.append(key, formData[key]);
       });
       if (profileImage) {
         formDataToSend.append("imagen_perfil", profileImage);
-        console.log("formatDataToSend", formDataToSend);
+        console.log("formatDataToSend", formDataToSend.get('comuna'));
+        console.log("formatDataToSend", formDataToSend.get('nombre_rol'));
       }
 
       await axios

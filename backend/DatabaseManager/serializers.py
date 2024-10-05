@@ -3,24 +3,28 @@ from .models import *
 
 class UsuarioSerializer(serializers.ModelSerializer):
     nombre_rol = serializers.ListField(child=serializers.CharField(), write_only=True)
+    comuna = serializers.ListField(child=serializers.CharField(), write_only=True)
     
     class Meta:
         model = Usuario
-        fields = ['id_usuario','email', 'nombre_usuario', 'apellido_usuario', 'edad', 'telefono', 'sexo', 'imagen_perfil', 'descripcion_usuario', 'password', 'nombre_rol']
+        fields = ['id_usuario','email', 'nombre_usuario', 'apellido_usuario', 'edad', 'telefono', 'sexo', 'imagen_perfil', 'descripcion_usuario', 'password', 'nombre_rol', 'comuna']
         extra_kwargs = {
             'password': {'write_only': True}
         }
         
     def create(self, validated_data):
         roles_data = validated_data.pop('nombre_rol', [])
+        comuna_data = validated_data.pop('comuna', [])
         user = Usuario.objects.create_user(**validated_data)
         user.assign_roles(roles_data)
+        user.assign_location(comuna_data)
         return user
     
     def update(self, instance, validated_data):
         roles_data = validated_data.pop('nombre_rol', None)
+        comuna_data = validated_data.pop('comuna', [])
         instance.email = validated_data.get('email', instance.email)
-        instance.id_usuario = validated_data.get('id_usuario', instance.id_usuario)
+        instance.nombre_usuario = validated_data.get('nombre_usuario', instance.nombre_usuario)
         instance.apellido_usuario = validated_data.get('apellido_usuario', instance.apellido_usuario)
         instance.edad = validated_data.get('edad', instance.edad)
         instance.telefono = validated_data.get('telefono', instance.telefono)
@@ -33,6 +37,9 @@ class UsuarioSerializer(serializers.ModelSerializer):
 
         if roles_data:
             instance.assign_roles(roles_data)
+        
+        if comuna_data:
+            instance.assign_location(comuna_data)
 
         return instance
 
@@ -183,4 +190,9 @@ class ComunaComunidadSerializer(serializers.ModelSerializer):
 class ComunaRegionSerializer(serializers.ModelSerializer):
     class Meta:
         model = ComunaRegion
+        fields = '__all__'
+
+class ComunaUsuarioSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ComunaUsuario
         fields = '__all__'

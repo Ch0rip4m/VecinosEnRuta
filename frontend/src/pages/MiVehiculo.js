@@ -37,7 +37,6 @@ export default function MiVehiculo() {
         .then((response) => {
           console.log("respuesta:", response.data);
           const vehiculo = response.data.vehiculo;
-          localStorage.setItem("car_id", response.data.vehiculo.id_vehiculo);
           if (vehiculo) {
             setCarData({
               marca_vehiculo: vehiculo.marca_vehiculo,

@@ -21,7 +21,7 @@ import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import AltRouteIcon from "@mui/icons-material/AltRoute";
 import MinorCrashIcon from "@mui/icons-material/MinorCrash";
 import EditCalendarIcon from "@mui/icons-material/EditCalendar";
-import ChatIcon from "@mui/icons-material/Chat";
+//import ChatIcon from "@mui/icons-material/Chat";
 import PeopleIcon from "@mui/icons-material/People";
 import HomeIcon from "@mui/icons-material/Home";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -36,10 +36,10 @@ const csrfToken = document.cookie.split('; ')
 const elements = [
   { name: "Inicio", icon: <HomeIcon />, url: "/inicio" },
   { name: "Mi Perfil", icon: <AccountBoxIcon />, url: "/mi-perfil" },
-  { name: "Mis Rutas", icon: <AltRouteIcon />, url: "/mis-rutas" },
   { name: "Mi Vehículo", icon: <MinorCrashIcon />, url: "/mi-vehiculo" },
+  { name: "Mis Rutas", icon: <AltRouteIcon />, url: "/mis-rutas" },
   { name: "Mis Viajes", icon: <EditCalendarIcon />, url: "/mis-viajes" },
-  { name: "Mis Chats", icon: <ChatIcon />, url: "/mis-chats" },
+  //{ name: "Mis Chats", icon: <ChatIcon />, url: "/mis-chats" },
   { name: "Comunidades", icon: <PeopleIcon />, url: "/comunidades" },
 ];
 
@@ -124,6 +124,7 @@ export default function PersistentDrawerLeft() {
       });
       if (response.status === 204) {
           // Redirige o realiza alguna otra acción después de un logout exitoso
+          localStorage.clear()
           window.location.href = '/login';
       } else {
           console.error('Logout failed');
@@ -162,7 +163,6 @@ export default function PersistentDrawerLeft() {
               BACKEND_URL + usuario.imagen_perfil ||
               "https://example.com/avatar.png",
           });
-          console.log(user.roles);
         })
         .catch((error) =>
           console.error("Error al obtener los datos del usuario:", error)

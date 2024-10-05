@@ -8,6 +8,8 @@ import axios from "axios";
 import { BACKEND_URL } from "../Utils/Variables";
 import SimpleSelector from "./SimpleSelector";
 import SelectorSearch from "./SelectorSearch";
+import MultipleSelectChip from "./MultiSelector";
+import DrawMap from "./DibujarRuta";
 
 const style = {
   position: "absolute",
@@ -28,6 +30,7 @@ export default function BasicModal(props) {
   const [inputData, setInputData] = useState({});
   const [profileImage, setProfileImage] = useState(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
+
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -152,10 +155,12 @@ export function getField({ type }) {
   switch (type) {
     case "gridFieldText":
       return gridFieldText;
-    case "gridFieldForeignKey":
-      return gridFieldForeignKey;
     case "gridFieldSearchSelector":
       return GridFieldSearchSelector;
+    case "gridMultiSelector":
+      return GridMultiSelector;
+    case "gridFieldMap":
+      return gridFieldMap;
     // case "gridFieldImage":
     //   return gridFieldImage;
     default:
@@ -180,6 +185,56 @@ export function gridFieldText({
         value={inputData[accessorKey] || null}
         onChange={handleInputChange}
       />
+    </Grid>
+  );
+}
+
+export function GridMultiSelector({
+  header,
+  accessorKey,
+  inputData,
+  handleDataSelectorChange,
+  requestData,
+  requestTable
+}) {
+  const [values, setValues] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get(BACKEND_URL + "/db-manager/" + requestTable + "/", {withCredentials: true})
+      .then((response) => {
+        const getData = response.data.map((item) => item[requestData]);
+        setValues(getData);
+      })
+      .catch((error) => {
+        console.error("Error al obtener los datos:", error);
+      });
+  }, []);
+  return (
+    <Grid item xs={12}>
+      <MultipleSelectChip
+        variant="outlined"
+        required
+        fullWidth
+        label={header}
+        name={accessorKey}
+        values={values}
+        formData={inputData}
+        onChange={handleDataSelectorChange}
+      />
+    </Grid>
+  );
+}
+
+export function gridFieldMap({
+  header,
+  accessorKey,
+  inputData,
+  handleInputChange,
+}) {
+  return (
+    <Grid item xs={12}>
+      <DrawMap width="100%" height="250px" />
     </Grid>
   );
 }
@@ -265,22 +320,4 @@ export function GridFieldSearchSelector({
   );
 }
 
-export function gridFieldForeignKey({
-  header,
-  accessorKey,
-  values,
-  inputData,
-  handleDataChange,
-}) {
-  return (
-    <Grid item xs={12}>
-      <SimpleSelector
-        values={values}
-        label={header}
-        name={accessorKey}
-        formData={inputData}
-        onChange={handleDataChange}
-      />
-    </Grid>
-  );
-}
+

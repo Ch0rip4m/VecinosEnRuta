@@ -59,6 +59,7 @@ export default function Login({ setCheckTokens }) {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
+          textAlign : "center"
         }}
       >
         <LogoRedondoVER width="150px" height="150px"/>

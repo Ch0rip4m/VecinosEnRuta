@@ -22,6 +22,7 @@ class RegistroUsuarioView(APIView):
             descripcion_usuario = serializer.validated_data.get('descripcion_usuario', '')
             imagen_perfil = serializer.validated_data.get('imagen_perfil', None)
             nombre_rol = serializer.validated_data.get('nombre_rol', [])
+            comuna = serializer.validated_data.get('comuna', [])
 
             user = Usuario.objects.create_user(
                 email=email,
@@ -35,8 +36,11 @@ class RegistroUsuarioView(APIView):
                 imagen_perfil=imagen_perfil
             )
             rol_list = nombre_rol[0].split(',')
+            location = comuna[0].split(',')
             print(rol_list)
+            print(location)
             user.assign_roles(rol_list)
+            user.assign_location(location)
 
             return Response({'message': 'Usuario registrado exitosamente'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -163,6 +167,10 @@ class ComunaComunidadViewSet(viewsets.ModelViewSet):
     queryset = ComunaComunidad
     serializer_class = ComunaComunidadSerializer
     
+class ComunaUsuarioViewSet(viewsets.ModelViewSet):
+    queryset = ComunaUsuario
+    serializer_class = ComunaUsuarioSerializer
+    
 @api_view(['GET'])
 def info_usuario(request, email):
     try:
@@ -175,7 +183,7 @@ def info_usuario(request, email):
         
         comunidad = ComunidadesUsuario.objects.filter(id_usuario=usuario).values_list('id_comunidad__nombre_comunidad', flat=True)
         comunidad = list(comunidad)
-        print(comunidad)
+        #print(comunidad)
         
         vehiculo_usuario = VehiculoUsuario.objects.filter(id_usuario=usuario).first()
         vehiculo = None

@@ -166,7 +166,7 @@ CORS_ALLOW_METHODS = [
 AUTH_USER_MODEL = 'DatabaseManager.Usuario'
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=5),
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=1),
     'REFRESH_TOKEN_LIFETIME': datetime.timedelta(hours=24),# Configura la expiración del token según tus necesidades
     'BLACKLIST_AFTER_ROTATION': True,
     'ALGORITHM': 'HS256'
