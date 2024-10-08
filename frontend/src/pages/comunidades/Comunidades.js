@@ -1,9 +1,8 @@
 import { Container, Box, Grid, Button } from "@mui/material";
 //import ContentListTable from "../components/Lista";
-import Mapa from "../components/Mapas";
+import Mapa from "../../components/mapas/Mapas";
 import React from "react";
-import BasicModal from "../components/Modal";
-import { BACKEND_URL } from "../Utils/Variables";
+import { BACKEND_URL } from "../../Utils/Variables";
 
 const columns = [
   {
@@ -33,12 +32,6 @@ export default function Comunidades() {
       >
         <Grid container spacing={2}>
           <Grid item xs={6} sm={6}>
-            <BasicModal
-              label="Crear comunidad"
-              url={BACKEND_URL + "/db-manager/comunidades/"}
-              title={"¡Ingresa los datos de tu comunidad!"}
-              columns={columns}
-            />
           </Grid>
           <Grid item xs={6} sm={6}>
             <Button color="primary" variant="contained" fullWidth>

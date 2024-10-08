@@ -5,10 +5,10 @@ import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import Mapa from "../components/Mapas";
-import TableRequest from "../components/ListaBoton";
+import Mapa from "../../components/mapas/Mapas";
+import TableRequest from "../../components/listas/ListaBoton";
 import axios from "axios";
-import { BACKEND_URL } from "../Utils/Variables";
+import { BACKEND_URL } from "../../Utils/Variables";
 
 const columns = [
   { id: "id_ruta", label: "Nombre Ruta", minWidth: 170 },

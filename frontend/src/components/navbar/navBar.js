@@ -1,6 +1,6 @@
-import "../styles/navBar.css";
+import "../../styles/navBar.css";
 import React, { useState, useEffect } from "react";
-import { BACKEND_URL } from "../Utils/Variables";
+import { BACKEND_URL } from "../../Utils/Variables";
 import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
@@ -25,7 +25,7 @@ import EditCalendarIcon from "@mui/icons-material/EditCalendar";
 import PeopleIcon from "@mui/icons-material/People";
 import HomeIcon from "@mui/icons-material/Home";
 import LogoutIcon from "@mui/icons-material/Logout";
-import LogoRedondoVER from "../styles/LogoRedondo";
+import LogoRedondoVER from "../../styles/LogoRedondo";
 import axios from "axios";
 import { Avatar } from "@mui/material";
 

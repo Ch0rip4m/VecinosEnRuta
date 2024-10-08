@@ -1,5 +1,5 @@
 import { Button, Container, Box, Grid } from "@mui/material";
-//import ContentListTable from "../components/Lista";
+//import ContentListTable from "../../components/listas/Lista";
 import React from "react";
 
 export default function MisViajes() {

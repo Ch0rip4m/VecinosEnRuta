@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { BACKEND_URL } from "../Utils/Variables";
+import { BACKEND_URL } from "../../Utils/Variables";
 import { Avatar, Button, Container, TextField, Box, Grid } from "@mui/material";
-import MultipleSelectChip from "../components/MultiSelector";
+import MultipleSelectChip from "../../components/selectores/MultiSelector";
 
 const csrfToken = document.cookie
   .split("; ")

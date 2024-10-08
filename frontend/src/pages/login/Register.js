@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { BACKEND_URL } from "../Utils/Variables";
+import { BACKEND_URL } from "../../Utils/Variables";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -10,10 +10,10 @@ import HowToRegIcon from "@mui/icons-material/HowToReg";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import axios from "axios";
-import SimpleSelector from "../components/SimpleSelector";
-import MultipleSelectChip from "../components/MultiSelector";
-import SelectorSearch from "../components/SelectorSearch";
-import LogoRedondoVER from "../styles/LogoRedondo";
+import SimpleSelector from "../../components/selectores/SimpleSelector";
+import MultipleSelectChip from "../../components/selectores/MultiSelector";
+import SelectorSearch from "../../components/selectores/SelectorSearch";
+import LogoRedondoVER from "../../styles/LogoRedondo";
 
 function GetSelectorData() {
   // función para obtener la data para componentes especificos, retorna una lista de strings

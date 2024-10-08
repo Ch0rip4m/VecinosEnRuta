@@ -1,13 +1,13 @@
 import { Link as RouterLink } from "react-router-dom";
 import { useState } from "react";
-import { BACKEND_URL } from "../Utils/Variables";
+import { BACKEND_URL } from "../../Utils/Variables";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import LogoRedondoVER from "../styles/LogoRedondo";
+import LogoRedondoVER from "../../styles/LogoRedondo";
 import axios from "axios";
 
 export default function Login({ setCheckTokens }) {

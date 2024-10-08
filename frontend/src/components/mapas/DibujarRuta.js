@@ -13,7 +13,7 @@ import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
 import Draw from "ol/interaction/Draw";
 import Modify from "ol/interaction/Modify"; // Para editar geometrías
-import Axios from "axios";
+import axios from "axios";
 
 export default function DrawMap(props) {
   const mapContainerRef = useRef(null);

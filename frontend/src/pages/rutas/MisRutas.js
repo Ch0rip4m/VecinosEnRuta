@@ -1,9 +1,8 @@
 import { Button, Container, Box, Grid } from "@mui/material";
-import ContentListTable from "../components/Lista";
-import DrawMap from "../components/DibujarRuta";
+import ContentListTable from "../../components/listas/Lista";
+import DrawMap from "../../components/mapas/DibujarRuta";
 import React from "react";
-import BasicModal from "../components/Modal";
-import { BACKEND_URL } from "../Utils/Variables";
+import { BACKEND_URL } from "../../Utils/Variables";
 
 const columns = [
   { id: "id_ruta", label: "Nombre Ruta", minWidth: 170 },
@@ -93,12 +92,6 @@ export default function MisRutas() {
       >
         <Grid container spacing={2}>
           <Grid item xs={6} sm={6}>
-            <BasicModal
-              label="Crear ruta"
-              url={BACKEND_URL + "/db-manager/rutas/"}
-              title={"¡Ingresa los datos de tu ruta!"}
-              columns={columnsModal}
-            />
           </Grid>
           <Grid item xs={6} sm={6}>
             <Button color="primary" variant="contained" fullWidth>

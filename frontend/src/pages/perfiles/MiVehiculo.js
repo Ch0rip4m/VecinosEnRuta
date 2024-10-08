@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { BACKEND_URL } from "../Utils/Variables";
+import { BACKEND_URL } from "../../Utils/Variables";
 import { Avatar, Button, Container, TextField, Box, Grid } from "@mui/material";
 
 const csrfToken = document.cookie
