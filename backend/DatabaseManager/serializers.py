@@ -83,7 +83,7 @@ class VehiculoSerializer(serializers.ModelSerializer):
                 print('id_usuario: ',usuario)
                 VehiculoUsuario.objects.create(id_vehiculo=vehiculo, id_usuario=usuario)
             except Comuna.DoesNotExist:
-                raise serializers.ValidationError(f'La comuna {id_usuario} no existe')
+                raise serializers.ValidationError(f'El usuario {id_usuario} no existe')
             
         return vehiculo
 
@@ -98,9 +98,39 @@ class ChatSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class RutaSerializer(serializers.ModelSerializer):
+    dias = serializers.SerializerMethodField()
+    
     class Meta:
         model = Rutas
         fields = '__all__'
+        
+    def create(self,validated_data):
+        print(validated_data)
+        request = self.context['request']
+        id_usuario = request.data.get('id_conductor')
+        print('id_usuario: ',id_usuario)
+        id_vehiculo = request.data.get('id_vehiculo')
+        print('id_vehiculo: ',id_vehiculo)
+        nombre_dia = request.data.get('nombre_dia')
+        print('dias: ',nombre_dia)
+        
+        if id_usuario and id_vehiculo and nombre_dia:
+            try:
+                usuario = Usuario.objects.get(id_usuario=id_usuario)
+                print('id_usuario: ',usuario)
+                vehiculo = Vehiculos.objects.get(id_vehiculo=id_vehiculo)
+                print('id_vehiculo: ',vehiculo)
+                ruta = Rutas.objects.create(**validated_data)
+                ruta.assign_days(nombre_dia)
+            except Vehiculos.DoesNotExist or Usuario.DoesNotExist:
+                raise serializers.ValidationError(f'El id {id_usuario} y {id_vehiculo} no existe')
+            
+        return ruta
+    
+    def get_dias(self, obj):
+        # Obtener los días asociados a la ruta a través de la tabla intermedia
+        dias_rutas = DiasRutas.objects.filter(id_ruta=obj.id_ruta).values_list('id_dia__nombre_dia', flat=True)
+        return list(dias_rutas)
 
 class DiaSerializer(serializers.ModelSerializer):
     class Meta:

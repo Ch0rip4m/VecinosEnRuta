@@ -1,6 +1,6 @@
 import { Container, Box, Grid, Button } from "@mui/material";
 //import ContentListTable from "../components/Lista";
-import Mapa from "../../components/mapas/Mapas";
+import Mapa from "../../components/mapas/VerRuta";
 import React from "react";
 import { BACKEND_URL } from "../../Utils/Variables";
 

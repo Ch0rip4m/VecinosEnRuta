@@ -39,7 +39,6 @@ const elements = [
   { name: "Mi Vehículo", icon: <MinorCrashIcon />, url: "/mi-vehiculo" },
   { name: "Mis Rutas", icon: <AltRouteIcon />, url: "/mis-rutas" },
   { name: "Mis Viajes", icon: <EditCalendarIcon />, url: "/mis-viajes" },
-  //{ name: "Mis Chats", icon: <ChatIcon />, url: "/mis-chats" },
   { name: "Comunidades", icon: <PeopleIcon />, url: "/comunidades" },
 ];
 
@@ -101,11 +100,7 @@ export default function PersistentDrawerLeft() {
   const [user, setUser] = useState({
     nombre_usuario: "",
     apellido_usuario: "",
-    email: "",
-    telefono: "",
     roles: "",
-    comunidad: "",
-    descripcion: "",
     imagen_perfil: "",
   });
 
@@ -150,15 +145,10 @@ export default function PersistentDrawerLeft() {
           //console.log("respuesta:", response.data);
           const usuario = response.data.usuario;
           const roles = response.data.roles;
-          const comunidad = response.data.comunidad;
           setUser({
             nombre_usuario: usuario.nombre_usuario,
             apellido_usuario: usuario.apellido_usuario,
-            email: usuario.email,
-            telefono: usuario.telefono,
             roles: roles.join(", "),
-            comunidad: comunidad[0] || "",
-            descripcion: usuario.descripcion_usuario,
             imagen_perfil:
               BACKEND_URL + usuario.imagen_perfil ||
               "https://example.com/avatar.png",

@@ -21,14 +21,14 @@ class TokenRefreshMiddleware(MiddlewareMixin):
                 expiration = make_aware(expiration)
                 expiration_r = datetime.fromtimestamp(refresh_payload['exp'])
                 expiration_r = make_aware(expiration_r)
-                print('EXPIRATION ACCESS: ', expiration)
-                print('EXPIRATION REFRESH: ', expiration_r)
+                #print('EXPIRATION ACCESS: ', expiration)
+                #print('EXPIRATION REFRESH: ', expiration_r)
 
             except (jwt.ExpiredSignatureError, jwt.InvalidTokenError) as e:
-                print('TOKEN DE ACCESO INVÁLIDO O EXPIRADO:', str(e))
+                #print('TOKEN DE ACCESO INVÁLIDO O EXPIRADO:', str(e))
                 
                 try:
-                    print("RENOVANDO TOKEN DE ACCESO...")
+                    #print("RENOVANDO TOKEN DE ACCESO...")
                     # Intenta renovar el token de acceso usando el token de actualización
                     refresh_token_obj = RefreshToken(refresh_token)
                     new_access_token = str(refresh_token_obj.access_token)
@@ -37,7 +37,7 @@ class TokenRefreshMiddleware(MiddlewareMixin):
                     request.new_access_token = new_access_token
 
                 except Exception as inner_e:
-                    print('FALLO AL RENOVAR EL TOKEN:', str(inner_e))
+                    #print('FALLO AL RENOVAR EL TOKEN:', str(inner_e))
                     request.new_access_token = None
                     request.logout_user = True
                     request.delete_cookies = True

@@ -11,7 +11,7 @@ import { Icon, Style } from "ol/style";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
 
-export default function Mapa(props) {
+export default function VerRuta(props) {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
   const [mapCreated, setMapCreated] = useState(false);

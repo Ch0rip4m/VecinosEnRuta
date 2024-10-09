@@ -306,6 +306,32 @@ class Rutas(models.Model):
         
     def __str__(self):
             return self.nombre_ruta
+        
+    def assign_days(self, days):
+        # Obtener los roles actuales del usuario
+        dias_actuales = DiasRutas.objects.filter(id_ruta=self).values_list('id_dia__nombre_dia', flat=True)
+
+    # Filtrar los roles que deben ser agregados
+        nuevos_dias = [day_name for day_name in days if day_name not in dias_actuales]
+
+    # Filtrar los roles que deben ser eliminados
+        dias_a_eliminar = [day_name for day_name in dias_actuales if day_name not in days]
+
+    # Agregar nuevos roles
+        for day_name in nuevos_dias:
+            try:
+                dia = Dias.objects.get(nombre_dia=day_name)
+                DiasRutas.objects.create(id_ruta=self, id_dia=dia)
+            except ObjectDoesNotExist:
+                raise ValueError(f'Dia {day_name} no existe')
+
+    # Eliminar roles que ya no están en la lista
+        for day_name in dias_a_eliminar:
+            try:
+                dia = Roles.objects.get(nombre_dia=day_name)
+                DiasRutas.objects.filter(id_ruta=self, id_rol=dia).delete()
+            except ObjectDoesNotExist:
+                raise ValueError(f'Rol {day_name} no existe')
     
 class Dias(models.Model):
     id_dia = models.AutoField(primary_key=True, verbose_name='ID del dia de la semana')

@@ -190,20 +190,23 @@ def info_usuario(request, email):
         if vehiculo_usuario:
             vehiculo = vehiculo_usuario.id_vehiculo
             vehiculo_serializer = VehiculoSerializer(vehiculo).data
+            
+        rutas = Rutas.objects.filter(id_conductor=usuario)
+        rutas_serializer = RutaSerializer(rutas, many=True)
         
-        if (vehiculo):
-            data = {
-                'usuario': serializer.data,
-                'roles': roles,
-                'comunidad': comunidad,
-                'vehiculo' : vehiculo_serializer
-            }
-        else:
-            data = {
+        data = {
             'usuario': serializer.data,
             'roles': roles,
-            'comunidad': comunidad,
         }
+
+        # Añadir condicionalmente los campos si existen
+        if comunidad:
+            data['comunidad'] = comunidad
+        if vehiculo:
+            data['vehiculo'] = vehiculo_serializer
+        if rutas:
+            data['rutas'] = rutas_serializer.data
+
         return Response(data)
     except Usuario.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)

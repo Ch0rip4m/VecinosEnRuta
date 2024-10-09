@@ -5,7 +5,7 @@ import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import Mapa from "../../components/mapas/Mapas";
+import Mapa from "../../components/mapas/VerRuta";
 import TableRequest from "../../components/listas/ListaBoton";
 import axios from "axios";
 import { BACKEND_URL } from "../../Utils/Variables";

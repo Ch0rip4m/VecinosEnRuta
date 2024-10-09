@@ -1,109 +1,78 @@
 import { Button, Container, Box, Grid } from "@mui/material";
-import ContentListTable from "../../components/listas/Lista";
-import DrawMap from "../../components/mapas/DibujarRuta";
-import React from "react";
+import ReadList from "../../components/listas/ListaLectura";
+import VerRuta from "../../components/mapas/VerRuta";
+import React, { useEffect, useState } from "react";
 import { BACKEND_URL } from "../../Utils/Variables";
+import axios from "axios";
 
 const columns = [
-  { id: "id_ruta", label: "Nombre Ruta", minWidth: 170 },
-  { id: "solicitud", label: "Solicitud", minWidth: 100 },
-];
-
-function createData(id_ruta, solicitud) {
-  const lista = {id_ruta}
-  return lista;
-}
-
-const rows = [
-  createData("India", "IN"),
-  createData("China", "CN"),
-  createData("Italy", "IT"),
-  createData("United States", "US"),
-  createData("Canada", "CA"),
-  createData("Australia", "AU"),
-  createData("Germany", "DE"),
-  createData("Ireland", "IE"),
-  createData("Mexico", "MX"),
-  createData("Japan", "JP"),
-  createData("France", "FR"),
-  createData("United Kingdom", "GB"),
-  createData("Russia", "RU"),
-  createData("Nigeria", "NG"),
-  createData("Brazil", "BR"),
-];
-
-const columnsModal = [
-  {
-    header: "Nombre de la ruta",
-    accessorKey: "nombre_ruta",
-    enableEditing: true,
-    createable: true,
-    type: "gridFieldText",
-  },
-  {
-    header: "Origen",
-    accessorKey: "origen",
-    enableEditing: true,
-    createable: true,
-    type: "gridFieldSearchSelector",
-    requestData: "nombre_comuna",
-    requestTable: "comunas",
-  },
-  {
-    header: "Destino",
-    accessorKey: "destino",
-    enableEditing: true,
-    createable: true,
-    type: "gridFieldSearchSelector",
-    requestData: "nombre_comuna",
-    requestTable: "comunas",
-  },
-  {
-    header: "Días",
-    accessorKey: "nombre_dia",
-    enableEditing: true,
-    createable: true,
-    type: "gridMultiSelector",
-    requestData: "nombre_dia",
-    requestTable: "dias",
-  },
-  {
-    header: "Hora de salida",
-    accessorKey: "hora_salida",
-    enableEditing: true,
-    createable: true,
-    type: "gridFieldText",
-  },
-  {
-    header: "DrawRout",
-    accessorKey: "d_ruta",
-    enableEditing: true,
-    createable: true,
-    type: "gridFieldMap",
-  },
+  { id: "nombre_ruta", label: "Nombre", minWidth: 1 },
+  { id: "origen", label: "Origen", minWidth: 1 },
+  { id: "destino", label: "Destino", minWidth: 1 },
+  { id: "dias", label: "Días", minWidth: 100 },
+  { id: "hora_salida", label: "Salida", minWidth: 1 },
 ];
 
 export default function MisRutas() {
+  const [rutas, setRutas] = useState([]);
+
+  useEffect(() => {
+    const email = localStorage.getItem("email");
+    if (email) {
+      axios
+        .get(BACKEND_URL + "/db-manager/usuarios/email/" + email + "/", {
+          withCredentials: true,
+        })
+        .then((response) => {
+          const rutas = response.data.rutas;
+          console.log(rutas)
+          setRutas(rutas);
+        })
+        .catch((error) =>
+          console.error("Error al obtener los datos del usuario:", error)
+        );
+    }
+  }, []);
+
+  const handleButtonCreate = () => {
+    window.location.href = "/mis-rutas/crear";
+  };
+
+  const handleButtonEdit = () => {
+    window.location.href = "/mis-rutas/editar";
+  };
+
   return (
     <Container maxWidth="xs">
       <Box
         component="container"
         sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
       >
-        <Grid container spacing={2}>
+        <Grid container spacing={2} sx={{ mb: 2 }}>
           <Grid item xs={6} sm={6}>
+            <Button
+              color="primary"
+              variant="contained"
+              fullWidth
+              onClick={handleButtonCreate}
+            >
+              Crear Ruta
+            </Button>
           </Grid>
           <Grid item xs={6} sm={6}>
-            <Button color="primary" variant="contained" fullWidth>
-              Eliminar Ruta
+            <Button
+              color="primary"
+              variant="contained"
+              fullWidth
+              onClick={handleButtonEdit}
+            >
+              Editar Ruta
             </Button>
           </Grid>
         </Grid>
-        <ContentListTable columns={columns} rows={rows} />
+        <ReadList columns={columns} rows={rutas} height={550}/>
+        <VerRuta width="100%" height="250px"/>
       </Box>
     </Container>
   );
 }
-
-//<DrawMap width="100%" height="250px" />
-//

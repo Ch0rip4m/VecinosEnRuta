@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { BACKEND_URL } from "../../Utils/Variables";
+import { BACKEND_URL } from "../../../Utils/Variables";
 import { Avatar, Button, Container, TextField, Box, Grid } from "@mui/material";
 
 const csrfToken = document.cookie
@@ -86,9 +86,9 @@ export default function MiVehiculo() {
 
     const car_id = localStorage.getItem("car_id");
 
-    const updatedCarData = { ...carData};
+    const updatedCarData = { ...carData };
     delete updatedCarData.imagen_perfil;
-    
+
     axios
       .put(`${BACKEND_URL}/db-manager/vehiculos/${car_id}/`, updatedCarData, {
         headers: { "X-CSRFToken": csrfToken }, // OJO AQUI
@@ -107,15 +107,18 @@ export default function MiVehiculo() {
 
   const handleCreate = async (e) => {
     e.preventDefault();
-    const user_id = localStorage.getItem('user_id')
+
+    const user_id = localStorage.getItem("user_id");
     const formDataToSend = new FormData();
-    const carWithIdData = { ...carData, 'id_usuario': user_id};
+    const carWithIdData = { ...carData, id_usuario: user_id };
+
     Object.keys(carWithIdData).forEach((key) => {
       formDataToSend.append(key, carWithIdData[key]);
     });
+
     if (profileImage) {
       formDataToSend.append("imagen_perfil", profileImage);
-      console.log("formatDataToSend", formDataToSend.get('id_usuario'));
+      console.log("formatDataToSend", formDataToSend.get("id_usuario"));
     }
 
     await axios
