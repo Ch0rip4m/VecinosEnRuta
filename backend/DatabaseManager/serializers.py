@@ -45,6 +45,7 @@ class UsuarioSerializer(serializers.ModelSerializer):
 
 class ComunidadSerializer(serializers.ModelSerializer):
     nombre_comuna = serializers.CharField(write_only=True)
+    comunas = serializers.SerializerMethodField()
     
     class Meta:
         model = Comunidades
@@ -55,15 +56,25 @@ class ComunidadSerializer(serializers.ModelSerializer):
         #print('nombre_comuna: ',nombre_comuna)
         comunidad = Comunidades.objects.create(**validated_data)
         #print('comunidad: ', comunidad)
-        if nombre_comuna:
+        request = self.context['request']
+        id_usuario = request.data.get('id_usuario')
+        
+        if nombre_comuna and id_usuario:
             try:
                 comuna = Comuna.objects.get(nombre_comuna=nombre_comuna)
                 #print('comuna: ', comuna)
+                usuario = Usuario.objects.get(id_usuario=id_usuario)
                 ComunaComunidad.objects.create(id_comunidad=comunidad, id_comuna=comuna)
-            except Comuna.DoesNotExist:
+                ComunidadesUsuario.objects.create(id_usuario=usuario, id_comunidad=comunidad)
+            except Comuna.DoesNotExist or Usuario.DoesNotExist:
                 raise serializers.ValidationError(f'La comuna {nombre_comuna} no existe')
             
         return comunidad
+    
+    def get_comunas(self, obj):
+        # Obtener las comunas asociadas a la comunidad a través de la tabla intermedia
+        comunas = ComunaComunidad.objects.filter(id_comunidad=obj.id_comunidad).values_list('id_comuna__nombre_comuna', flat=True)
+        return list(comunas)
     
 class VehiculoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -90,11 +101,6 @@ class VehiculoSerializer(serializers.ModelSerializer):
 class CalificacionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Calificaciones
-        fields = '__all__'
-
-class ChatSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Chat
         fields = '__all__'
 
 class RutaSerializer(serializers.ModelSerializer):

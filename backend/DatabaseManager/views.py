@@ -87,10 +87,6 @@ class CalificacionViewSet(viewsets.ModelViewSet):
     queryset = Calificaciones.objects.all()
     serializer_class = CalificacionSerializer 
 
-class ChatViewSet(viewsets.ModelViewSet):
-    queryset = Chat.objects.all()
-    serializer_class = ChatSerializer
-
 class RutasViewSet(viewsets.ModelViewSet):
     queryset = Rutas.objects.all()
     serializer_class = RutaSerializer
@@ -181,8 +177,8 @@ def info_usuario(request, email):
         roles = list(roles)
         #print(roles)
         
-        comunidad = ComunidadesUsuario.objects.filter(id_usuario=usuario).values_list('id_comunidad__nombre_comunidad', flat=True)
-        comunidad = list(comunidad)
+        comunidad_usuario = ComunidadesUsuario.objects.filter(id_usuario=usuario)
+        comunidad_serializer = ComunidadSerializer([com.id_comunidad for com in comunidad_usuario], many=True)
         #print(comunidad)
         
         vehiculo_usuario = VehiculoUsuario.objects.filter(id_usuario=usuario).first()
@@ -200,8 +196,8 @@ def info_usuario(request, email):
         }
 
         # Añadir condicionalmente los campos si existen
-        if comunidad:
-            data['comunidad'] = comunidad
+        if comunidad_usuario:
+            data['comunidad'] = comunidad_serializer.data
         if vehiculo:
             data['vehiculo'] = vehiculo_serializer
         if rutas:

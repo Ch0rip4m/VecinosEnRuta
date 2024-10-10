@@ -12,6 +12,7 @@ import EditarRutas from "./pages/rutas/EditarRuta";
 import MisViajes from "./pages/viajes/MisViajes";
 import MiVehiculo from "./pages/perfiles/mi-perfil/MiVehiculo";
 import Comunidades from "./pages/comunidades/Comunidades";
+import CrearComunidad from "./pages/comunidades/CrearComunidad";
 import PersistentDrawerLeft from "./components/navbar/navBar";
 import ManageAccess from "./components/controlAcceso/ManageAccess";
 
@@ -127,7 +128,7 @@ export default function App() {
               path="/comunidades/crear"
               element={
                 <ManageAccess
-                  Component={Comunidades}
+                  Component={CrearComunidad}
                   setCheckTokens={setCheckTokens}
                 />
               }

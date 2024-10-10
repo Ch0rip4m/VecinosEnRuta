@@ -6,11 +6,11 @@ import { BACKEND_URL } from "../../Utils/Variables";
 import axios from "axios";
 
 const columns = [
-  { id: "nombre_ruta", label: "Nombre", minWidth: 1 },
-  { id: "origen", label: "Origen", minWidth: 1 },
-  { id: "destino", label: "Destino", minWidth: 1 },
-  { id: "dias", label: "Días", minWidth: 100 },
-  { id: "hora_salida", label: "Salida", minWidth: 1 },
+  { id: "nombre_ruta", label: "Nombre" },
+  { id: "origen", label: "Origen" },
+  { id: "destino", label: "Destino" },
+  { id: "dias", label: "Días" },
+  { id: "hora_salida", label: "Salida" },
 ];
 
 export default function MisRutas() {
@@ -25,8 +25,10 @@ export default function MisRutas() {
         })
         .then((response) => {
           const rutas = response.data.rutas;
-          console.log(rutas)
-          setRutas(rutas);
+          if (rutas) {
+            console.log(rutas);
+            setRutas(rutas);
+          }
         })
         .catch((error) =>
           console.error("Error al obtener los datos del usuario:", error)
@@ -70,8 +72,8 @@ export default function MisRutas() {
             </Button>
           </Grid>
         </Grid>
-        <ReadList columns={columns} rows={rutas} height={550}/>
-        <VerRuta width="100%" height="250px"/>
+        <ReadList columns={columns} rows={rutas} height={550} />
+        <VerRuta width="100%" height="250px" />
       </Box>
     </Container>
   );

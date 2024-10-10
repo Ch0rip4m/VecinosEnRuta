@@ -274,19 +274,6 @@ class CategoriasCalificacion(models.Model):
     def __str__(self):
             return f"{self.id_calificacion} - {self.seguridad} - {self.limpieza} - {self.comodidad} - {self.puntualidad}"
     
-class Chat(models.Model):
-    id_mensaje = models.AutoField(primary_key=True, verbose_name='ID del mensaje')
-    id_emisor = models.ForeignKey(Usuario, to_field='id_usuario', related_name='mensaje_enviado', on_delete=models.CASCADE, verbose_name='ID del usuario emisor')
-    id_receptor = models.ForeignKey(Usuario, to_field='id_usuario', related_name='mensaje_recibido', on_delete=models.CASCADE, verbose_name='ID del usuario receptor')
-    mensaje = models.TextField(verbose_name='Contenido del mensaje')
-    tiempo_registro = models.DateTimeField(auto_now_add=True, verbose_name='marca de tiempo del mensaje')
-    
-    class Meta:
-        verbose_name = 'Chat'
-        verbose_name_plural = 'Chats'
-        
-    def __str__(self):
-            return f"{self.id_mensaje} - {self.id_emisor} - {self.id_receptor} - {self.mensaje}"
 
 # PLANIFICACIÓN
    
