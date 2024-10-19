@@ -1,6 +1,6 @@
 import { Container, Box, Grid, Button } from "@mui/material";
 import ReadList from "../../components/listas/ListaLectura";
-import Mapa from "../../components/mapas/VerRuta";
+import VerComunidades from "../../components/mapas/MapaComunidades";
 import React, { useEffect, useState } from "react";
 import { BACKEND_URL } from "../../Utils/Variables";
 import axios from "axios";
@@ -12,6 +12,29 @@ const columns = [
 
 export default function Comunidades() {
   const [comunidad, setComunidad] = useState([]);
+  const [mapValues, setMapValues] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get(BACKEND_URL + "/db-manager/comunidades/", {
+        withCredentials: true,
+      })
+      .then((response) => {
+        //console.log(response.data);
+        const getCoordinates = response.data.map((item) => [
+          item.longitud,
+          item.latitud,
+        ]);
+        setMapValues(getCoordinates);
+      })
+      .catch((error) =>
+        console.error("Error al obtener los datos del usuario:", error)
+      );
+  }, []);
+
+  // useEffect(() => {
+  //   console.log("mapValues", mapValues);
+  // }, [mapValues]);
 
   useEffect(() => {
     const email = localStorage.getItem("email");
@@ -21,10 +44,8 @@ export default function Comunidades() {
           withCredentials: true,
         })
         .then((response) => {
-          //console.log(response.data);
           const comunidad = response.data.comunidad;
           if (comunidad) {
-            console.log(comunidad);
             setComunidad(comunidad);
           }
         })
@@ -33,10 +54,6 @@ export default function Comunidades() {
         );
     }
   }, []);
-
-  useEffect(() => {
-    console.log("comunidad: ", comunidad);
-  }, [comunidad]);
 
   const handleButtonCreate = () => {
     window.location.href = "/comunidades/crear";
@@ -61,11 +78,16 @@ export default function Comunidades() {
           </Grid>
           <Grid item xs={6} sm={6}>
             <Button color="primary" variant="contained" fullWidth>
-              Eliminar comunidad
+              Editar comunidad
             </Button>
           </Grid>
         </Grid>
-        <ReadList columns={columns} rows={comunidad} height={550} />
+        <ReadList
+          columns={columns}
+          rows={comunidad}
+          height={550}
+        />
+        <VerComunidades width="100%" height="250px" mapValues={mapValues} />
       </Box>
     </Container>
   );

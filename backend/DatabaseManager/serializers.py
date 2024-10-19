@@ -119,6 +119,7 @@ class RutaSerializer(serializers.ModelSerializer):
         print('id_vehiculo: ',id_vehiculo)
         nombre_dia = request.data.get('nombre_dia')
         print('dias: ',nombre_dia)
+        trayectoria_data = request.data.get('trayectoria',[])
         
         if id_usuario and id_vehiculo and nombre_dia:
             try:
@@ -128,6 +129,16 @@ class RutaSerializer(serializers.ModelSerializer):
                 print('id_vehiculo: ',vehiculo)
                 ruta = Rutas.objects.create(**validated_data)
                 ruta.assign_days(nombre_dia)
+                trayectoria = Trayectoria.objects.create(id_ruta=ruta)
+                
+                for i, punto in enumerate(trayectoria_data):
+                    OrdenTrayectoria.objects.create(
+                        id_trayectoria=trayectoria,
+                        orden=i + 1,
+                        latitud=punto.get('latitud'),
+                        longitud=punto.get('longitud')
+                    )
+                    
             except Vehiculos.DoesNotExist or Usuario.DoesNotExist:
                 raise serializers.ValidationError(f'El id {id_usuario} y {id_vehiculo} no existe')
             

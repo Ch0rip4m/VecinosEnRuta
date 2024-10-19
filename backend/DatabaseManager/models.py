@@ -152,6 +152,8 @@ class ComunaUsuario(models.Model):
 class Comunidades(models.Model):
     id_comunidad = models.AutoField(primary_key=True, verbose_name='ID de la comunidad')
     nombre_comunidad = models.CharField(max_length=100, verbose_name='Nombre de la comunidad')
+    latitud = models.FloatField(verbose_name='Latitud', default=0)
+    longitud = models.FloatField(verbose_name='Longitud', default=0)
     tiempo_registro = models.DateTimeField(auto_now_add=True, verbose_name='Registro de creacion')
     
     class Meta:
@@ -352,7 +354,7 @@ class Trayectoria(models.Model):
         verbose_name_plural = 'Trayectorias'
         
     def __str__(self):
-            return self.id_trayectoria
+            return f"{self.id_trayectoria}"
          
 class OrdenTrayectoria(models.Model):
     id_trayectoria = models.ForeignKey(Trayectoria, to_field='id_trayectoria', on_delete=models.CASCADE, verbose_name='ID de la trayectoria')

@@ -25,10 +25,10 @@ class ComunaAdmin(admin.ModelAdmin):
 
 @admin.register(Comunidades)
 class ComunidadesAdmin(admin.ModelAdmin):
-    list_display = ('id_comunidad','nombre_comunidad','tiempo_registro')
-    search_fields = ('id_comunidad','nombre_comunidad','tiempo_registro')
-    list_filter = ('id_comunidad','nombre_comunidad','tiempo_registro')
-    ordering = ('id_comunidad','nombre_comunidad','tiempo_registro')
+    list_display = ('id_comunidad','nombre_comunidad', 'latitud' ,'longitud','tiempo_registro')
+    search_fields = ('id_comunidad','nombre_comunidad', 'latitud' ,'longitud','tiempo_registro')
+    list_filter = ('id_comunidad','nombre_comunidad', 'latitud' ,'longitud','tiempo_registro')
+    ordering = ('id_comunidad','nombre_comunidad', 'latitud' ,'longitud','tiempo_registro')
 
 @admin.register(ComunaUsuario)
 class ComunaUsuarioAdmin(admin.ModelAdmin):
@@ -120,6 +120,20 @@ class DiasRutasAdmin(admin.ModelAdmin):
     search_fields = ('id_dia','id_ruta')
     list_filter = ('id_dia','id_ruta')
     ordering = ('id_dia','id_ruta')
+    
+@admin.register(Trayectoria)
+class TrayectoriaAdmin(admin.ModelAdmin):
+    list_display = ('id_trayectoria', 'id_ruta', 'tiempo_registro')
+    search_fields = ('id_trayectoria', 'id_ruta', 'tiempo_registro')
+    list_filter = ('id_trayectoria', 'id_ruta', 'tiempo_registro')
+    ordering = ('id_trayectoria', 'id_ruta', 'tiempo_registro')
+    
+@admin.register(OrdenTrayectoria)
+class OrdenTrayectoriaAdmin(admin.ModelAdmin):
+    list_display = ('id_trayectoria', 'orden', 'latitud', 'longitud')
+    search_fields = ('id_trayectoria', 'orden', 'latitud', 'longitud')
+    list_filter = ('id_trayectoria', 'orden', 'latitud', 'longitud')
+    ordering = ('id_trayectoria', 'orden', 'latitud', 'longitud')
 
 
 

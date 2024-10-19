@@ -8,29 +8,28 @@ import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
 import LineString from "ol/geom/LineString";
 import { fromLonLat, toLonLat } from "ol/proj";
-import { Icon, Style } from "ol/style";
+import { Icon, Style, Stroke } from "ol/style";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
-import Draw from "ol/interaction/Draw";
-import Modify from "ol/interaction/Modify"; // Para editar geometrías
-import axios from "axios";
+import { Draw } from "ol/interaction";
 
 export default function DrawMap(props) {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
   const [mapCreated, setMapCreated] = useState(false);
-  const [routePoints, setRoutePoints] = useState([]);
-  const [drawInteraction, setDrawInteraction] = useState(null);
-  const [modifyInteraction, setModifyInteraction] = useState(null);
+  const [route, setRoute] = useState([]); // Estado para almacenar la ruta
+  const routeLayerRef = useRef(null); // Referencia para la capa de la ruta
 
   useEffect(() => {
     // Función para crear el mapa
     const createMap = () => {
+      // Obtener la ubicación actual del usuario
       if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
             const { latitude, longitude } = position.coords;
-            const coordinates = [longitude, latitude];
+            const coordinates = fromLonLat([longitude, latitude]); // Transformar a coordenadas de OpenLayers
+
             const newMap = new Map({
               layers: [
                 new TileLayer({
@@ -38,14 +37,14 @@ export default function DrawMap(props) {
                 }),
               ],
               view: new View({
-                center: fromLonLat(coordinates),
+                center: coordinates,
                 zoom: 15,
               }),
             });
 
             // Crear un marcador en la ubicación actual
             const marker = new Feature({
-              geometry: new Point(fromLonLat(coordinates)),
+              geometry: new Point(coordinates), // Transformar las coordenadas a sistema EPSG:3857
             });
             marker.setStyle(
               new Style({
@@ -58,99 +57,61 @@ export default function DrawMap(props) {
             // Capa de marcadores
             const markerLayer = new VectorLayer({
               source: new VectorSource({
-                features: [marker],
+                features: [marker], // Añadir el marcador a la capa de features
               }),
             });
 
-            // Capa para las rutas dibujadas
+            // Capa vectorial para la ruta
             const routeLayer = new VectorLayer({
               source: new VectorSource(),
+              style: new Style({
+                stroke: new Stroke({
+                  color: "blue",
+                  width: 3,
+                }),
+              }),
             });
 
-            // Añadir capas al mapa
-            newMap.addLayer(markerLayer);
-            newMap.addLayer(routeLayer);
+            // Guardar referencia a la capa de la ruta
+            routeLayerRef.current = routeLayer;
 
-            // Añadir interacción para dibujar rutas (líneas)
+            // Interacción de dibujo
             const draw = new Draw({
               source: routeLayer.getSource(),
-              type: "LineString",
+              type: "Point",
             });
 
-            // Guardar la interacción de dibujo en el estado
-            setDrawInteraction(draw);
-
-            // Añadir interacción para modificar rutas (mover/borrar puntos)
-            const modify = new Modify({ source: routeLayer.getSource() });
-
-            // Guardar la interacción de modificación en el estado
-            setModifyInteraction(modify);
-
-            // Manejar el evento cuando se complete el dibujo de una ruta
+            // Al hacer click en el mapa, añadir el punto a la ruta
             draw.on("drawend", (event) => {
-              const feature = event.feature;
-              const geometry = feature.getGeometry();
-              const coordinates = geometry.getCoordinates();
-
-              // Crear una nueva ruta con puntos { latitud, longitud, orden }
-              const newRoutePoints = coordinates.map((coord, index) => {
-                const [lon, lat] = toLonLat(coord);
-                return {
-                  latitud: lat,
-                  longitud: lon,
-                  orden: index + 1,
-                };
-              });
-
-              // Actualizar el estado con los puntos de la ruta
-              setRoutePoints(newRoutePoints);
-
-              // Enviar la ruta al backend
-            //   Axios.post("/api/ruta", newRoutePoints)
-            //     .then((response) => {
-            //       console.log("Ruta guardada:", response.data);
-            //     })
-            //     .catch((error) => {
-            //       console.error("Error al enviar la ruta:", error);
-            //     });
-            });
-
-            // Manejar el evento cuando se modifique la ruta (puntos movidos/eliminados)
-            modify.on("modifyend", (event) => {
-              const modifiedFeatures = event.features.getArray();
-              if (modifiedFeatures.length > 0) {
-                const geometry = modifiedFeatures[0].getGeometry();
-                const coordinates = geometry.getCoordinates();
-
-                // Crear una nueva ruta con puntos { latitud, longitud, orden }
-                const updatedRoutePoints = coordinates.map((coord, index) => {
-                  const [lon, lat] = toLonLat(coord);
-                  return {
-                    latitud: lat,
-                    longitud: lon,
-                    orden: index + 1,
-                  };
+              const coords = event.feature.getGeometry().getCoordinates();
+              const [lon, lat] = toLonLat(coords);
+              
+              setRoute((prevRoute) => {
+                const updatedRoute = [...prevRoute, { latitud: lat, longitud: lon }];
+                
+                props.onRouteChange(updatedRoute)
+                // Actualizar la geometría de la línea
+                const lineCoords = updatedRoute.map((point) =>
+                  fromLonLat([point.longitud, point.latitud])
+                );
+                const lineString = new LineString(lineCoords);
+                const lineFeature = new Feature({
+                  geometry: lineString,
                 });
 
-                // Actualizar el estado con los puntos modificados
-                setRoutePoints(updatedRoutePoints);
-
-                // Opción: Actualizar la ruta en el backend tras la modificación
-            //     Axios.put("/api/ruta", updatedRoutePoints)
-            //       .then((response) => {
-            //         console.log("Ruta actualizada:", response.data);
-            //       })
-            //       .catch((error) => {
-            //         console.error("Error al actualizar la ruta:", error);
-            //       });
-                }
+                // Reemplazar la línea anterior con la nueva
+                const routeSource = routeLayerRef.current.getSource();
+                routeSource.clear(); // Limpiar capa para redibujar
+                routeSource.addFeature(lineFeature); // Añadir línea
+                return updatedRoute;
+              });
             });
 
-            // Añadir las interacciones al mapa
+            // Añadir capas y setTarget para visualizar el mapa
+            newMap.addLayer(markerLayer); // Añadir la capa del marcador
+            newMap.addLayer(routeLayer); // Añadir la capa de la ruta
             newMap.addInteraction(draw);
-            newMap.addInteraction(modify);
-
-            newMap.setTarget(mapContainerRef.current);
+            newMap.setTarget(mapContainerRef.current); // Referencia al contenedor del mapa
             mapRef.current = newMap;
             setMapCreated(true);
           },
@@ -163,23 +124,11 @@ export default function DrawMap(props) {
       }
     };
 
+    // Solo crear el mapa si no ha sido creado aún
     if (!mapCreated) {
       createMap();
     }
   }, [mapCreated]);
-
-  // Función para activar o desactivar el modo de dibujo o modificación
-  const toggleInteraction = (interaction) => {
-    if (mapRef.current) {
-      if (interaction === "draw") {
-        mapRef.current.removeInteraction(modifyInteraction);
-        mapRef.current.addInteraction(drawInteraction);
-      } else if (interaction === "modify") {
-        mapRef.current.removeInteraction(drawInteraction);
-        mapRef.current.addInteraction(modifyInteraction);
-      }
-    }
-  };
 
   return (
     <div>
@@ -187,12 +136,6 @@ export default function DrawMap(props) {
         ref={mapContainerRef}
         style={{ width: props.width, height: props.height }}
       />
-      <button onClick={() => toggleInteraction("draw")}>
-        Dibujar nueva ruta
-      </button>
-      <button onClick={() => toggleInteraction("modify")}>
-        Modificar ruta
-      </button>
     </div>
   );
 }

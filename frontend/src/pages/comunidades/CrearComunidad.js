@@ -9,6 +9,7 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import axios from "axios";
 import SelectorSearch from "../../components/selectores/SelectorSearch";
+import UbicarComunidad from "../../components/mapas/UbicarComunidad";
 
 const csrfToken = document.cookie
   .split("; ")
@@ -39,11 +40,13 @@ function GetSelectorData(tableRequest) {
 
 export default function CrearComunidad() {
   const [formData, setformData] = useState({});
+  const [ubicacion, setUbicacion] = useState({});
   const comunas = GetSelectorData("comunas");
 
   useEffect(() => {
     console.log("formData: ", formData);
-  }, [formData]);
+    console.log("ubicacion: ", ubicacion);
+  }, [formData, ubicacion]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -53,13 +56,15 @@ export default function CrearComunidad() {
     const formDataToSend = {
       ...formData,
       id_usuario: user_id,
+      latitud: ubicacion.lat,
+      longitud: ubicacion.lon,
     };
     console.log(formDataToSend);
 
     await axios
       .post(BACKEND_URL + "/db-manager/comunidades/", formDataToSend, {
-        headers: { "X-CSRFToken": csrfToken }, // OJO AQUI
-        withCredentials: true, // Asegúrate de enviar cookies con la solicitud
+        headers: { "X-CSRFToken": csrfToken },
+        withCredentials: true,
       })
       .then((response) => {
         console.log("Comunidad creada exitosamente", response.data);
@@ -76,6 +81,11 @@ export default function CrearComunidad() {
   const handleTextChange = (event) => {
     const { name, value } = event.target;
     setformData({ ...formData, [name]: value });
+  };
+
+  // Función para recibir las coordenadas desde el componente hijo
+  const handleCoordinatesChange = (coords) => {
+    setUbicacion(coords);
   };
 
   return (
@@ -96,7 +106,7 @@ export default function CrearComunidad() {
           <Grid container spacing={2} sx={{ mb: 1 }}>
             <Grid item xs={12}>
               <TextField
-                value={formData.nombre_comunidad || null}
+                value={formData.nombre_comunidad || ""}
                 name="nombre_comunidad"
                 required
                 fullWidth
@@ -116,6 +126,11 @@ export default function CrearComunidad() {
               />
             </Grid>
           </Grid>
+          <UbicarComunidad
+            width="100%"
+            height="250px"
+            onCoordinatesChange={handleCoordinatesChange} // Pasar la función al hijo
+          />
           <Button
             type="submit"
             fullWidth

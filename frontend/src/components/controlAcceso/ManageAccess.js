@@ -13,7 +13,7 @@ export default function ManageAccess({Component, setCheckTokens}) {
         if (response.status === 200) {
           setTokensChecked(true);
           setCheckTokens(true);
-          console.log(response.data)
+          //console.log(response.data)
         } else {
           setTokensChecked(false);
           setCheckTokens(false);

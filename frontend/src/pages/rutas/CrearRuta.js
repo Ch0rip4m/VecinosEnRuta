@@ -45,12 +45,14 @@ function GetSelectorData(tableRequest) {
 
 export default function CrearRuta() {
   const [formData, setformData] = useState({});
+  const [trayectoria, setTrayectoria] = useState([]);
   const comunas = GetSelectorData("comunas");
   const dias = GetSelectorData("dias");
 
   useEffect(() => {
     console.log("formData: ", formData);
-  }, [formData]);
+    console.log("trayectoria: ", trayectoria);
+  }, [formData, trayectoria]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -62,6 +64,7 @@ export default function CrearRuta() {
       ...formData,
       id_conductor: user_id,
       id_vehiculo: car_id,
+      trayectoria: trayectoria
     };
     console.log(formDataToSend);
 
@@ -98,6 +101,10 @@ export default function CrearRuta() {
     if (isPartialTime) {
       setformData((currentData) => ({ ...currentData, [name]: inputValue }));
     }
+  };
+
+  const handleRouteChange = (newRoute) => {
+    setTrayectoria(newRoute);
   };
 
   return (
@@ -177,7 +184,7 @@ export default function CrearRuta() {
           >
             ¡Dibuja la ruta dentro de la comuna!
           </Typography>
-          <DrawMap width="100%" height="250px" />
+          <DrawMap width="100%" height="250px" onRouteChange={handleRouteChange}/>
           <Button
             type="submit"
             fullWidth
