@@ -15,6 +15,9 @@ const columns = [
 
 export default function MisRutas() {
   const [rutas, setRutas] = useState([]);
+  const [dataTrayectoria, setDataTrayectoria] = useState({});
+  const [ordenTrayectoria, setOrdenTrayectoria] = useState([]);
+  const [dataExist, setDataExist] = useState(false);
 
   useEffect(() => {
     const email = localStorage.getItem("email");
@@ -26,7 +29,7 @@ export default function MisRutas() {
         .then((response) => {
           const rutas = response.data.rutas;
           if (rutas) {
-            console.log(rutas);
+            //console.log(rutas);
             setRutas(rutas);
           }
         })
@@ -42,6 +45,44 @@ export default function MisRutas() {
 
   const handleButtonEdit = () => {
     window.location.href = "/mis-rutas/editar";
+  };
+
+  const hadleSelectRoute = (row) => {
+    axios
+      .get(
+        BACKEND_URL + "/db-manager/trayectorias/?id_ruta=" + row.id_ruta + "/",
+        { withCredentials: true }
+      )
+      .then((response) => {
+        if (response) {
+          setDataTrayectoria(response.data[0]);
+          console.log(dataTrayectoria);
+
+          axios
+            .get(
+              BACKEND_URL +
+                "/db-manager/orden-trayectorias/?id_trayectoria=" +
+                dataTrayectoria.id_trayectoria +
+                "/",
+              { withCredentials: true }
+            )
+            .then((res) => {
+              if (res) {
+                setOrdenTrayectoria(res.data);
+                console.log(ordenTrayectoria);
+                if (ordenTrayectoria.length > 0) {
+                  setDataExist(true);
+                }
+              }
+            })
+            .catch((error) => {
+              console.error("Error al obtener orden de la trayectoria:", error);
+            });
+        }
+      })
+      .catch((error) => {
+        console.error("Error al obtener los datos de la trayectoria:", error);
+      });
   };
 
   return (
@@ -72,8 +113,21 @@ export default function MisRutas() {
             </Button>
           </Grid>
         </Grid>
-        <ReadList columns={columns} rows={rutas} height={550} />
-        <VerRuta width="100%" height="250px" />
+        <ReadList
+          columns={columns}
+          rows={rutas}
+          height={550}
+          onClickFunction={hadleSelectRoute}
+        />
+        {dataExist ? (
+          <VerRuta
+            width="100%"
+            height="250px"
+            ordenTrayectoria={ordenTrayectoria}
+          />
+        ) : (
+          <VerRuta width="100%" height="250px" />
+        )}
       </Box>
     </Container>
   );

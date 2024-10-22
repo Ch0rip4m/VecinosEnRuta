@@ -9,17 +9,23 @@ import TableRow from "@mui/material/TableRow";
 
 export default function ReadList(props) {
 
+  const handleRowClick = (row) => {
+    if (props.onClickFunction) {
+      props.onClickFunction(row);
+    }
+  };
+
   return (
     <Paper sx={{ width: "100%", overflow: "hidden" }}>
-      <TableContainer sx={{ maxHeight: props.height, mb:1}}>
-        <Table stickyHeader >
+      <TableContainer sx={{ maxHeight: props.height, mb: 1 }}>
+        <Table stickyHeader>
           <TableHead>
             <TableRow>
               {props.columns.map((column) => (
                 <TableCell
                   key={column.id}
                   align="center"
-                  sx={{ padding: '4px 8px' }}
+                  sx={{ padding: "4px 8px" }}
                 >
                   {column.label}
                 </TableCell>
@@ -27,21 +33,30 @@ export default function ReadList(props) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {props.rows
-              .map((row, rowIndex) => {
-                return (
-                  <TableRow hover tabIndex={-1} key={row.code || rowIndex}>
-                    {props.columns.map((column) => {
-                      const value = row[column.id];
-                      return (
-                        <TableCell key={`${column.id}-${rowIndex}`} align="center" sx={{ padding: '4px 8px' }}>
-                          {Array.isArray(value) ? value.join(', ') : value}
-                        </TableCell>
-                      );
-                    })}
-                  </TableRow>
-                );
-              })}
+            {props.rows.map((row, rowIndex) => {
+              return (
+                <TableRow
+                  hover
+                  tabIndex={-1}
+                  key={row.code || rowIndex}
+                  onClick={() => handleRowClick(row)}
+                  sx={{ cursor: "pointer" }}
+                >
+                  {props.columns.map((column) => {
+                    const value = row[column.id];
+                    return (
+                      <TableCell
+                        key={`${column.id}-${rowIndex}`}
+                        align="center"
+                        sx={{ padding: "4px 8px" }}
+                      >
+                        {Array.isArray(value) ? value.join(", ") : value}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </TableContainer>

@@ -166,6 +166,14 @@ class ComunaComunidadViewSet(viewsets.ModelViewSet):
 class ComunaUsuarioViewSet(viewsets.ModelViewSet):
     queryset = ComunaUsuario
     serializer_class = ComunaUsuarioSerializer
+
+class ContactosEmergeciaViewSet(viewsets.ModelViewSet):
+    queryset = ContactosEmergencia
+    serializer_class = ContactosEmergenciaSerializer
+    
+class NotificacionesViewSet(viewsets.ModelViewSet):
+    queryset = Notificaciones.objects.all()
+    serializer_class = NotificacionesSerializer
     
 @api_view(['GET'])
 def info_usuario(request, email):
@@ -206,3 +214,61 @@ def info_usuario(request, email):
         return Response(data)
     except Usuario.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
+    
+@api_view(['GET'])
+def buscar_rutas(request):
+    id_usuario = request.query_params.get('id_usuario')
+    origen = request.query_params.get('origen')
+    destino = request.query_params.get('destino')
+
+    # Filtra las rutas basadas en el origen y destino
+    rutas = Rutas.objects.filter(origen=origen, destino=destino).exclude(id_conductor=id_usuario)
+    serializer = RutaSerializer(rutas, many=True)
+
+    return Response(serializer.data)
+
+@api_view(['POST'])
+def solicitar_unirse_ruta(request):
+    id_ruta = request.query_params.get('id_ruta')
+    id_comunidad = request.query_params.get('id_comunidad')
+    try:
+        if id_ruta:
+            ruta = Rutas.objects.get(id_ruta=id_ruta)
+            usuario = ruta.id_conductor
+        
+            Notificaciones.objects.create(id_usuario=usuario, id_ruta=ruta, es_ruta=True)
+        
+        if id_comunidad:
+            comunidad = Comunidades.objects.get(id_comunidad=id_comunidad)
+            comunidad_usuario = ComunidadesUsuario.objects.get(id_comunidad=id_comunidad)
+            usuario=comunidad_usuario.id_usuario
+        
+            Notificaciones.objects.create(id_usuario=usuario, id_comunidad=comunidad, es_comunidad=True)
+        
+        return Response({"detail": "Solicitud enviada y notificación creada."}, status=status.HTTP_200_OK)
+    except Rutas.DoesNotExist or Comunidades.DoesNotExist:
+        return Response({"detail": "Ruta o Comunidad no encontrada."}, status=status.HTTP_404_NOT_FOUND)
+    
+@api_view(['GET'])
+def mostrar_solicitudes(request, id_usuario):
+    try:
+        usuario = Usuario.objects.get(id_usuario=id_usuario)
+        
+        solicitudes = Notificaciones.objects.filter(id_usuario=usuario)
+        serializer = NotificacionesSerializer(solicitudes, many=True)
+        
+        return Response(serializer.data)
+    except Usuario.DoesNotExist:
+        return Response({'detail' : 'usuario no encontrado. '}, status=status.HTTP_404_NOT_FOUND)
+        
+
+@api_view(['GET'])
+def mostrar_comunidades(request):
+    id_usuario = request.query_params.get('id_usuario')
+
+    # Filtra las rutas basadas en el origen y destino
+    comunidades_usuario = ComunidadesUsuario.objects.filter(id_usuario=id_usuario).values('id_comunidad') 
+    comunidades = Comunidades.objects.exclude(id_comunidad__in=comunidades_usuario)   
+    serializer = ComunidadSerializer(comunidades, many=True)
+
+    return Response(serializer.data)

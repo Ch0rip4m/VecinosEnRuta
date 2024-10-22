@@ -8,45 +8,71 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Button from "@mui/material/Button"; // Importamos Button de Material-UI
 
-export default function TableRequest(props) {
-  
-  const handleJoinRequest = (routeName) => {
-    // Aquí va la lógica cuando el usuario hace clic en el botón para unirse a la ruta
-    console.log(`Solicitar unirse a la ruta: ${routeName}`);
+export default function ListaSolicitud(props) {
+  const handleRowClick = (row) => {
+    if (props.onClickRowFunction) {
+      props.onClickRowFunction(row);
+    }
+  };
+
+  const handleButtonClick = (row) => {
+    if (props.onClickButtonFunction) {
+      props.onClickButtonFunction(row)
+    }
   };
 
   return (
     <Paper sx={{ width: "100%", overflow: "hidden" }}>
-      <TableContainer sx={{ maxHeight: 440 }}>
+      <TableContainer sx={{ maxHeight: props.height, mt: 1 }}>
         <Table stickyHeader aria-label="sticky table">
+          <TableHead>
+            <TableRow>
+              {props.columns.map((column) => (
+                <TableCell
+                  key={column.id}
+                  align="center"
+                  sx={{ padding: "4px 8px" }}
+                >
+                  {column.label}
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
           <TableBody>
-            {props.rows
-              .map((row, rowIndex) => {
-                //console.log(row)
-                return (
-                  <TableRow hover role="checkbox" key={rowIndex}>
-                    {props.columns.map((column) => {
-                      const value = row[column.id];
-                      //console.log(value)
-                      return (
-                        <TableCell key={`${column.id}-${rowIndex}`} >
-                          {value}
-                        </TableCell>
-                      );
-                    })}
-                    {/* Aquí agregamos el botón en cada fila */}
-                    <TableCell align="center">
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={() => handleJoinRequest(row.routeName)}
+            {props.rows.map((row, rowIndex) => {
+              return (
+                <TableRow
+                  hover
+                  tabIndex={-1}
+                  key={row.code || rowIndex}
+                  onClick={() => handleRowClick(row)}
+                  sx={{ cursor: "pointer" }}
+                >
+                  {props.columns.map((column) => {
+                    const value = row[column.id];
+                    return (
+                      <TableCell
+                        key={`${column.id}-${rowIndex}`}
+                        align="center"
+                        sx={{ padding: "4px 8px" }}
                       >
-                        {props.buttonLabel}
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
+                        {Array.isArray(value) ? value.join(", ") : value}
+                      </TableCell>
+                    );
+                  })}
+                  {/* Aquí agregamos el botón en cada fila */}
+                  <TableCell align="center">
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => handleButtonClick(row)}
+                    >
+                      {props.buttonLabel}
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </TableContainer>

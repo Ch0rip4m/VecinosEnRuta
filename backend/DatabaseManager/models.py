@@ -384,6 +384,23 @@ class RecepcionPasajeros(models.Model):
     def __str__(self):
             return f"{self.id_recepcion} - {self.latitud} - {self.longitud}"
         
+class Notificaciones(models.Model):
+    id_notificacion = models.AutoField(primary_key=True, verbose_name="ID de la notificacion")
+    id_usuario = models.ForeignKey(Usuario, to_field='id_usuario', on_delete=models.CASCADE, verbose_name="ID del usuario")
+    id_comunidad = models.ForeignKey(Comunidades, to_field='id_comunidad', on_delete=models.CASCADE, verbose_name="ID de comunidad", null=True, blank=True)
+    id_ruta = models.ForeignKey(Rutas, to_field='id_ruta', on_delete=models.CASCADE, verbose_name='ID de la ruta', null=True, blank=True)
+    leido = models.BooleanField(default=False)
+    es_ruta = models.BooleanField(default=False)
+    es_comunidad = models.BooleanField(default=False)
+    tiempo_registro = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        verbose_name = "Notificacion"
+        verbose_name_plural = "Notificaciones"
+    
+    def __str__(self):
+        return f"{self.id_notificacion}"
+        
 # EJECUCIÓN 
 
 class TrayectoriaReal(models.Model):
@@ -437,7 +454,7 @@ class RecepecionReal(models.Model):
 class RutasEjecutadas(models.Model):
     id_ruta = models.ForeignKey(Rutas, to_field='id_ruta', on_delete=models.CASCADE, verbose_name='ID de la ruta')
     id_conductor = models.ForeignKey(Usuario, to_field='id_usuario', on_delete=models.CASCADE, verbose_name='ID del usuario')
-    flag_inicio = models.BooleanField(verbose_name='Flag de inicio de la ruta')
+    flag_inicio = models.BooleanField(verbose_name='Flag de inicio de la ruta', default=False)
     inicio_real = models.DateTimeField(auto_now_add=True, verbose_name='Registro de la fecha del inicio real de al ruta')
     
     class Meta:
@@ -446,3 +463,14 @@ class RutasEjecutadas(models.Model):
         
     def __str__(self):
             return f"{self.id_ruta} - {self.flag_inicio} - {self.inicio_real}"
+        
+class ContactosEmergencia(models.Model):
+    id_usuario = models.ForeignKey(Usuario, to_field='id_usuario', on_delete=models.CASCADE, verbose_name="ID del usuario")
+    correo_emergencia = models.CharField(max_length=50, verbose_name='Correo de emergencia')
+    
+    class Meta:
+        verbose_name = 'ContactoEmergencia'
+        verbose_name_plural = 'ContactosEmergencia'
+        
+    def __str__(self):
+            return f"{self.id_usuario} - {self.correo_emergencia}"

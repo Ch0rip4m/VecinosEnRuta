@@ -6,8 +6,9 @@ import TileLayer from "ol/layer/Tile";
 import OSM from "ol/source/OSM";
 import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
+import LineString from "ol/geom/LineString";
 import { fromLonLat } from "ol/proj";
-import { Icon, Style } from "ol/style";
+import { Icon, Style, Stroke } from "ol/style";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
 
@@ -32,13 +33,13 @@ export default function VerRuta(props) {
                 }),
               ],
               view: new View({
-                center: coordinates,
+                center: fromLonLat(coordinates),
                 zoom: 15,
               }),
             });
 
-            // Crear un marcador en la ubicación actual
-            const marker = new Feature({
+             // Crear un marcador en la ubicación actual
+             const marker = new Feature({
               geometry: new Point(fromLonLat(coordinates)),
             });
             marker.setStyle(
@@ -76,6 +77,72 @@ export default function VerRuta(props) {
       createMap();
     }
   }, [mapCreated]);
+
+  // Dibujar la trayectoria cuando se actualicen los datos
+  useEffect(() => {
+    if (mapCreated && props.ordenTrayectoria && props.ordenTrayectoria.length > 0) {
+      // console.log(props.ordenTrayectoria)
+      // Extraer los puntos de la trayectoria desde props.ordenTrayectorias
+      const points = props.ordenTrayectoria.map((orden) => {
+        return fromLonLat([orden.longitud, orden.latitud]); // Asegúrate de que orden tenga longitud y latitud
+      });
+
+      // Crear las features de puntos
+      const pointFeatures = points.map((point) => {
+        return new Feature({
+          geometry: new Point(point),
+        });
+      });
+
+      // Crear un vector source para los puntos
+      const pointSource = new VectorSource({
+        features: pointFeatures,
+      });
+
+      // Crear un estilo para los puntos
+      const pointStyle = new Style({
+        image: new Icon({
+          src: "https://openlayers.org/en/latest/examples/data/icon.png",
+          scale: 0.05,
+        }),
+      });
+
+      // Crear la capa para los puntos
+      const pointLayer = new VectorLayer({
+        source: pointSource,
+        style: pointStyle,
+      });
+
+      // Añadir la capa de puntos al mapa
+      mapRef.current.addLayer(pointLayer);
+
+      // Crear una LineString para conectar los puntos
+      const lineFeature = new Feature({
+        geometry: new LineString(points),
+      });
+
+      // Crear una capa para la línea
+      const lineLayer = new VectorLayer({
+        source: new VectorSource({
+          features: [lineFeature],
+        }),
+        style: new Style({
+          stroke: new Stroke({
+            color: "#FF0000", // Color rojo para la línea
+            width: 4,
+          }),
+        }),
+      });
+
+      // Añadir la capa de línea al mapa
+      mapRef.current.addLayer(lineLayer);
+
+      // Centrar el mapa en los puntos si es necesario
+      mapRef.current.getView().fit(lineFeature.getGeometry().getExtent(), {
+        padding: [50, 50, 50, 50], // Agrega un padding para ver mejor la ruta
+      });
+    }
+  }, [props.ordenTrayectoria, mapCreated]); // Solo se ejecuta cuando ordenTrayectorias cambia o el mapa está listo
 
   return (
     <div

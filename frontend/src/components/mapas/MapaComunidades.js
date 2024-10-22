@@ -54,11 +54,9 @@ export default function VerComunidades(props) {
 
       // Verificar las coordenadas adicionales
       if (coordinatesList && coordinatesList.length > 0) {
-        console.log("Coordinates list before mapping:", coordinatesList);
 
         // Crear marcadores para las coordenadas adicionales
         const additionalMarkers = coordinatesList.map((coordinate, index) => {
-          console.log(`Adding coordinate ${index + 1}:`, coordinate);
           const marker = new Feature({
             geometry: new Point(fromLonLat(coordinate)),
           });

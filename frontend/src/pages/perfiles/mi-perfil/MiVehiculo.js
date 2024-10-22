@@ -139,7 +139,7 @@ export default function MiVehiculo() {
   };
 
   return (
-    <Container component="main" maxWidth="sm">
+    <Container component="main" maxWidth="xs">
       {isConductor ? (
         carExist ? (
           <div>

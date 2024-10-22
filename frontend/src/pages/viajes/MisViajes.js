@@ -1,27 +1,22 @@
-import { Button, Container, Box, Grid } from "@mui/material";
-//import ContentListTable from "../../components/listas/Lista";
-import React from "react";
+import * as React from 'react';
+import Box from '@mui/material/Box';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 
 export default function MisViajes() {
+  const [value, setValue] = React.useState(0);
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+    console.log(value);
+  };
+
   return (
-    <Container maxWidth="xs">
-      <Box
-        component="container"
-        sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
-      >
-        <Grid container spacing={5}>
-          <Grid item xs={6} sm={6}>
-            <Button color="primary" variant="contained" fullWidth>
-              viajes realizados
-            </Button>
-          </Grid>
-          <Grid item xs={6} sm={6}>
-            <Button color="primary" variant="contained" fullWidth>
-              viajes programados
-            </Button>
-          </Grid>
-        </Grid>
-      </Box>
-    </Container>
+    <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
+      <Tabs value={value} onChange={handleChange} centered>
+        <Tab label="Viajes Programados" />
+        <Tab label="Viajes Realizados" />
+      </Tabs>
+    </Box>
   );
 }

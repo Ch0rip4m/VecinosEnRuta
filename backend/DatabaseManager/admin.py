@@ -134,6 +134,20 @@ class OrdenTrayectoriaAdmin(admin.ModelAdmin):
     search_fields = ('id_trayectoria', 'orden', 'latitud', 'longitud')
     list_filter = ('id_trayectoria', 'orden', 'latitud', 'longitud')
     ordering = ('id_trayectoria', 'orden', 'latitud', 'longitud')
+    
+@admin.register(ContactosEmergencia)
+class ContactosEmergenciaAdmin(admin.ModelAdmin):
+    list_display = ('id_usuario', 'correo_emergencia')
+    search_fields = ('id_usuario', 'correo_emergencia')
+    list_filter = ('id_usuario', 'correo_emergencia')
+    ordering = ('id_usuario', 'correo_emergencia')
+    
+@admin.register(Notificaciones)
+class NotificacionesAdmin(admin.ModelAdmin):
+    list_display = ('id_notificacion','id_usuario', 'id_comunidad', 'id_ruta', 'leido','es_ruta','es_comunidad', 'tiempo_registro')
+    search_fields = ('id_notificacion','id_usuario', 'id_comunidad','id_ruta', 'leido', 'es_ruta','es_comunidad', 'tiempo_registro')
+    list_filter = ('id_notificacion','id_usuario', 'id_comunidad', 'id_ruta', 'leido', 'es_ruta','es_comunidad','tiempo_registro')
+    ordering = ('id_notificacion','id_usuario', 'id_comunidad', 'id_ruta', 'leido', 'es_ruta','es_comunidad', 'tiempo_registro')
 
 
 

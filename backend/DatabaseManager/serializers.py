@@ -53,16 +53,13 @@ class ComunidadSerializer(serializers.ModelSerializer):
 
     def create(self,validated_data):
         nombre_comuna = validated_data.pop('nombre_comuna', None)
-        #print('nombre_comuna: ',nombre_comuna)
         comunidad = Comunidades.objects.create(**validated_data)
-        #print('comunidad: ', comunidad)
         request = self.context['request']
         id_usuario = request.data.get('id_usuario')
         
         if nombre_comuna and id_usuario:
             try:
                 comuna = Comuna.objects.get(nombre_comuna=nombre_comuna)
-                #print('comuna: ', comuna)
                 usuario = Usuario.objects.get(id_usuario=id_usuario)
                 ComunaComunidad.objects.create(id_comunidad=comunidad, id_comuna=comuna)
                 ComunidadesUsuario.objects.create(id_usuario=usuario, id_comunidad=comunidad)
@@ -84,14 +81,11 @@ class VehiculoSerializer(serializers.ModelSerializer):
     def create(self,validated_data):
         request = self.context['request']
         id_usuario = request.data.get('id_usuario')
-        print('id_usuario: ',id_usuario)
         vehiculo = Vehiculos.objects.create(**validated_data)
-        print('vehiculo: ',vehiculo)
         
         if id_usuario:
             try:
                 usuario = Usuario.objects.get(id_usuario=id_usuario)
-                print('id_usuario: ',usuario)
                 VehiculoUsuario.objects.create(id_vehiculo=vehiculo, id_usuario=usuario)
             except Comuna.DoesNotExist:
                 raise serializers.ValidationError(f'El usuario {id_usuario} no existe')
@@ -111,14 +105,10 @@ class RutaSerializer(serializers.ModelSerializer):
         fields = '__all__'
         
     def create(self,validated_data):
-        print(validated_data)
         request = self.context['request']
         id_usuario = request.data.get('id_conductor')
-        print('id_usuario: ',id_usuario)
         id_vehiculo = request.data.get('id_vehiculo')
-        print('id_vehiculo: ',id_vehiculo)
         nombre_dia = request.data.get('nombre_dia')
-        print('dias: ',nombre_dia)
         trayectoria_data = request.data.get('trayectoria',[])
         
         if id_usuario and id_vehiculo and nombre_dia:
@@ -242,4 +232,45 @@ class ComunaRegionSerializer(serializers.ModelSerializer):
 class ComunaUsuarioSerializer(serializers.ModelSerializer):
     class Meta:
         model = ComunaUsuario
+        fields = '__all__'
+        
+class ContactosEmergenciaSerializer(serializers.ModelSerializer):
+    correo_emergencia = serializers.CharField()
+    
+    class Meta:
+        model = ContactosEmergencia
+        fields = '__all__'
+        
+    def create(self,validated_data):
+        request = self.context['request']
+        id_usuario = request.data.get('id_usuario')
+        contactos = validated_data.get('correo_emergencia')
+        
+        if id_usuario and contactos:
+            try:
+                usuario = Usuario.objects.get(id_usuario=id_usuario)
+                
+                for correo in contactos:
+                    ContactosEmergencia.objects.create(id_usuario=usuario, correo_emergencia=correo)
+                    
+            except Usuario.DoesNotExist:
+                raise serializers.ValidationError(f'El id {id_usuario} no existe')
+        
+        return validated_data
+    
+    def validate_correo_emergencia(self, value):
+        """
+        Validar que el valor sea una lista de correos separados por comas y no exceda la longitud permitida.
+        """
+        correos = [correo.strip() for correo in value.split(',')]
+        
+        for correo in correos:
+            if len(correo) > 50:
+                raise serializers.ValidationError(f"El correo '{correo}' excede los 50 caracteres permitidos.")
+        
+        return correos
+    
+class NotificacionesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notificaciones
         fields = '__all__'

@@ -21,10 +21,11 @@ import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import AltRouteIcon from "@mui/icons-material/AltRoute";
 import MinorCrashIcon from "@mui/icons-material/MinorCrash";
 import EditCalendarIcon from "@mui/icons-material/EditCalendar";
-//import ChatIcon from "@mui/icons-material/Chat";
+import GppMaybeIcon from '@mui/icons-material/GppMaybe';
 import PeopleIcon from "@mui/icons-material/People";
 import HomeIcon from "@mui/icons-material/Home";
 import LogoutIcon from "@mui/icons-material/Logout";
+import NotificationsIcon from '@mui/icons-material/Notifications';
 import LogoRedondoVER from "../../styles/LogoRedondo";
 import axios from "axios";
 import { Avatar } from "@mui/material";
@@ -40,6 +41,8 @@ const elements = [
   { name: "Mis Rutas", icon: <AltRouteIcon />, url: "/mis-rutas" },
   { name: "Mis Viajes", icon: <EditCalendarIcon />, url: "/mis-viajes" },
   { name: "Comunidades", icon: <PeopleIcon />, url: "/comunidades" },
+  { name: "Contactos", icon: <GppMaybeIcon />, url: "/contactos" },
+  { name: "Solicitudes", icon: <NotificationsIcon />, url: "/solicitudes" },
 ];
 
 const drawerWidth = 240;

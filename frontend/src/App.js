@@ -13,6 +13,8 @@ import MisViajes from "./pages/viajes/MisViajes";
 import MiVehiculo from "./pages/perfiles/mi-perfil/MiVehiculo";
 import Comunidades from "./pages/comunidades/Comunidades";
 import CrearComunidad from "./pages/comunidades/CrearComunidad";
+import Contactos from "./pages/seguridad/ContactosEmergencia";
+import Solicitudes from "./pages/solicitudes/Solicitudes";
 import PersistentDrawerLeft from "./components/navbar/navBar";
 import ManageAccess from "./components/controlAcceso/ManageAccess";
 
@@ -138,6 +140,24 @@ export default function App() {
               element={
                 <ManageAccess
                   Component={Comunidades}
+                  setCheckTokens={setCheckTokens}
+                />
+              }
+            />
+            <Route
+              path="/contactos"
+              element={
+                <ManageAccess
+                  Component={Contactos}
+                  setCheckTokens={setCheckTokens}
+                />
+              }
+            />
+            <Route
+              path="/solicitudes"
+              element={
+                <ManageAccess
+                  Component={Solicitudes}
                   setCheckTokens={setCheckTokens}
                 />
               }

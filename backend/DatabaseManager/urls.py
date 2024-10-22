@@ -26,9 +26,15 @@ router.register(r'comunas', ComunaViewSet, basename='comunas')
 router.register(r'regiones', RegionViewSet, basename='regiones')
 router.register(r'comuna-region', ComunaRegionViewSet, basename='comuna-region')
 router.register(r'comuna-comunidad', ComunaComunidadViewSet, basename='comuna-comunidad')
+router.register(r'contactos-emergencia', ContactosEmergeciaViewSet, basename='contactos-emergencia')
+router.register(r'notificaciones', NotificacionesViewSet, basename='notificaciones')
 
 
 urlpatterns = [
     path("", include(router.urls)),
-    path('usuarios/email/<str:email>/', info_usuario, name='info_usuario')
+    path('usuarios/email/<str:email>/', info_usuario, name='info_usuario'),
+    path('buscar-rutas/', buscar_rutas, name='buscar_rutas'),
+    path('solicitar-unirse/', solicitar_unirse_ruta, name='solicitar_unirse_ruta'),
+    path('mostrar-solicitudes/<int:id_usuario>/', mostrar_solicitudes, name='mostrar_solicitudes'),
+    path('mostrar-comunidades/', mostrar_comunidades, name='mostrar_comunidades'),
 ] 
