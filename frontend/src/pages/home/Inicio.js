@@ -118,7 +118,7 @@ export default function Inicio() {
         BACKEND_URL + "/db-manager/solicitar-unirse/",
         {},
         {
-          params: {id_ruta: row.id_ruta},
+          params: { id_ruta: row.id_ruta },
           headers: { "X-CSRFToken": csrfToken },
           withCredentials: true,
         }

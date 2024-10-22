@@ -30,7 +30,7 @@ export default function Contactos(props) {
       id_usuario: localStorage.getItem("user_id"),
     };
 
-    console.log(formDataToSend)
+    console.log(formDataToSend);
 
     await axios
       .post(BACKEND_URL + "/db-manager/contactos-emergencia/", formDataToSend, {

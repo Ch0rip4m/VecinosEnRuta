@@ -17,7 +17,7 @@ export default function ListaSolicitud(props) {
 
   const handleButtonClick = (row) => {
     if (props.onClickButtonFunction) {
-      props.onClickButtonFunction(row)
+      props.onClickButtonFunction(row);
     }
   };
 

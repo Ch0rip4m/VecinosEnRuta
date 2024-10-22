@@ -12,6 +12,7 @@ import { Icon, Style, Stroke } from "ol/style";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
 import { Draw } from "ol/interaction";
+import { BACKEND_URL } from "../../Utils/Variables";
 
 export default function DrawMap(props) {
   const mapContainerRef = useRef(null);
@@ -49,7 +50,8 @@ export default function DrawMap(props) {
             marker.setStyle(
               new Style({
                 image: new Icon({
-                  src: "https://openlayers.org/en/latest/examples/data/icon.png",
+                  src: BACKEND_URL + "/media/mapas/user.svg",
+                  scale: 0.07,
                 }),
               })
             );
@@ -85,11 +87,14 @@ export default function DrawMap(props) {
             draw.on("drawend", (event) => {
               const coords = event.feature.getGeometry().getCoordinates();
               const [lon, lat] = toLonLat(coords);
-              
+
               setRoute((prevRoute) => {
-                const updatedRoute = [...prevRoute, { latitud: lat, longitud: lon }];
-                
-                props.onRouteChange(updatedRoute)
+                const updatedRoute = [
+                  ...prevRoute,
+                  { latitud: lat, longitud: lon },
+                ];
+
+                props.onRouteChange(updatedRoute);
                 // Actualizar la geometría de la línea
                 const lineCoords = updatedRoute.map((point) =>
                   fromLonLat([point.longitud, point.latitud])

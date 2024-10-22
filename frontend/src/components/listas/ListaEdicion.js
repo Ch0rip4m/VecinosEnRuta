@@ -9,7 +9,6 @@ import TableRow from "@mui/material/TableRow";
 import Button from "@mui/material/Button"; // Importar botón de MUI
 
 export default function EditList(props) {
-
   return (
     <Paper sx={{ width: "100%", overflow: "hidden" }}>
       <TableContainer sx={{ maxHeight: props.height }}>
@@ -26,19 +25,25 @@ export default function EditList(props) {
                 </TableCell>
               ))}
               {/* Agregamos una columna más para las acciones */}
-              <TableCell align="center">
-                Acciones
-              </TableCell>
+              <TableCell align="center">Acciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {props.rows.map((row, rowIndex) => {
               return (
-                <TableRow hover role="checkbox" tabIndex={-1} key={row.code || rowIndex}>
+                <TableRow
+                  hover
+                  role="checkbox"
+                  tabIndex={-1}
+                  key={row.code || rowIndex}
+                >
                   {props.columns.map((column) => {
                     const value = row[column.id];
                     return (
-                      <TableCell key={`${column.id}-${rowIndex}`} align={column.align}>
+                      <TableCell
+                        key={`${column.id}-${rowIndex}`}
+                        align={column.align}
+                      >
                         {column.format && typeof value === "number"
                           ? column.format(value)
                           : value}

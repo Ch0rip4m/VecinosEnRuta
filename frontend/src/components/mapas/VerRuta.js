@@ -11,6 +11,7 @@ import { fromLonLat } from "ol/proj";
 import { Icon, Style, Stroke } from "ol/style";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
+import { BACKEND_URL } from "../../Utils/Variables";
 
 export default function VerRuta(props) {
   const mapContainerRef = useRef(null);
@@ -38,14 +39,15 @@ export default function VerRuta(props) {
               }),
             });
 
-             // Crear un marcador en la ubicación actual
-             const marker = new Feature({
+            // Crear un marcador en la ubicación actual
+            const marker = new Feature({
               geometry: new Point(fromLonLat(coordinates)),
             });
             marker.setStyle(
               new Style({
                 image: new Icon({
-                  src: "https://openlayers.org/en/latest/examples/data/icon.png",
+                  src: BACKEND_URL + "/media/mapas/user.svg",
+                  scale: 0.07,
                 }),
               })
             );
@@ -80,7 +82,11 @@ export default function VerRuta(props) {
 
   // Dibujar la trayectoria cuando se actualicen los datos
   useEffect(() => {
-    if (mapCreated && props.ordenTrayectoria && props.ordenTrayectoria.length > 0) {
+    if (
+      mapCreated &&
+      props.ordenTrayectoria &&
+      props.ordenTrayectoria.length > 0
+    ) {
       // console.log(props.ordenTrayectoria)
       // Extraer los puntos de la trayectoria desde props.ordenTrayectorias
       const points = props.ordenTrayectoria.map((orden) => {

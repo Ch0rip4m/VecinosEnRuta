@@ -8,7 +8,6 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 
 export default function ReadList(props) {
-
   const handleRowClick = (row) => {
     if (props.onClickFunction) {
       props.onClickFunction(row);

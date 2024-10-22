@@ -64,7 +64,7 @@ export default function CrearRuta() {
       ...formData,
       id_conductor: user_id,
       id_vehiculo: car_id,
-      trayectoria: trayectoria
+      trayectoria: trayectoria,
     };
     console.log(formDataToSend);
 
@@ -184,7 +184,11 @@ export default function CrearRuta() {
           >
             ¡Dibuja la ruta dentro de la comuna!
           </Typography>
-          <DrawMap width="100%" height="250px" onRouteChange={handleRouteChange}/>
+          <DrawMap
+            width="100%"
+            height="250px"
+            onRouteChange={handleRouteChange}
+          />
           <Button
             type="submit"
             fullWidth

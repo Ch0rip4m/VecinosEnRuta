@@ -25,7 +25,7 @@ export default function MiPerfil() {
   useEffect(() => {
     console.log("USER", user);
   }, [user]);
-  
+
   useEffect(() => {
     const email = localStorage.getItem("email");
     if (email) {
@@ -70,12 +70,12 @@ export default function MiPerfil() {
     e.preventDefault();
 
     const user_id = localStorage.getItem("user_id");
-    console.log(user_id)
+    console.log(user_id);
 
-    const updatedUser = { ...user};
-    console.log("updatedUSER", updatedUser)
+    const updatedUser = { ...user };
+    console.log("updatedUSER", updatedUser);
     delete updatedUser.imagen_perfil;
-    
+
     axios
       .put(`${BACKEND_URL}/db-manager/usuarios/${user_id}/`, updatedUser, {
         headers: { "X-CSRFToken": csrfToken }, // OJO AQUI

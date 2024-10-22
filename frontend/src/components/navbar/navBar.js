@@ -21,18 +21,19 @@ import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import AltRouteIcon from "@mui/icons-material/AltRoute";
 import MinorCrashIcon from "@mui/icons-material/MinorCrash";
 import EditCalendarIcon from "@mui/icons-material/EditCalendar";
-import GppMaybeIcon from '@mui/icons-material/GppMaybe';
+import GppMaybeIcon from "@mui/icons-material/GppMaybe";
 import PeopleIcon from "@mui/icons-material/People";
 import HomeIcon from "@mui/icons-material/Home";
 import LogoutIcon from "@mui/icons-material/Logout";
-import NotificationsIcon from '@mui/icons-material/Notifications';
+import NotificationsIcon from "@mui/icons-material/Notifications";
 import LogoRedondoVER from "../../styles/LogoRedondo";
 import axios from "axios";
 import { Avatar } from "@mui/material";
 
-const csrfToken = document.cookie.split('; ')
-  .find(row => row.startsWith('csrftoken='))
-  ?.split('=')[1];
+const csrfToken = document.cookie
+  .split("; ")
+  .find((row) => row.startsWith("csrftoken="))
+  ?.split("=")[1];
 
 const elements = [
   { name: "Inicio", icon: <HomeIcon />, url: "/inicio" },
@@ -117,20 +118,24 @@ export default function PersistentDrawerLeft() {
 
   const handleLogOut = async () => {
     try {
-      const response = await axios.post(`${BACKEND_URL}/auth/logout/`, {}, { headers: {'X-Csrftoken': csrfToken}, //OJO AQUI
-          withCredentials: true,  // Asegúrate de enviar cookies con la solicitud
-      });
+      const response = await axios.post(
+        `${BACKEND_URL}/auth/logout/`,
+        {},
+        {
+          headers: { "X-Csrftoken": csrfToken }, //OJO AQUI
+          withCredentials: true, // Asegúrate de enviar cookies con la solicitud
+        }
+      );
       if (response.status === 204) {
-          // Redirige o realiza alguna otra acción después de un logout exitoso
-          localStorage.clear()
-          window.location.href = '/login';
+        // Redirige o realiza alguna otra acción después de un logout exitoso
+        localStorage.clear();
+        window.location.href = "/login";
       } else {
-          console.error('Logout failed');
+        console.error("Logout failed");
       }
-  } catch (error) {
-      console.error('An error occurred during logout', error);
-  }
-
+    } catch (error) {
+      console.error("An error occurred during logout", error);
+    }
   };
 
   const handleElementSelect = (element) => {
@@ -143,7 +148,9 @@ export default function PersistentDrawerLeft() {
     const email = localStorage.getItem("email");
     if (email) {
       axios
-        .get(BACKEND_URL + "/db-manager/usuarios/email/" + email + "/", { withCredentials:true})
+        .get(BACKEND_URL + "/db-manager/usuarios/email/" + email + "/", {
+          withCredentials: true,
+        })
         .then((response) => {
           //console.log("respuesta:", response.data);
           const usuario = response.data.usuario;
@@ -215,8 +222,17 @@ export default function PersistentDrawerLeft() {
             alt={user.nombre_usuario}
             sx={{ mr: 3, mt: 1 }}
           />
-          <Box sx={{mt:2, flexDirection: "column", display: "flex", color:"white", fontSize: 12}}>
-            {user.nombre_usuario} {user.apellido_usuario} <br />{user.roles}
+          <Box
+            sx={{
+              mt: 2,
+              flexDirection: "column",
+              display: "flex",
+              color: "white",
+              fontSize: 12,
+            }}
+          >
+            {user.nombre_usuario} {user.apellido_usuario} <br />
+            {user.roles}
           </Box>
           <IconButton onClick={handleDrawerClose} sx={{ color: "white" }}>
             {theme.direction === "ltr" ? (

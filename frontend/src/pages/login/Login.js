@@ -32,7 +32,8 @@ export default function Login({ setCheckTokens }) {
       try {
         const response = await axios.post(
           BACKEND_URL + "/auth/token/",
-          formData, {withCredentials: true}
+          formData,
+          { withCredentials: true }
         );
         if (response.data.access) {
           localStorage.setItem("email", formData.email);
@@ -59,11 +60,11 @@ export default function Login({ setCheckTokens }) {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          textAlign : "center"
+          textAlign: "center",
         }}
       >
-        <LogoRedondoVER width="150px" height="150px"/>
-        <Typography component="h1" variant="h5" sx={{mt: 3}}>
+        <LogoRedondoVER width="150px" height="150px" />
+        <Typography component="h1" variant="h5" sx={{ mt: 3 }}>
           ¡Bienvenido a VecinosEnRuta!
         </Typography>
         <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>

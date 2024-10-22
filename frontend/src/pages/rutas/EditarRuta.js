@@ -39,7 +39,7 @@ export default function EditarRutas() {
         component="container"
         sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
       >
-        <EditList columns={columns} rows={rows} height={500}/>
+        <EditList columns={columns} rows={rows} height={500} />
       </Box>
     </Container>
   );

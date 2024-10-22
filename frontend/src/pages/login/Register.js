@@ -72,15 +72,15 @@ export default function Register() {
     } else {
       const formDataToSend = new FormData();
       Object.keys(formData).forEach((key) => {
-        if (key === 'comuna') {
-          formDataToSend.append(key, [formData[key]])
+        if (key === "comuna") {
+          formDataToSend.append(key, [formData[key]]);
         }
         formDataToSend.append(key, formData[key]);
       });
       if (profileImage) {
         formDataToSend.append("imagen_perfil", profileImage);
-        console.log("formatDataToSend", formDataToSend.get('comuna'));
-        console.log("formatDataToSend", formDataToSend.get('nombre_rol'));
+        console.log("formatDataToSend", formDataToSend.get("comuna"));
+        console.log("formatDataToSend", formDataToSend.get("nombre_rol"));
       }
 
       await axios
@@ -282,7 +282,7 @@ export default function Register() {
                   color={profileImage ? "success" : "primary"}
                   component="span"
                   fullWidth
-                  sx={{bgcolor:"var(--navbar-color)"}}
+                  sx={{ bgcolor: "var(--navbar-color)" }}
                 >
                   {profileImage ? "Imagen Lista" : "Subir Foto de Perfil"}
                 </Button>
@@ -306,7 +306,7 @@ export default function Register() {
             type="submit"
             fullWidth
             variant="contained"
-            sx={{ mt: 3, mb: 2, bgcolor: "var(--navbar-color)"}}
+            sx={{ mt: 3, mb: 2, bgcolor: "var(--navbar-color)" }}
           >
             Registrarse
           </Button>

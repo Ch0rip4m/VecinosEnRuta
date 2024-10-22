@@ -31,9 +31,11 @@ function getStyles(val, selectedValues, theme) {
 export default function MultipleSelectChip(props) {
   const theme = useTheme();
   const name = props.name || "";
-  
+
   // Inicializamos el estado con los valores de selección que sean proporcionados en props
-  const [selectedValues, setSelectedValues] = React.useState(props.formData[name] || []);
+  const [selectedValues, setSelectedValues] = React.useState(
+    props.formData[name] || []
+  );
 
   // Usamos useEffect para actualizar el estado si los valores de props cambian
   React.useEffect(() => {
@@ -44,9 +46,11 @@ export default function MultipleSelectChip(props) {
     const {
       target: { value },
     } = event;
-    
+
     // Eliminamos duplicados utilizando Set para cualquier tipo de valores
-    const uniqueValues = [...new Set(typeof value === "string" ? value.split(",") : value)];
+    const uniqueValues = [
+      ...new Set(typeof value === "string" ? value.split(",") : value),
+    ];
 
     // Actualizamos el estado local con los valores únicos
     setSelectedValues(uniqueValues);

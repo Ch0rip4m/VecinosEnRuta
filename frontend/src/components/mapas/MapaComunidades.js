@@ -10,18 +10,18 @@ import { fromLonLat } from "ol/proj";
 import { Icon, Style } from "ol/style";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
+import { BACKEND_URL } from "../../Utils/Variables";
 
 export default function VerComunidades(props) {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
+  const markerLayerRef = useRef(null); // Mantener referencia a la capa de marcadores
   const [mapCreated, setMapCreated] = useState(false);
   const [userCoordinates, setUserCoordinates] = useState(null);
 
-  // Lista de coordenadas (latitud, longitud) para los marcadores adicionales
-  const coordinatesList = props.mapValues
+  const coordinatesList = props.mapValues;
 
   useEffect(() => {
-    // Función para crear el mapa
     const createMap = (userCoordinates) => {
       if (mapRef.current) {
         console.log("El mapa ya está creado.");
@@ -35,67 +35,59 @@ export default function VerComunidades(props) {
           }),
         ],
         view: new View({
-          center: fromLonLat(userCoordinates), // Centrar en la ubicación del usuario
+          center: fromLonLat(userCoordinates),
           zoom: 15,
         }),
       });
 
-      // Crear un marcador en la ubicación actual del usuario
       const userMarker = new Feature({
         geometry: new Point(fromLonLat(userCoordinates)),
       });
       userMarker.setStyle(
         new Style({
           image: new Icon({
-            src: "https://iconos8.es/icon/2gsR2g07AQvu/map-pin",
+            src: BACKEND_URL + "/media/mapas/user.svg",
+            scale: 0.07,
           }),
         })
       );
 
-      // Verificar las coordenadas adicionales
-      if (coordinatesList && coordinatesList.length > 0) {
-
-        // Crear marcadores para las coordenadas adicionales
-        const additionalMarkers = coordinatesList.map((coordinate, index) => {
-          const marker = new Feature({
-            geometry: new Point(fromLonLat(coordinate)),
-          });
-          marker.setStyle(
-            new Style({
-              image: new Icon({
-                src: "https://openlayers.org/en/latest/examples/data/icon.png",
-                color: "blue"
-              }),
-            })
-          );
-          return marker;
+      const additionalMarkers = coordinatesList.map((coordinate, index) => {
+        const marker = new Feature({
+          geometry: new Point(fromLonLat(coordinate)),
         });
+        marker.setStyle(
+          new Style({
+            image: new Icon({
+              src: BACKEND_URL + "/media/mapas/community.png",
+              scale: 0.2,
+            }),
+          })
+        );
+        return marker;
+      });
 
-        // Capa de marcadores incluyendo el del usuario y los adicionales
-        const markerLayer = new VectorLayer({
-          source: new VectorSource({
-            features: [userMarker, ...additionalMarkers], // Incluir el marcador del usuario y los adicionales
-          }),
-        });
+      const markerLayer = new VectorLayer({
+        source: new VectorSource({
+          features: [userMarker, ...additionalMarkers],
+        }),
+      });
 
-        newMap.addLayer(markerLayer);
-      } else {
-        console.error("No additional coordinates to add markers.");
-      }
+      newMap.addLayer(markerLayer);
+      markerLayerRef.current = markerLayer; // Guardar referencia a la capa de marcadores
 
       newMap.setTarget(mapContainerRef.current);
       mapRef.current = newMap; // Guardamos la referencia del mapa para evitar duplicados
       setMapCreated(true);
     };
 
-    // Obtener la ubicación del usuario
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
           const userCoordinates = [longitude, latitude];
-          setUserCoordinates(userCoordinates); // Guardamos las coordenadas del usuario
-          createMap(userCoordinates); // Crear el mapa centrado en la ubicación del usuario
+          setUserCoordinates(userCoordinates);
+          createMap(userCoordinates);
         },
         (error) => {
           console.error("Error al obtener la ubicación:", error.message);
@@ -105,17 +97,42 @@ export default function VerComunidades(props) {
       console.error("Geolocalización no soportada por el navegador.");
     }
 
-    // Limpiar el mapa cuando el componente se desmonta
     return () => {
       if (mapRef.current) {
-        mapRef.current.setTarget(null); // Limpiar el mapa
-        mapRef.current = null; // Reiniciar la referencia
-        setMapCreated(false); // Restablecer el estado de creación del mapa
+        mapRef.current.setTarget(null);
+        mapRef.current = null;
+        setMapCreated(false);
       }
     };
-  }, [coordinatesList]); // Dependemos de coordinatesList para asegurarnos de que los puntos están listos
+  }, [coordinatesList]);
 
-  // Solo renderizar el mapa si tenemos las coordenadas del usuario
+  // Nuevo useEffect para manejar selectCommunity
+  useEffect(() => {
+    if (props.selectCommunity && props.selectCommunity.length > 0) {
+      const [longitude, latitude] = props.selectCommunity;
+
+      // Crear un nuevo marcador en las coordenadas de selectCommunity
+      const communityMarker = new Feature({
+        geometry: new Point(fromLonLat([longitude, latitude])),
+      });
+      communityMarker.setStyle(
+        new Style({
+          image: new Icon({
+            src: BACKEND_URL + "/media/mapas/community.png",
+            scale: 0.2,
+          }),
+        })
+      );
+
+      // Añadir el marcador a la capa de marcadores existente
+      markerLayerRef.current.getSource().addFeature(communityMarker);
+
+      // Centrar el mapa en las nuevas coordenadas
+      mapRef.current.getView().setCenter(fromLonLat([longitude, latitude]));
+      mapRef.current.getView().setZoom(15); // Ajustar el zoom si es necesario
+    }
+  }, [props.selectCommunity]);
+
   if (!userCoordinates) {
     return null; // No renderizar nada hasta que tengamos las coordenadas
   }
