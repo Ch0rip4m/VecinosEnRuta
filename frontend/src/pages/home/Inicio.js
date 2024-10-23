@@ -19,6 +19,7 @@ const columns = [
   { id: "nombre_ruta", label: "Nombre" },
   { id: "dias", label: "Días" },
   { id: "hora_salida", label: "Salida" },
+  { id: "cupos", label: "Cupos" },
 ];
 
 function GetSelectorData() {
@@ -49,11 +50,11 @@ export default function Inicio() {
   const [dataExist, setDataExist] = useState(false);
   const comunas = GetSelectorData();
 
-  useEffect(() => {
-    console.log("Rutas:", rutas);
-    console.log("formData:", formData);
-    console.log("dataTrayectoria:", dataTrayectoria);
-  }, [rutas, formData, dataTrayectoria]);
+  // useEffect(() => {
+  //   console.log("Rutas:", rutas);
+  //   console.log("formData:", formData);
+  //   console.log("dataTrayectoria:", dataTrayectoria);
+  // }, [rutas, formData, dataTrayectoria]);
 
   useEffect(() => {
     const email = localStorage.getItem("email");
@@ -118,7 +119,7 @@ export default function Inicio() {
         BACKEND_URL + "/db-manager/solicitar-unirse/",
         {},
         {
-          params: { id_ruta: row.id_ruta },
+          params: { id_ruta: row.id_ruta, id_solicitante: localStorage.getItem('user_id') },
           headers: { "X-CSRFToken": csrfToken },
           withCredentials: true,
         }

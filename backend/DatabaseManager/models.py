@@ -287,6 +287,7 @@ class Rutas(models.Model):
     origen = models.CharField(max_length=30, verbose_name='Origen de la ruta')
     destino = models.CharField(max_length=30, verbose_name='Destino de la ruta')
     hora_salida = models.CharField(max_length=10, verbose_name='Hora de salida de la ruta')
+    cupos = models.IntegerField(verbose_name='Cupos disponibles')
     tiempo_registro = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de creacion de ruta')
     
     class Meta:
@@ -386,10 +387,11 @@ class RecepcionPasajeros(models.Model):
         
 class Notificaciones(models.Model):
     id_notificacion = models.AutoField(primary_key=True, verbose_name="ID de la notificacion")
-    id_usuario = models.ForeignKey(Usuario, to_field='id_usuario', on_delete=models.CASCADE, verbose_name="ID del usuario")
+    id_propietario = models.ForeignKey(Usuario, to_field='id_usuario', related_name="propietario_ruta", on_delete=models.CASCADE, verbose_name="ID propietario ruta o comunidad")
+    id_solicitante = models.ForeignKey(Usuario, to_field='id_usuario', related_name="propietario_solicitud", on_delete=models.CASCADE, verbose_name="ID del solicitante")
     id_comunidad = models.ForeignKey(Comunidades, to_field='id_comunidad', on_delete=models.CASCADE, verbose_name="ID de comunidad", null=True, blank=True)
     id_ruta = models.ForeignKey(Rutas, to_field='id_ruta', on_delete=models.CASCADE, verbose_name='ID de la ruta', null=True, blank=True)
-    leido = models.BooleanField(default=False)
+    aceptada = models.BooleanField(default=False)
     es_ruta = models.BooleanField(default=False)
     es_comunidad = models.BooleanField(default=False)
     tiempo_registro = models.DateTimeField(auto_now_add=True)

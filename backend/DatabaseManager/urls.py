@@ -37,4 +37,5 @@ urlpatterns = [
     path('solicitar-unirse/', solicitar_unirse_ruta, name='solicitar_unirse_ruta'),
     path('mostrar-solicitudes/<int:id_usuario>/', mostrar_solicitudes, name='mostrar_solicitudes'),
     path('mostrar-comunidades/', mostrar_comunidades, name='mostrar_comunidades'),
+    path('aceptar_solicitud_ruta/', aceptar_solicitud_ruta, name='aceptar_solicitud_ruta'),
 ] 

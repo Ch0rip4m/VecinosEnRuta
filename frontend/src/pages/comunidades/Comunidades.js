@@ -87,7 +87,7 @@ export default function Comunidades() {
         BACKEND_URL + "/db-manager/solicitar-unirse/",
         {},
         {
-          params: { id_comunidad: row.id_comunidad },
+          params: { id_comunidad: row.id_comunidad, id_solicitante: localStorage.getItem('user_id') },
           headers: { "X-CSRFToken": csrfToken },
           withCredentials: true,
         }

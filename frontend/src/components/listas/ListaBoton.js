@@ -56,7 +56,11 @@ export default function ListaSolicitud(props) {
                         align="center"
                         sx={{ padding: "4px 8px" }}
                       >
-                        {Array.isArray(value) ? value.join(", ") : value}
+                        {Array.isArray(value)
+                          ? value.join(", ")
+                          : typeof value === "object" && value !== null
+                          ? value[column.obj_id]
+                          : value}
                       </TableCell>
                     );
                   })}

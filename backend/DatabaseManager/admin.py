@@ -102,10 +102,10 @@ class CategoriasCalificacionAdmin(admin.ModelAdmin):
 
 @admin.register(Rutas)
 class RutasAdmin(admin.ModelAdmin):
-    list_display = ('id_ruta','id_vehiculo','id_conductor','nombre_ruta','origen','destino','hora_salida','tiempo_registro')
-    search_fields = ('id_ruta','id_vehiculo','id_conductor','nombre_ruta','origen','destino','hora_salida','tiempo_registro')
-    list_filter = ('id_ruta','id_vehiculo','id_conductor','nombre_ruta','origen','destino','hora_salida','tiempo_registro')
-    ordering = ('id_ruta','id_vehiculo','id_conductor','nombre_ruta','origen','destino','hora_salida','tiempo_registro')
+    list_display = ('id_ruta','id_vehiculo','id_conductor','nombre_ruta','origen','destino','hora_salida', 'cupos','tiempo_registro')
+    search_fields = ('id_ruta','id_vehiculo','id_conductor','nombre_ruta','origen','destino','hora_salida', 'cupos','tiempo_registro')
+    list_filter = ('id_ruta','id_vehiculo','id_conductor','nombre_ruta','origen','destino','hora_salida', 'cupos','tiempo_registro')
+    ordering = ('id_ruta','id_vehiculo','id_conductor','nombre_ruta','origen','destino','hora_salida', 'cupos','tiempo_registro')
 
 @admin.register(Dias)
 class DiasAdmin(admin.ModelAdmin):
@@ -144,10 +144,10 @@ class ContactosEmergenciaAdmin(admin.ModelAdmin):
     
 @admin.register(Notificaciones)
 class NotificacionesAdmin(admin.ModelAdmin):
-    list_display = ('id_notificacion','id_usuario', 'id_comunidad', 'id_ruta', 'leido','es_ruta','es_comunidad', 'tiempo_registro')
-    search_fields = ('id_notificacion','id_usuario', 'id_comunidad','id_ruta', 'leido', 'es_ruta','es_comunidad', 'tiempo_registro')
-    list_filter = ('id_notificacion','id_usuario', 'id_comunidad', 'id_ruta', 'leido', 'es_ruta','es_comunidad','tiempo_registro')
-    ordering = ('id_notificacion','id_usuario', 'id_comunidad', 'id_ruta', 'leido', 'es_ruta','es_comunidad', 'tiempo_registro')
+    list_display = ('id_notificacion','id_propietario','id_solicitante', 'id_comunidad', 'id_ruta', 'aceptada','es_ruta','es_comunidad', 'tiempo_registro')
+    search_fields = ('id_notificacion','id_propietario', 'id_solicitante', 'id_comunidad','id_ruta', 'aceptada', 'es_ruta','es_comunidad', 'tiempo_registro')
+    list_filter = ('id_notificacion','id_propietario', 'id_solicitante', 'id_comunidad', 'id_ruta', 'aceptada', 'es_ruta','es_comunidad','tiempo_registro')
+    ordering = ('id_notificacion','id_propietario', 'id_solicitante', 'id_comunidad', 'id_ruta', 'aceptada', 'es_ruta','es_comunidad', 'tiempo_registro')
 
 
 

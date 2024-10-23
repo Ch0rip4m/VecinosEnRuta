@@ -99,10 +99,11 @@ class CalificacionSerializer(serializers.ModelSerializer):
 
 class RutaSerializer(serializers.ModelSerializer):
     dias = serializers.SerializerMethodField()
+    cupos = serializers.SerializerMethodField()
     
     class Meta:
         model = Rutas
-        fields = '__all__'
+        fields = ['id_ruta','id_vehiculo','id_conductor','nombre_ruta', 'origen', 'destino', 'dias', 'hora_salida', 'cupos']
         
     def create(self,validated_data):
         request = self.context['request']
@@ -117,7 +118,7 @@ class RutaSerializer(serializers.ModelSerializer):
                 print('id_usuario: ',usuario)
                 vehiculo = Vehiculos.objects.get(id_vehiculo=id_vehiculo)
                 print('id_vehiculo: ',vehiculo)
-                ruta = Rutas.objects.create(**validated_data)
+                ruta = Rutas.objects.create(**validated_data, cupos=vehiculo.nro_asientos_disp)
                 ruta.assign_days(nombre_dia)
                 trayectoria = Trayectoria.objects.create(id_ruta=ruta)
                 
@@ -138,6 +139,10 @@ class RutaSerializer(serializers.ModelSerializer):
         # Obtener los días asociados a la ruta a través de la tabla intermedia
         dias_rutas = DiasRutas.objects.filter(id_ruta=obj.id_ruta).values_list('id_dia__nombre_dia', flat=True)
         return list(dias_rutas)
+    
+    def get_cupos(self, obj):
+        # Devuelve el valor de cupos desde el objeto de la ruta
+        return obj.cupos
 
 class DiaSerializer(serializers.ModelSerializer):
     class Meta:
@@ -271,6 +276,9 @@ class ContactosEmergenciaSerializer(serializers.ModelSerializer):
         return correos
     
 class NotificacionesSerializer(serializers.ModelSerializer):
+    id_solicitante = UsuarioSerializer()  
+    id_ruta = RutaSerializer() 
+    
     class Meta:
         model = Notificaciones
         fields = '__all__'

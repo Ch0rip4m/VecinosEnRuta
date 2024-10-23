@@ -222,8 +222,12 @@ def buscar_rutas(request):
     destino = request.query_params.get('destino')
 
     # Filtra las rutas basadas en el origen y destino
-    rutas = Rutas.objects.filter(origen=origen, destino=destino).exclude(id_conductor=id_usuario)
+    rutas = Rutas.objects.filter(origen=origen, destino=destino) \
+                         .exclude(id_conductor=id_usuario) \
+                         .exclude(cupos=0)
+    print(rutas)
     serializer = RutaSerializer(rutas, many=True)
+    print(serializer.data)
 
     return Response(serializer.data)
 
@@ -231,19 +235,22 @@ def buscar_rutas(request):
 def solicitar_unirse_ruta(request):
     id_ruta = request.query_params.get('id_ruta')
     id_comunidad = request.query_params.get('id_comunidad')
+    id_solicitante = request.query_params.get('id_solicitante')
     try:
         if id_ruta:
             ruta = Rutas.objects.get(id_ruta=id_ruta)
-            usuario = ruta.id_conductor
+            usuario_propietario = ruta.id_conductor
+            usuario_solicitante = Usuario.objects.get(id_usuario=id_solicitante)
         
-            Notificaciones.objects.create(id_usuario=usuario, id_ruta=ruta, es_ruta=True)
+            Notificaciones.objects.create(id_propietario=usuario_propietario, id_solicitante=usuario_solicitante, id_ruta=ruta, es_ruta=True)
         
         if id_comunidad:
             comunidad = Comunidades.objects.get(id_comunidad=id_comunidad)
             comunidad_usuario = ComunidadesUsuario.objects.get(id_comunidad=id_comunidad)
-            usuario=comunidad_usuario.id_usuario
+            usuario_propietario=comunidad_usuario.id_usuario
+            usuario_solicitante = Usuario.objects.get(id_usuario=id_solicitante)
         
-            Notificaciones.objects.create(id_usuario=usuario, id_comunidad=comunidad, es_comunidad=True)
+            Notificaciones.objects.create(id_propietario=usuario_propietario, id_solicitante=usuario_solicitante, id_comunidad=comunidad, es_comunidad=True)
         
         return Response({"detail": "Solicitud enviada y notificación creada."}, status=status.HTTP_200_OK)
     except Rutas.DoesNotExist or Comunidades.DoesNotExist:
@@ -252,12 +259,12 @@ def solicitar_unirse_ruta(request):
 @api_view(['GET'])
 def mostrar_solicitudes(request, id_usuario):
     try:
-        usuario = Usuario.objects.get(id_usuario=id_usuario)
+        usuario_propietario = Usuario.objects.get(id_usuario=id_usuario)
         
-        solicitudes = Notificaciones.objects.filter(id_usuario=usuario)
-        serializer = NotificacionesSerializer(solicitudes, many=True)
+        solicitudes = Notificaciones.objects.filter(id_propietario=usuario_propietario).select_related('id_ruta', 'id_solicitante')
+        solicitudes_serializer = NotificacionesSerializer(solicitudes, many=True)
         
-        return Response(serializer.data)
+        return Response(solicitudes_serializer.data)
     except Usuario.DoesNotExist:
         return Response({'detail' : 'usuario no encontrado. '}, status=status.HTTP_404_NOT_FOUND)
         
@@ -272,3 +279,35 @@ def mostrar_comunidades(request):
     serializer = ComunidadSerializer(comunidades, many=True)
 
     return Response(serializer.data)
+
+@api_view(['POST'])
+def aceptar_solicitud_ruta(request):
+        id_ruta = request.query_params.get("id_ruta")
+        # Obtener la ruta por su ID
+        ruta = Rutas.objects.get(id_ruta=id_ruta)
+        solicitud_id = request.query_params.get("id_solicitud")
+        
+        try:
+            # Obtener la notificación correspondiente
+            notificacion = Notificaciones.objects.get(id_notificacion=solicitud_id)
+            
+            # Verificar que la notificación corresponde a la ruta
+            if notificacion.id_ruta != ruta:
+                return Response({"error": "La solicitud no corresponde a esta ruta."}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Verificar si hay cupos disponibles
+            if ruta.cupos > 0:
+                # Aceptar la solicitud
+                notificacion.aceptada = True
+                notificacion.save()
+                
+                # Reducir los cupos disponibles
+                ruta.cupos -= 1
+                ruta.save()
+
+                return Response({"message": "Solicitud aceptada."}, status=status.HTTP_200_OK)
+            else:
+                return Response({"error": "No hay cupos disponibles para esta ruta."}, status=status.HTTP_400_BAD_REQUEST)
+
+        except ObjectDoesNotExist:
+            return Response({"error": "La notificación no existe."}, status=status.HTTP_404_NOT_FOUND)
