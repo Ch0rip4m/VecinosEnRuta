@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Container, Grid, Box, Tabs, Tab, Typography } from "@mui/material";
 import { BACKEND_URL } from "../../Utils/Variables";
 import ListaSolicitud from "../../components/listas/ListaBoton";
+import BasicModal from "../../components/modals/InfoModal";
 import axios from "axios";
 
 const csrfToken = document.cookie
@@ -19,9 +20,20 @@ const columnsCommunityRequest = [
   { id: "id_solicitante", obj_id: "nombre_usuario", label: "Usuario" },
 ];
 
+const modalInfo = [
+  {id: "nombre_usuario", label: "Nombre"},
+  {id: "apellido_usuario", label: "Apellido"},
+  {id: "edad", label: "Edad"},
+  {id: "sexo", label: "Sexo"},
+  {id: "email", label: "Correo Electrónico"},
+  {id: "telefono", label: "Telefono"}
+]
+
 export default function Solicitudes() {
   const [notificaciones, setNotificaciones] = useState([]);
   const [value, setValue] = useState(0);
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedRow, setSelectedRow] = useState(null); 
 
   useEffect(() => {
     axios
@@ -57,7 +69,7 @@ export default function Solicitudes() {
     (solicitud) => solicitud.es_comunidad && !solicitud.aceptada
   );
 
-  const handleAcceptRequest = (row) => {
+  const handleAcceptRouteRequest = (row) => {
     axios
       .post(
         BACKEND_URL + "/db-manager/aceptar_solicitud_ruta/",
@@ -74,6 +86,34 @@ export default function Solicitudes() {
       .catch((error) => {
         console.error("error al acpetar solicitud", error);
       });
+  };
+
+  const handleAcceptComRequest = (row) => {
+    axios
+      .post(
+        BACKEND_URL + "/db-manager/aceptar_solicitud_comunidad/",
+        {},
+        {
+          params: { id_comunidad: row.id_comunidad.id_comunidad, id_solicitud: row.id_notificacion },
+          headers: { "X-CSRFToken": csrfToken },
+          withCredentials: true,
+        }
+      )
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error("error al acpetar solicitud", error);
+      });
+  }
+
+  const handleSelectRow = (row) => {
+    setSelectedRow(row); // Guardar la fila seleccionada
+    setOpenModal(true);  // Abrir el modal
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false); // Cerrar el modal
   };
 
   useEffect(() => {
@@ -110,7 +150,8 @@ export default function Solicitudes() {
                   rows={solicitudesDeRuta}
                   height={550}
                   buttonLabel="Aceptar"
-                  onClickButtonFunction={handleAcceptRequest}
+                  onClickButtonFunction={handleAcceptRouteRequest}
+                  onClickRowFunction={handleSelectRow}
                 />
               ) : (
                 <Typography variant="body2">No hay solicitudes</Typography>
@@ -126,7 +167,8 @@ export default function Solicitudes() {
                   rows={solicitudesDeComunidad}
                   height={550}
                   buttonLabel="Aceptar"
-                  onClickButtonFunction={handleAcceptRequest}
+                  onClickButtonFunction={handleAcceptComRequest}
+                  onClickRowFunction={handleSelectRow}
                 />
               ) : (
                 <Typography variant="body2">No hay solicitudes</Typography>
@@ -135,6 +177,17 @@ export default function Solicitudes() {
           )}
         </Box>
       </Box>
+      {/* Renderizando el modal */}
+      {selectedRow && (
+        <BasicModal
+          open={openModal}
+          handleClose={handleCloseModal}
+          modalInfo={modalInfo}
+          imgURL={selectedRow.id_solicitante.imagen_perfil}
+          title="DETALLE DE LA SOLICITUD"
+          description={selectedRow.id_solicitante}
+        />
+      )}
     </Container>
   );
 }
