@@ -49,35 +49,17 @@ export default function MisRutas() {
 
   const hadleSelectRoute = (row) => {
     axios
-      .get(
-        BACKEND_URL + "/db-manager/trayectorias/?id_ruta=" + row.id_ruta + "/",
-        { withCredentials: true }
-      )
+      .get(BACKEND_URL + "/db-manager/mostrar-ruta/", {
+        params: { id_ruta: row.id_ruta },
+        withCredentials: true,
+      })
       .then((response) => {
         if (response) {
-          setDataTrayectoria(response.data[0]);
-          console.log(dataTrayectoria);
-
-          axios
-            .get(
-              BACKEND_URL +
-                "/db-manager/orden-trayectorias/?id_trayectoria=" +
-                dataTrayectoria.id_trayectoria +
-                "/",
-              { withCredentials: true }
-            )
-            .then((res) => {
-              if (res) {
-                setOrdenTrayectoria(res.data);
-                console.log(ordenTrayectoria);
-                if (ordenTrayectoria.length > 0) {
-                  setDataExist(true);
-                }
-              }
-            })
-            .catch((error) => {
-              console.error("Error al obtener orden de la trayectoria:", error);
-            });
+          setOrdenTrayectoria(response.data);
+          console.log(ordenTrayectoria);
+          if (ordenTrayectoria.length > 0) {
+            setDataExist(true);
+          }
         }
       })
       .catch((error) => {
@@ -116,7 +98,7 @@ export default function MisRutas() {
         <ReadList
           columns={columns}
           rows={rutas}
-          height={550}
+          height={150}
           onClickFunction={hadleSelectRoute}
         />
         {dataExist ? (
@@ -126,7 +108,7 @@ export default function MisRutas() {
             ordenTrayectoria={ordenTrayectoria}
           />
         ) : (
-          <VerRuta width="100%" height="250px" />
+          <VerRuta width="100%" height="450px" />
         )}
       </Box>
     </Container>

@@ -172,6 +172,7 @@ class RutaSerializer(serializers.ModelSerializer):
                         latitud=punto.get("latitud"),
                         longitud=punto.get("longitud"),
                     )
+                RutasEjecutadas.objects.create(id_ruta=ruta,id_conductor=usuario)
 
             except Vehiculos.DoesNotExist or Usuario.DoesNotExist:
                 raise serializers.ValidationError(
@@ -223,6 +224,8 @@ class RecepcionRealSerializer(serializers.ModelSerializer):
 
 
 class RutaEjecutadaSerializer(serializers.ModelSerializer):
+    id_ruta = RutaSerializer()
+    
     class Meta:
         model = RutasEjecutadas
         fields = "__all__"

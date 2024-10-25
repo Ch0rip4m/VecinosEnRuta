@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import (
     AbstractBaseUser,
@@ -814,13 +815,20 @@ class RutasEjecutadas(models.Model):
         verbose_name="Flag de inicio de la ruta", default=False
     )
     inicio_real = models.DateTimeField(
-        auto_now_add=True,
+        null=True,
+        blank=True,
         verbose_name="Registro de la fecha del inicio real de al ruta",
     )
 
     class Meta:
         verbose_name = "RutaEjecutada"
         verbose_name_plural = "RutasEjecutadas"
+        
+    def save(self, *args, **kwargs):
+        # Solo se asigna una vez la fecha cuando flag_inicio es True
+        if self.flag_inicio and self.inicio_real is None:
+            self.inicio_real = timezone.now()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.id_ruta} - {self.flag_inicio} - {self.inicio_real}"

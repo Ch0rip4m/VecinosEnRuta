@@ -42,7 +42,7 @@ const elements = [
   { name: "Mis Rutas", icon: <AltRouteIcon />, url: "/mis-rutas" },
   { name: "Mis Viajes", icon: <EditCalendarIcon />, url: "/mis-viajes" },
   { name: "Comunidades", icon: <PeopleIcon />, url: "/comunidades" },
-  { name: "Contactos", icon: <GppMaybeIcon />, url: "/contactos" },
+  { name: "Seguridad", icon: <GppMaybeIcon />, url: "/seguridad" },
   { name: "Solicitudes", icon: <NotificationsIcon />, url: "/solicitudes" },
 ];
 

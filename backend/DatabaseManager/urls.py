@@ -60,11 +60,21 @@ urlpatterns = [
         mostrar_solicitudes,
         name="mostrar_solicitudes",
     ),
+    path(
+        "mostrar-viajes/<int:id_usuario>/",
+        mostrar_viajes,
+        name="mostrar_viajes",
+    ),
     path("mostrar-comunidades/", mostrar_comunidades, name="mostrar_comunidades"),
+    path("mostrar-ruta/", mostrar_ruta, name="mostrar_ruta"),
     path(
         "aceptar_solicitud_ruta/", aceptar_solicitud_ruta, name="aceptar_solicitud_ruta"
     ),
     path(
-        "aceptar_solicitud_comunidad/", aceptar_solicitud_comunidad, name="aceptar_solicitud_comunidad"
+        "aceptar_solicitud_comunidad/",
+        aceptar_solicitud_comunidad,
+        name="aceptar_solicitud_comunidad",
     ),
+    path("iniciar-ruta/", iniciar_ruta, name="iniciar_ruta"),
+    path("contactos-usuario/", contactos_usuario, name="contactos_usuario"),
 ]

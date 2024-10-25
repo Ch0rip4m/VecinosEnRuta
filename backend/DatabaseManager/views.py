@@ -348,6 +348,19 @@ def mostrar_comunidades(request):
 
     return Response(serializer.data)
 
+@api_view(["GET"])
+def mostrar_ruta(request):
+    id_ruta = request.query_params.get("id_ruta")
+    trayectoria = Trayectoria.objects.get(id_ruta=id_ruta)
+
+    # Filtra las rutas basadas en el origen y destino
+    orden_trayectoria = OrdenTrayectoria.objects.filter(
+        id_trayectoria=trayectoria
+    )
+    serializer = OrdenTrayectoriaSerializer(orden_trayectoria, many=True)
+
+    return Response(serializer.data)
+
 
 @api_view(["POST"])
 def aceptar_solicitud_ruta(request):
@@ -424,3 +437,48 @@ def aceptar_solicitud_comunidad(request):
         return Response(
             {"error": "La notificación no existe."}, status=status.HTTP_404_NOT_FOUND
         )
+        
+@api_view(["GET"])
+def mostrar_viajes(request, id_usuario):
+    try:
+        usuario_propietario = Usuario.objects.get(id_usuario=id_usuario)
+
+        viajes = RutasEjecutadas.objects.filter(
+            id_conductor=usuario_propietario
+        ).select_related("id_ruta")
+        viajes_serializer = RutaEjecutadaSerializer(viajes, many=True)
+
+        return Response(viajes_serializer.data)
+    except Usuario.DoesNotExist:
+        return Response(
+            {"detail": "usuario no encontrado. "}, status=status.HTTP_404_NOT_FOUND
+        )
+        
+@api_view(["POST"])
+def iniciar_ruta(request):
+    try:
+        id_ruta = request.query_params.get('id_ruta')
+        ruta = Rutas.objects.get(id_ruta=id_ruta)
+        ruta_ej = RutasEjecutadas.objects.get(id_ruta=ruta)
+    
+        ruta_ej.flag_inicio = True
+        ruta_ej.save()
+        
+        return Response({"message": "flag_inicio actualizado."}, status=status.HTTP_200_OK)
+    except Rutas.DoesNotExist:
+        return Response({"detail": "ruta no encontrada"}, status= status.HTTP_404_NOT_FOUND)
+    
+
+@api_view(["GET"])
+def contactos_usuario(request):
+    id_usuario = request.query_params.get("id_usuario")
+    usuario = Usuario.objects.get(id_usuario=id_usuario)
+
+    # Filtra las rutas basadas en el origen y destino
+    contactos = ContactosEmergencia.objects.filter(
+        id_usuario=usuario
+    )
+    serializer = ContactosEmergenciaSerializer(contactos, many=True)
+
+    return Response(serializer.data)
+    

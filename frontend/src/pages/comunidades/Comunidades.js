@@ -138,12 +138,12 @@ export default function Comunidades() {
         {dataExist ? (
           <VerComunidades
             width="100%"
-            height="250px"
+            height="350px"
             mapValues={mapValues}
             selectCommunity={selectCommunity}
           />
         ) : (
-          <VerComunidades width="100%" height="250px" mapValues={mapValues} />
+          <VerComunidades width="100%" height="350px" mapValues={mapValues} />
         )}
         <Typography variant="overline" sx={{ mt: 1 }}>
           ¡Unete a una comunidad!

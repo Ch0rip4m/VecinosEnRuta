@@ -15,6 +15,7 @@ import Comunidades from "./pages/comunidades/Comunidades";
 import CrearComunidad from "./pages/comunidades/CrearComunidad";
 import Contactos from "./pages/seguridad/ContactosEmergencia";
 import Solicitudes from "./pages/solicitudes/Solicitudes";
+import VisorConductor from "./pages/ejecucion/VisorRutaConductor";
 import PersistentDrawerLeft from "./components/navbar/navBar";
 import ManageAccess from "./components/controlAcceso/ManageAccess";
 
@@ -145,7 +146,7 @@ export default function App() {
               }
             />
             <Route
-              path="/contactos"
+              path="/seguridad"
               element={
                 <ManageAccess
                   Component={Contactos}
@@ -158,6 +159,15 @@ export default function App() {
               element={
                 <ManageAccess
                   Component={Solicitudes}
+                  setCheckTokens={setCheckTokens}
+                />
+              }
+            />
+            <Route
+              path="/ruta-en-ejecucion"
+              element={
+                <ManageAccess
+                  Component={VisorConductor}
                   setCheckTokens={setCheckTokens}
                 />
               }

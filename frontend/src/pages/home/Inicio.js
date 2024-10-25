@@ -214,7 +214,7 @@ export default function Inicio() {
             ordenTrayectoria={ordenTrayectoria}
           />
         ) : (
-          <VerRuta width="100%" height="250px" />
+          <VerRuta width="100%" height="320px" />
         )}
         <ListaSolicitud
           columns={columns}

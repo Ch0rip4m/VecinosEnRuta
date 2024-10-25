@@ -433,6 +433,7 @@ class MiembrosComunidadAdmin(admin.ModelAdmin):
         "tiempo_registro",
     )
 
+
 @admin.register(MiembrosRuta)
 class MiembrosRutaAdmin(admin.ModelAdmin):
     list_display = (
@@ -454,4 +455,32 @@ class MiembrosRutaAdmin(admin.ModelAdmin):
         "id_ruta",
         "id_miembro",
         "tiempo_registro",
+    )
+
+
+@admin.register(RutasEjecutadas)
+class RutasEjecutadasAdmin(admin.ModelAdmin):
+    list_display = (
+        "id_ruta",
+        "id_conductor",
+        "flag_inicio",
+        "inicio_real",
+    )
+    search_fields = (
+        "id_ruta",
+        "id_conductor",
+        "flag_inicio",
+        "inicio_real",
+    )
+    list_filter = (
+        "id_ruta",
+        "id_conductor",
+        "flag_inicio",
+        "inicio_real",
+    )
+    ordering = (
+        "id_ruta",
+        "id_conductor",
+        "flag_inicio",
+        "inicio_real",
     )

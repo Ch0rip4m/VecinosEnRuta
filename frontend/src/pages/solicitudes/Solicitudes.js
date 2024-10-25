@@ -10,7 +10,7 @@ const csrfToken = document.cookie
   .find((row) => row.startsWith("csrftoken="))
   ?.split("=")[1];
 
-const columnsRoutRequest = [
+const columnsRouteRequest = [
   { id: "id_ruta", obj_id: "nombre_ruta", label: "Ruta" },
   { id: "id_solicitante", obj_id: "nombre_usuario", label: "Usuario" },
 ];
@@ -21,19 +21,20 @@ const columnsCommunityRequest = [
 ];
 
 const modalInfo = [
-  {id: "nombre_usuario", label: "Nombre"},
-  {id: "apellido_usuario", label: "Apellido"},
-  {id: "edad", label: "Edad"},
-  {id: "sexo", label: "Sexo"},
-  {id: "email", label: "Correo Electrónico"},
-  {id: "telefono", label: "Telefono"}
-]
+  { id: "nombre_usuario", label: "Nombre" },
+  { id: "apellido_usuario", label: "Apellido" },
+  { id: "edad", label: "Edad" },
+  { id: "sexo", label: "Sexo" },
+  { id: "email", label: "Correo Electrónico" },
+  { id: "telefono", label: "Telefono" },
+  { id: "descripcion_usuario", label: "Descripción" },
+];
 
 export default function Solicitudes() {
   const [notificaciones, setNotificaciones] = useState([]);
   const [value, setValue] = useState(0);
   const [openModal, setOpenModal] = useState(false);
-  const [selectedRow, setSelectedRow] = useState(null); 
+  const [selectedRow, setSelectedRow] = useState(null);
 
   useEffect(() => {
     axios
@@ -45,11 +46,7 @@ export default function Solicitudes() {
         { withCredentials: true }
       )
       .then((response) => {
-        //console.log(response.data);
         setNotificaciones(response.data);
-        // const getRutas = notificaciones.map((item) => item.id_ruta)
-        // console.log(getRutas)
-        // setInfoRutas(getRutas)
       })
       .catch((error) => {
         console.error("Error al obtener las notificaciones:", error);
@@ -75,7 +72,10 @@ export default function Solicitudes() {
         BACKEND_URL + "/db-manager/aceptar_solicitud_ruta/",
         {},
         {
-          params: { id_ruta: row.id_ruta.id_ruta, id_solicitud: row.id_notificacion },
+          params: {
+            id_ruta: row.id_ruta.id_ruta,
+            id_solicitud: row.id_notificacion,
+          },
           headers: { "X-CSRFToken": csrfToken },
           withCredentials: true,
         }
@@ -94,7 +94,10 @@ export default function Solicitudes() {
         BACKEND_URL + "/db-manager/aceptar_solicitud_comunidad/",
         {},
         {
-          params: { id_comunidad: row.id_comunidad.id_comunidad, id_solicitud: row.id_notificacion },
+          params: {
+            id_comunidad: row.id_comunidad.id_comunidad,
+            id_solicitud: row.id_notificacion,
+          },
           headers: { "X-CSRFToken": csrfToken },
           withCredentials: true,
         }
@@ -105,11 +108,11 @@ export default function Solicitudes() {
       .catch((error) => {
         console.error("error al acpetar solicitud", error);
       });
-  }
+  };
 
   const handleSelectRow = (row) => {
     setSelectedRow(row); // Guardar la fila seleccionada
-    setOpenModal(true);  // Abrir el modal
+    setOpenModal(true); // Abrir el modal
   };
 
   const handleCloseModal = () => {
@@ -146,7 +149,7 @@ export default function Solicitudes() {
             <Grid container spacing={2}>
               {solicitudesDeRuta.length > 0 ? (
                 <ListaSolicitud
-                  columns={columnsRoutRequest}
+                  columns={columnsRouteRequest}
                   rows={solicitudesDeRuta}
                   height={550}
                   buttonLabel="Aceptar"
