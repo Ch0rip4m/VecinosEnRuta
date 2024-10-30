@@ -65,6 +65,11 @@ urlpatterns = [
         mostrar_viajes,
         name="mostrar_viajes",
     ),
+    path(
+        "mostrar-viajes-ejecutados/<int:id_usuario>/",
+        mostrar_viajes_ejecutados,
+        name="mostrar_viajes_ejecutados",
+    ),
     path("mostrar-comunidades/", mostrar_comunidades, name="mostrar_comunidades"),
     path("mostrar-ruta/", mostrar_ruta, name="mostrar_ruta"),
     path(
@@ -77,4 +82,7 @@ urlpatterns = [
     ),
     path("iniciar-ruta/", iniciar_ruta, name="iniciar_ruta"),
     path("contactos-usuario/", contactos_usuario, name="contactos_usuario"),
+    path("boton-de-panico/", boton_de_panico, name="boton_de_panico"),
+    path("compartir-ubicacion/", compartir_ubicacion, name="compartir_ubicacion"),
+    path("obtener-ubicacion/", obtener_ubicacion, name="obtener_ubucacion"),
 ]

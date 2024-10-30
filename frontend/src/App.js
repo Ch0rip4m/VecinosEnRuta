@@ -18,6 +18,7 @@ import Solicitudes from "./pages/solicitudes/Solicitudes";
 import VisorConductor from "./pages/ejecucion/VisorRutaConductor";
 import PersistentDrawerLeft from "./components/navbar/navBar";
 import ManageAccess from "./components/controlAcceso/ManageAccess";
+import MapaUbicacion from "./pages/seguridad/UbicacionCompartida";
 
 export default function App() {
   const [checkTokens, setCheckTokens] = useState(null); // Inicializa en null para manejar el estado de carga
@@ -168,6 +169,15 @@ export default function App() {
               element={
                 <ManageAccess
                   Component={VisorConductor}
+                  setCheckTokens={setCheckTokens}
+                />
+              }
+            />
+            <Route
+              path="/ubicacion-compartida"
+              element={
+                <ManageAccess
+                  Component={MapaUbicacion}
                   setCheckTokens={setCheckTokens}
                 />
               }

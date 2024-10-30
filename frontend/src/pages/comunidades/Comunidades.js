@@ -1,10 +1,11 @@
-import { Container, Box, Grid, Button, Typography } from "@mui/material";
+import { Container, Box, Grid, Button, Typography, Snackbar } from "@mui/material";
 import ReadList from "../../components/listas/ListaLectura";
 import ListaSolicitud from "../../components/listas/ListaBoton";
 import VerComunidades from "../../components/mapas/MapaComunidades";
 import React, { useEffect, useState } from "react";
 import { BACKEND_URL } from "../../Utils/Variables";
 import axios from "axios";
+import { useSnackbar } from "../../contexts/SnackbarContext";
 
 const csrfToken = document.cookie
   .split("; ")
@@ -22,6 +23,7 @@ export default function Comunidades() {
   const [mapValues, setMapValues] = useState([]);
   const [selectCommunity, setSelectCommunity] = useState([]);
   const [dataExist, setDataExist] = useState(false);
+  const snackbar = useSnackbar(); 
 
   useEffect(() => {
     axios
@@ -94,9 +96,11 @@ export default function Comunidades() {
       )
       .then((response) => {
         console.log(response.data);
+        snackbar.success("Solicitud enviada")
       })
       .catch((error) => {
         console.error("Error al hacer la solicitud", error);
+        snackbar.error("Error al enviar la solicitud")
       });
   };
 

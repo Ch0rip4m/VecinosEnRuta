@@ -11,6 +11,7 @@ import axios from "axios";
 import MultipleSelectChip from "../../components/selectores/MultiSelector";
 import SelectorSearch from "../../components/selectores/SelectorSearch";
 import DrawMap from "../../components/mapas/DibujarRuta";
+import { useSnackbar } from "../../contexts/SnackbarContext";
 
 const csrfToken = document.cookie
   .split("; ")
@@ -48,6 +49,7 @@ export default function CrearRuta() {
   const [trayectoria, setTrayectoria] = useState([]);
   const comunas = GetSelectorData("comunas");
   const dias = GetSelectorData("dias");
+  const snackbar = useSnackbar();
 
   useEffect(() => {
     console.log("formData: ", formData);
@@ -75,9 +77,14 @@ export default function CrearRuta() {
       })
       .then((response) => {
         console.log("Ruta creada exitosamente", response.data);
+        snackbar.success("Ruta creada exitosamente");
+        setTimeout(() => {
+          window.location.href = "/mis-rutas";
+        }, 2000); 
       })
       .catch((error) => {
         console.error("Error al ingresar la ruta", error);
+        snackbar.error("Error al crear la ruta");
       });
   };
 

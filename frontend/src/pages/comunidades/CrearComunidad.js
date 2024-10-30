@@ -10,6 +10,7 @@ import Container from "@mui/material/Container";
 import axios from "axios";
 import SelectorSearch from "../../components/selectores/SelectorSearch";
 import UbicarComunidad from "../../components/mapas/UbicarComunidad";
+import { useSnackbar } from "../../contexts/SnackbarContext";
 
 const csrfToken = document.cookie
   .split("; ")
@@ -42,6 +43,7 @@ export default function CrearComunidad() {
   const [formData, setformData] = useState({});
   const [ubicacion, setUbicacion] = useState({});
   const comunas = GetSelectorData("comunas");
+  const snackbar = useSnackbar()
 
   useEffect(() => {
     console.log("formData: ", formData);
@@ -68,9 +70,14 @@ export default function CrearComunidad() {
       })
       .then((response) => {
         console.log("Comunidad creada exitosamente", response.data);
+        snackbar.success("Comunidad creada exitosamente");
+        setTimeout(() => {
+          window.location.href = "/comunidades";
+        }, 2000); 
       })
       .catch((error) => {
         console.error("Error al ingresar la comunidad", error);
+        snackbar.error("Error al crear la comunidad")
       });
   };
 

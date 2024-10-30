@@ -463,24 +463,39 @@ class RutasEjecutadasAdmin(admin.ModelAdmin):
     list_display = (
         "id_ruta",
         "id_conductor",
-        "flag_inicio",
         "inicio_real",
     )
     search_fields = (
         "id_ruta",
         "id_conductor",
-        "flag_inicio",
         "inicio_real",
     )
     list_filter = (
         "id_ruta",
         "id_conductor",
-        "flag_inicio",
         "inicio_real",
     )
     ordering = (
         "id_ruta",
         "id_conductor",
-        "flag_inicio",
         "inicio_real",
     )
+
+@admin.register(Ubicacion)
+class UbicacionAdmin(admin.ModelAdmin):
+    list_display = (
+        "id_emisor",
+        "id_receptor",
+        "latitud",
+        "longitud",
+        "tiempo_registro",
+    )
+    search_fields = (
+        "id_emisor",
+        "id_receptor",
+        "latitud",
+        "longitud",
+        "tiempo_registro",
+    )
+    list_filter = ("id_emisor", "id_receptor", "latitud", "longitud", "tiempo_registro")
+    ordering = ("id_emisor", "id_receptor", "latitud", "longitud", "tiempo_registro")

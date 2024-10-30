@@ -811,27 +811,19 @@ class RutasEjecutadas(models.Model):
         on_delete=models.CASCADE,
         verbose_name="ID del usuario",
     )
-    flag_inicio = models.BooleanField(
-        verbose_name="Flag de inicio de la ruta", default=False
-    )
     inicio_real = models.DateTimeField(
         null=True,
         blank=True,
         verbose_name="Registro de la fecha del inicio real de al ruta",
+        auto_now_add=True
     )
 
     class Meta:
         verbose_name = "RutaEjecutada"
         verbose_name_plural = "RutasEjecutadas"
-        
-    def save(self, *args, **kwargs):
-        # Solo se asigna una vez la fecha cuando flag_inicio es True
-        if self.flag_inicio and self.inicio_real is None:
-            self.inicio_real = timezone.now()
-        super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.id_ruta} - {self.flag_inicio} - {self.inicio_real}"
+        return f"{self.id_ruta} - {self.inicio_real}"
 
 
 class ContactosEmergencia(models.Model):
@@ -851,3 +843,30 @@ class ContactosEmergencia(models.Model):
 
     def __str__(self):
         return f"{self.id_usuario} - {self.correo_emergencia}"
+
+
+class Ubicacion(models.Model):
+    id_emisor = models.ForeignKey(
+        Usuario,
+        to_field="id_usuario",
+        on_delete=models.CASCADE,
+        related_name="usuario_emisor",
+        verbose_name="id del usuario emisor",
+    )
+    id_receptor = models.ForeignKey(
+        Usuario,
+        to_field="id_usuario",
+        on_delete=models.CASCADE,
+        related_name="usuario_receptor",
+        verbose_name="id del usuario receptor",
+    )
+    latitud = models.FloatField(verbose_name="Latitud")
+    longitud = models.FloatField(verbose_name="Longitud")
+    tiempo_registro = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Ubicacion"
+        verbose_name_plural = "Ubicaciones"
+
+    def __str__(self):
+        return f"{self.id_emisor} - {self.id_receptor}"

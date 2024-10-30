@@ -7,85 +7,118 @@ import { OSM } from "ol/source";
 import { Vector as VectorSource } from "ol/source";
 import { fromLonLat, toLonLat } from "ol/proj";
 import { Feature } from "ol";
-import { Point } from "ol/geom";
-import { Style, Icon } from "ol/style";
+import { Point, LineString } from "ol/geom";
+import { Style, Icon, Stroke } from "ol/style";
 import { BACKEND_URL } from "../../Utils/Variables";
 
 export default function VisorConductor() {
   const mapRef = useRef();
   const mapInstance = useRef(null);
   const markerRef = useRef(null);
+  const vectorLayerRef = useRef(null); // Ref para la capa del marcador
+
+  const handleEndRoute = () => {
+    localStorage.removeItem("ordenTrayectoria")
+    window.location.href = "/inicio"
+  }
 
   useEffect(() => {
-    const initialPosition = fromLonLat([-70.6483, -33.4569]); // Coordenadas iniciales (ejemplo: Santiago, Chile)
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          const initialPosition = fromLonLat([longitude, latitude]);
 
-    // Crear el marcador con el ícono del conductor
-    const driverMarker = new Feature({
-      geometry: new Point(initialPosition),
-    });
-    driverMarker.setStyle(
-      new Style({
-        image: new Icon({
-          src: BACKEND_URL + "/media/mapas/vehicle.png", // URL del ícono del conductor
-          scale: 0.11,
-        }),
-      })
-    );
-    const vectorSource = new VectorSource({
-      features: [driverMarker],
-    });
-    const vectorLayer = new VectorLayer({
-      source: vectorSource,
-    });
+          // Crear el marcador con el ícono del conductor
+          const driverMarker = new Feature({
+            geometry: new Point(initialPosition),
+          });
+          driverMarker.setStyle(
+            new Style({
+              image: new Icon({
+                src: BACKEND_URL + "/media/mapas/vehicle.png",
+                scale: 0.11,
+              }),
+            })
+          );
 
-    // Crear el mapa con OpenLayers
-    mapInstance.current = new Map({
-      target: mapRef.current,
-      layers: [
-        new TileLayer({
-          source: new OSM(),
-        }),
-        vectorLayer,
-      ],
-      view: new View({
-        center: initialPosition,
-        zoom: 15,
-      }),
-    });
+          const vectorSource = new VectorSource({
+            features: [driverMarker],
+          });
+          vectorLayerRef.current = new VectorLayer({
+            source: vectorSource,
+          });
 
-    // Guardar el marcador en el ref
-    markerRef.current = driverMarker;
+          // Crear el mapa con OpenLayers sin agregar aún el marcador
+          mapInstance.current = new Map({
+            target: mapRef.current,
+            layers: [
+              new TileLayer({
+                source: new OSM(),
+              })
+            ],
+            view: new View({
+              center: initialPosition,
+              zoom: 15,
+            }),
+          });
+
+          markerRef.current = driverMarker;
+
+          // Llamar a la función para dibujar la línea de la trayectoria
+          dibujarLineaTrayectoria();
+
+          // Agregar el marcador como última capa, después de la línea
+          mapInstance.current.addLayer(vectorLayerRef.current);
+        },
+        (error) => console.error("Error al obtener ubicación inicial:", error)
+      );
+    }
   }, []);
 
-//   useEffect(() => {
-//     const intervalId = setInterval(() => {
-//         if (markerRef.current && mapInstance.current) {
-//             // Obtener la posición actual y convertirla a lon/lat para modificarla
-//             const currentCoords = toLonLat(markerRef.current.getGeometry().getCoordinates());
-            
-//             // Emular un cambio en la posición (aquí moviéndonos ligeramente al noreste)
-//             const newCoords = fromLonLat([currentCoords[0] + 0.0001, currentCoords[1] + 0.0001]);
+  const dibujarLineaTrayectoria = () => {
+    const ordenTrayectoria = JSON.parse(localStorage.getItem("ordenTrayectoria"));
+    console.log("Coordenadas de la trayectoria:", ordenTrayectoria);
+    if (ordenTrayectoria && mapInstance.current) {
+      const coordenadas = ordenTrayectoria.map((punto) =>
+        fromLonLat([punto.longitud, punto.latitud])
+      );
 
-//             // Actualizar la posición del marcador y centrar el mapa en la nueva posición
-//             markerRef.current.getGeometry().setCoordinates(newCoords);
-//             mapInstance.current.getView().setCenter(newCoords);
-//         }
-//     }, 1000); // Actualizar cada segundo para simular movimiento
+      const lineaTrayectoria = new Feature({
+        geometry: new LineString(coordenadas),
+      });
 
-//     return () => clearInterval(intervalId); // Limpiar el intervalo cuando el componente se desmonte
-// }, []);
+      lineaTrayectoria.setStyle(
+        new Style({
+          stroke: new Stroke({
+            color: "#ff0000",
+            width: 4,
+          }),
+        })
+      );
 
-  // Actualizar posición en tiempo real sin renderizar
+      const lineaSource = new VectorSource({
+        features: [lineaTrayectoria],
+      });
+
+      const lineaLayer = new VectorLayer({
+        source: lineaSource,
+      });
+
+      mapInstance.current.addLayer(lineaLayer);
+    }
+  };
+
+  // Actualizar posición en tiempo real
   useEffect(() => {
     if (navigator.geolocation) {
       const watchId = navigator.geolocation.watchPosition(
         (pos) => {
-          const coords = fromLonLat([
-            pos.coords.longitude,
-            pos.coords.latitude,
-          ]);
-          markerRef.current.getGeometry().setCoordinates(coords);
-          mapInstance.current.getView().setCenter(coords);
+          const coords = fromLonLat([pos.coords.longitude, pos.coords.latitude]);
+          if (markerRef.current) {
+            markerRef.current.getGeometry().setCoordinates(coords);
+            mapInstance.current.getView().setCenter(coords);
+          }
         },
         (error) => console.error("Error al obtener ubicación:", error),
         {
@@ -101,14 +134,7 @@ export default function VisorConductor() {
   }, []);
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        p: 2,
-      }}
-    >
+    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", p: 2 }}>
       <Paper elevation={3} sx={{ width: "100%", height: "70vh", p: 1 }}>
         <Typography variant="h6" align="center" gutterBottom>
           Ruta en ejecución
@@ -126,6 +152,14 @@ export default function VisorConductor() {
         }
       >
         Centrar en mi posición
+      </Button>
+      <Button
+        variant="contained"
+        color="primary"
+        sx={{ mt: 2 }}
+        onClick={handleEndRoute}
+      >
+        Finalizar Ruta
       </Button>
     </Box>
   );

@@ -15,7 +15,8 @@ export default function ListaSolicitud(props) {
     }
   };
 
-  const handleButtonClick = (row) => {
+  const handleButtonClick = (e, row) => {
+    e.stopPropagation();
     if (props.onClickButtonFunction) {
       props.onClickButtonFunction(row);
     }
@@ -69,7 +70,7 @@ export default function ListaSolicitud(props) {
                     <Button
                       variant="contained"
                       color="primary"
-                      onClick={() => handleButtonClick(row)}
+                      onClick={(e) => handleButtonClick(e,row)}
                     >
                       {props.buttonLabel}
                     </Button>

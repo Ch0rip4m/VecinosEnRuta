@@ -9,6 +9,7 @@ import ListaSolicitud from "../../components/listas/ListaBoton";
 import axios from "axios";
 import { BACKEND_URL } from "../../Utils/Variables";
 import SelectorSearch from "../../components/selectores/SelectorSearch";
+import { useSnackbar } from "../../contexts/SnackbarContext";
 
 const csrfToken = document.cookie
   .split("; ")
@@ -49,6 +50,7 @@ export default function Inicio() {
   const [ordenTrayectoria, setOrdenTrayectoria] = useState([]);
   const [dataExist, setDataExist] = useState(false);
   const comunas = GetSelectorData();
+  const snackbar = useSnackbar();
 
   // useEffect(() => {
   //   console.log("Rutas:", rutas);
@@ -77,35 +79,17 @@ export default function Inicio() {
 
   const hadleSelectRoute = (row) => {
     axios
-      .get(
-        BACKEND_URL + "/db-manager/trayectorias/?id_ruta=" + row.id_ruta + "/",
-        { withCredentials: true }
-      )
+      .get(BACKEND_URL + "/db-manager/mostrar-ruta/", {
+        params: { id_ruta: row.id_ruta },
+        withCredentials: true,
+      })
       .then((response) => {
         if (response) {
-          setDataTrayectoria(response.data[0]);
-          console.log(dataTrayectoria);
-
-          axios
-            .get(
-              BACKEND_URL +
-                "/db-manager/orden-trayectorias/?id_trayectoria=" +
-                dataTrayectoria.id_trayectoria +
-                "/",
-              { withCredentials: true }
-            )
-            .then((res) => {
-              if (res) {
-                setOrdenTrayectoria(res.data);
-                console.log(ordenTrayectoria);
-                if (ordenTrayectoria.length > 0) {
-                  setDataExist(true);
-                }
-              }
-            })
-            .catch((error) => {
-              console.error("Error al obtener orden de la trayectoria:", error);
-            });
+          setOrdenTrayectoria(response.data);
+          console.log(ordenTrayectoria);
+          if (ordenTrayectoria.length > 0) {
+            setDataExist(true);
+          }
         }
       })
       .catch((error) => {
@@ -119,16 +103,23 @@ export default function Inicio() {
         BACKEND_URL + "/db-manager/solicitar-unirse/",
         {},
         {
-          params: { id_ruta: row.id_ruta, id_solicitante: localStorage.getItem('user_id') },
+          params: {
+            id_ruta: row.id_ruta,
+            id_solicitante: localStorage.getItem("user_id"),
+          },
           headers: { "X-CSRFToken": csrfToken },
           withCredentials: true,
         }
       )
       .then((response) => {
         console.log(response.data);
+        snackbar.success("Solicititud enviada con exito");
+        setformData({});
+        setRutas([]);
       })
       .catch((error) => {
         console.error("Error al hacer la solicitud", error);
+        snackbar.error("Error al enviar la solicitud");
       });
   };
 

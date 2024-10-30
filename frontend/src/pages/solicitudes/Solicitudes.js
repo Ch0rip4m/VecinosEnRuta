@@ -4,6 +4,7 @@ import { BACKEND_URL } from "../../Utils/Variables";
 import ListaSolicitud from "../../components/listas/ListaBoton";
 import BasicModal from "../../components/modals/InfoModal";
 import axios from "axios";
+import { useSnackbar } from "../../contexts/SnackbarContext";
 
 const csrfToken = document.cookie
   .split("; ")
@@ -35,6 +36,7 @@ export default function Solicitudes() {
   const [value, setValue] = useState(0);
   const [openModal, setOpenModal] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
+  const snackbar = useSnackbar();
 
   useEffect(() => {
     axios
@@ -82,9 +84,11 @@ export default function Solicitudes() {
       )
       .then((response) => {
         console.log(response.data);
+        snackbar.success("Solicitud aceptada");
       })
       .catch((error) => {
         console.error("error al acpetar solicitud", error);
+        snackbar.error("Error al aceptar solicitud");
       });
   };
 
@@ -104,9 +108,11 @@ export default function Solicitudes() {
       )
       .then((response) => {
         console.log(response.data);
+        snackbar.success("Solicitud aceptada");
       })
       .catch((error) => {
         console.error("error al acpetar solicitud", error);
+        snackbar.error("Error al aceptar solicitud");
       });
   };
 
@@ -118,17 +124,6 @@ export default function Solicitudes() {
   const handleCloseModal = () => {
     setOpenModal(false); // Cerrar el modal
   };
-
-  useEffect(() => {
-    console.log("notificaciones", notificaciones);
-    // console.log("L",solicitudesLeidas)
-    // console.log("NL",solicitudesNoLeidas)
-  }, [solicitudesDeRuta, solicitudesDeComunidad, notificaciones]);
-
-  // useEffect(() => {
-  //   console.log("infoRutas",infoRutas)
-  //   console.log("infoComunidades",infoComunidades)
-  // },[infoRutas, infoComunidades])
 
   return (
     <Container component="main" maxWidth="xs">

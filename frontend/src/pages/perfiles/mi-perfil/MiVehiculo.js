@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { BACKEND_URL } from "../../../Utils/Variables";
 import { Avatar, Button, Container, TextField, Box, Grid } from "@mui/material";
+import { useSnackbar } from "../../../contexts/SnackbarContext";
 
 const csrfToken = document.cookie
   .split("; ")
@@ -9,6 +10,7 @@ const csrfToken = document.cookie
   ?.split("=")[1];
 
 export default function MiVehiculo() {
+  const snackbar = useSnackbar()
   const [isEditing, setIsEditing] = useState(false);
   const [isConductor, setIsConductor] = useState(false);
   const [carExist, setCarExist] = useState(false);
@@ -96,10 +98,12 @@ export default function MiVehiculo() {
       })
       .then((response) => {
         console.log("Datos Actualizados", response.data);
+        snackbar.success("Datos actualizados")
         setIsEditing(false);
       })
       .catch((error) => {
         console.error("Error al acualizar", error);
+        snackbar.error("Error al actualizar")
       });
     // Aquí puedes enviar los datos actualizados del usuario a tu servidor
     setIsEditing(false);

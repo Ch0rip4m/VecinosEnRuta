@@ -3,6 +3,7 @@ import axios from "axios";
 import { BACKEND_URL } from "../../../Utils/Variables";
 import { Avatar, Button, Container, TextField, Box, Grid } from "@mui/material";
 import MultipleSelectChip from "../../../components/selectores/MultiSelector";
+import { useSnackbar } from "../../../contexts/SnackbarContext";
 
 const csrfToken = document.cookie
   .split("; ")
@@ -10,6 +11,7 @@ const csrfToken = document.cookie
   ?.split("=")[1];
 
 export default function MiPerfil() {
+  const snackbar = useSnackbar();
   const [isEditing, setIsEditing] = useState(false);
   const [user, setUser] = useState({
     //id_usuario: 0,
@@ -83,10 +85,12 @@ export default function MiPerfil() {
       })
       .then((response) => {
         console.log("Datos Actualizados", response.data);
+        snackbar.success("Datos Actualizados");
         setIsEditing(false);
       })
       .catch((error) => {
         console.error("Error al acualizar", error);
+        snackbar.error("Error al acualizar");
       });
     // Aquí puedes enviar los datos actualizados del usuario a tu servidor
   };

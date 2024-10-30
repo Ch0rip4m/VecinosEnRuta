@@ -18,10 +18,13 @@ export default function VerRuta(props) {
   const mapRef = useRef(null);
   const [mapCreated, setMapCreated] = useState(false);
 
+  // Referencias para las capas de puntos y línea
+  const pointLayerRef = useRef(null);
+  const lineLayerRef = useRef(null);
+
   useEffect(() => {
     // Función para crear el mapa
     const createMap = () => {
-      // Obtener la ubicación actual del usuario
       if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
@@ -39,7 +42,6 @@ export default function VerRuta(props) {
               }),
             });
 
-            // Crear un marcador en la ubicación actual
             const marker = new Feature({
               geometry: new Point(fromLonLat(coordinates)),
             });
@@ -52,7 +54,6 @@ export default function VerRuta(props) {
               })
             );
 
-            // Capa de marcadores
             const markerLayer = new VectorLayer({
               source: new VectorSource({
                 features: [marker],
@@ -74,7 +75,6 @@ export default function VerRuta(props) {
       }
     };
 
-    // Solo crear el mapa si no ha sido creado aún
     if (!mapCreated) {
       createMap();
     }
@@ -82,30 +82,23 @@ export default function VerRuta(props) {
 
   // Dibujar la trayectoria cuando se actualicen los datos
   useEffect(() => {
-    if (
-      mapCreated &&
-      props.ordenTrayectoria &&
-      props.ordenTrayectoria.length > 0
-    ) {
-      // console.log(props.ordenTrayectoria)
-      // Extraer los puntos de la trayectoria desde props.ordenTrayectorias
+    if (mapCreated && props.ordenTrayectoria && props.ordenTrayectoria.length > 0) {
+      // Remover la capa de línea y puntos anteriores si existen
+      if (lineLayerRef.current) {
+        mapRef.current.removeLayer(lineLayerRef.current);
+      }
+      if (pointLayerRef.current) {
+        mapRef.current.removeLayer(pointLayerRef.current);
+      }
+
       const points = props.ordenTrayectoria.map((orden) => {
-        return fromLonLat([orden.longitud, orden.latitud]); // Asegúrate de que orden tenga longitud y latitud
+        return fromLonLat([orden.longitud, orden.latitud]);
       });
 
-      // Crear las features de puntos
-      const pointFeatures = points.map((point) => {
-        return new Feature({
-          geometry: new Point(point),
-        });
-      });
+      const pointFeatures = points.map((point) => new Feature({ geometry: new Point(point) }));
 
-      // Crear un vector source para los puntos
-      const pointSource = new VectorSource({
-        features: pointFeatures,
-      });
+      const pointSource = new VectorSource({ features: pointFeatures });
 
-      // Crear un estilo para los puntos
       const pointStyle = new Style({
         image: new Icon({
           src: "https://openlayers.org/en/latest/examples/data/icon.png",
@@ -113,47 +106,37 @@ export default function VerRuta(props) {
         }),
       });
 
-      // Crear la capa para los puntos
-      const pointLayer = new VectorLayer({
+      // Crear y guardar la capa de puntos en la referencia
+      pointLayerRef.current = new VectorLayer({
         source: pointSource,
         style: pointStyle,
       });
+      mapRef.current.addLayer(pointLayerRef.current);
 
-      // Añadir la capa de puntos al mapa
-      mapRef.current.addLayer(pointLayer);
-
-      // Crear una LineString para conectar los puntos
       const lineFeature = new Feature({
         geometry: new LineString(points),
       });
 
-      // Crear una capa para la línea
-      const lineLayer = new VectorLayer({
+      // Crear y guardar la capa de línea en la referencia
+      lineLayerRef.current = new VectorLayer({
         source: new VectorSource({
           features: [lineFeature],
         }),
         style: new Style({
           stroke: new Stroke({
-            color: "#FF0000", // Color rojo para la línea
+            color: "#FF0000",
             width: 4,
           }),
         }),
       });
 
-      // Añadir la capa de línea al mapa
-      mapRef.current.addLayer(lineLayer);
+      mapRef.current.addLayer(lineLayerRef.current);
 
-      // Centrar el mapa en los puntos si es necesario
       mapRef.current.getView().fit(lineFeature.getGeometry().getExtent(), {
-        padding: [50, 50, 50, 50], // Agrega un padding para ver mejor la ruta
+        padding: [50, 50, 50, 50],
       });
     }
-  }, [props.ordenTrayectoria, mapCreated]); // Solo se ejecuta cuando ordenTrayectorias cambia o el mapa está listo
+  }, [props.ordenTrayectoria, mapCreated]);
 
-  return (
-    <div
-      ref={mapContainerRef}
-      style={{ width: props.width, height: props.height }}
-    />
-  );
+  return <div ref={mapContainerRef} style={{ width: props.width, height: props.height }} />;
 }
