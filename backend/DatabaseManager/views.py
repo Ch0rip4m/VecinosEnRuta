@@ -456,9 +456,7 @@ def mostrar_viajes(request, id_usuario):
     try:
         usuario_propietario = Usuario.objects.get(id_usuario=id_usuario)
 
-        viajes = Rutas.objects.filter(
-            id_conductor=usuario_propietario
-        )
+        viajes = Rutas.objects.filter(id_conductor=usuario_propietario)
         viajes_serializer = RutaSerializer(viajes, many=True)
 
         return Response(viajes_serializer.data)
@@ -466,6 +464,7 @@ def mostrar_viajes(request, id_usuario):
         return Response(
             {"detail": "usuario no encontrado. "}, status=status.HTTP_404_NOT_FOUND
         )
+
 
 @api_view(["GET"])
 def mostrar_viajes_ejecutados(request, id_usuario):
@@ -521,8 +520,67 @@ def contactos_usuario(request):
 def boton_de_panico(request):
     id_usuario = request.query_params.get("id_usuario")
     usuario = Usuario.objects.get(id_usuario=id_usuario)
-    asunto = "correo test"
-    mensaje = "mensaje test"
+    rutas_usuario = MiembrosRuta.objects.filter(id_miembro=usuario)
+    rutas_usuario_serializer = MiembrosRutaSerializer(rutas_usuario, many=True)
+
+    lista_rutas = []
+    for ruta in rutas_usuario_serializer.data:
+        # print(ruta)
+        lista_rutas.append(ruta["id_ruta"])
+
+    rutas_f = RutasEjecutadas.objects.filter(id_ruta__in=lista_rutas).order_by(
+        "inicio_real"
+    )
+    serializer_rutas = RutaEjecutadaSerializer(rutas_f, many=True)
+
+    template = {
+        "conductor": "",
+        "patente": "",
+        "fecha": "",
+        "origen": "",
+        "destino": "",
+    }
+    respuesta = []
+
+    tabla = """<table border="1">
+  <tr>
+    <th>conductor</th>
+    <th>patente</th>
+    <th>fecha</th>
+    <th>origen</th>
+    <th>destino</th>
+  </tr>
+  """
+
+    for i in serializer_rutas.data:
+        r = template.copy()
+        vehiculo = Vehiculos.objects.get(id_vehiculo=i["id_ruta"]["id_vehiculo"])
+        r["patente"] = vehiculo.patente
+        conductor = Usuario.objects.get(id_usuario=i["id_ruta"]["id_conductor"])
+        r["conductor"] = f"{conductor.nombre_usuario} {conductor.apellido_usuario}"
+        r["fecha"] = i["inicio_real"]
+        origen = i["id_ruta"]["origen"]
+        destino = i["id_ruta"]["destino"]
+        r["origen"] = origen
+        r["destino"] = destino
+        linea = f"""<tr>
+    <td>{r['conductor']}</td>
+    <td>{r['patente']}</td>
+    <td>{r['fecha']}</td>
+    <td>{r['origen']}</td>
+    <td>{r['destino']}</td>
+  </tr>"""
+        tabla = f"{tabla} {linea}"
+        respuesta.append(r)
+
+    print(respuesta)
+
+    tabla = f"{tabla} </table>"
+
+    asunto = f" {usuario.nombre_usuario} {usuario.apellido_usuario} necesita ayuda"
+
+    mensaje = f""" <div>Este es un mensaje de auxilio de parte de {usuario.nombre_usuario} {usuario.apellido_usuario}</div></br>
+    <div>comunicate con el lo antes posible para saber si se encuentra bien.</div></br></br> {tabla} """
 
     contactos = ContactosEmergencia.objects.filter(id_usuario=usuario)
     serializer = ContactosEmergenciaSerializer(contactos, many=True)
@@ -531,11 +589,11 @@ def boton_de_panico(request):
 
     for contacto in serializer.data:
         destinatarios.append(contacto["correo_emergencia"])
-    
-    print(destinatarios)
 
     if len(destinatarios) > 0:
-        send_mail(asunto, mensaje, settings.DEFAULT_FROM_EMAIL, destinatarios)
+        send_mail(
+            asunto, "", settings.DEFAULT_FROM_EMAIL, destinatarios, html_message=mensaje
+        )
         return Response(
             {"message": "Elerta enviada exitosamente"}, status=status.HTTP_200_OK
         )
@@ -564,9 +622,11 @@ def obtener_ubicacion(request):
     id_receptor = request.query_params.get("id_receptor")
     receptor = Usuario.objects.get(id_usuario=id_receptor)
     print(receptor)
-    ubicaciones = Ubicacion.objects.filter(id_receptor=receptor).order_by(
-        "-tiempo_registro"
-    ).first()
+    ubicaciones = (
+        Ubicacion.objects.filter(id_receptor=receptor)
+        .order_by("-tiempo_registro")
+        .first()
+    )
     serializer = UbicacionSerializer(ubicaciones)
     print(serializer.data)
     return Response(serializer.data)

@@ -367,7 +367,7 @@ class MiembrosComunidadSerializer(serializers.ModelSerializer):
         
 class MiembrosRutaSerializer(serializers.ModelSerializer):
     class Meta:
-        model = MiembrosComunidad
+        model = MiembrosRuta
         fields = "__all__"
         
 class UbicacionSerializer(serializers.ModelSerializer):
