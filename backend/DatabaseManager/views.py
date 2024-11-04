@@ -351,14 +351,21 @@ def mostrar_solicitudes(request, id_usuario):
 def mostrar_comunidades(request):
     id_usuario = request.query_params.get("id_usuario")
 
-    # Filtra las rutas basadas en el origen y destino
+    
     comunidades_usuario = ComunidadesUsuario.objects.filter(
         id_usuario=id_usuario
     ).values("id_comunidad")
     comunidades = Comunidades.objects.exclude(id_comunidad__in=comunidades_usuario)
+    comunidad_miembro = MiembrosComunidad.objects.filter(id_miembro=id_usuario)
+    ser = MiembrosComunidadSerializer(comunidad_miembro, many=True)
     serializer = ComunidadSerializer(comunidades, many=True)
-
-    return Response(serializer.data)
+    
+    ids_comunidades_miembro = {item['id_comunidad'] for item in ser.data}
+    filtered_data = [comunidad for comunidad in serializer.data if comunidad['id_comunidad'] not in ids_comunidades_miembro]
+    
+    print(filtered_data)
+            
+    return Response(filtered_data)
 
 
 @api_view(["GET"])
@@ -518,6 +525,10 @@ def contactos_usuario(request):
 
 @api_view(["POST"])
 def boton_de_panico(request):
+    data = request.data
+    latitud = data["latitud"]
+    longitud = data["longitud"]
+    timestamp = data["timestamp"]
     id_usuario = request.query_params.get("id_usuario")
     usuario = Usuario.objects.get(id_usuario=id_usuario)
     rutas_usuario = MiembrosRuta.objects.filter(id_miembro=usuario)
@@ -525,7 +536,6 @@ def boton_de_panico(request):
 
     lista_rutas = []
     for ruta in rutas_usuario_serializer.data:
-        # print(ruta)
         lista_rutas.append(ruta["id_ruta"])
 
     rutas_f = RutasEjecutadas.objects.filter(id_ruta__in=lista_rutas).order_by(
@@ -543,44 +553,46 @@ def boton_de_panico(request):
     respuesta = []
 
     tabla = """<table border="1">
-  <tr>
-    <th>conductor</th>
-    <th>patente</th>
-    <th>fecha</th>
-    <th>origen</th>
-    <th>destino</th>
-  </tr>
-  """
+                    <tr>
+                        <th>Conductor</th>
+                        <th>Patente</th>
+                        <th>Fecha de ruta</th>
+                        <th>Origen</th>
+                        <th>Destino</th>
+                    </tr>
+            """
 
     for i in serializer_rutas.data:
         r = template.copy()
         vehiculo = Vehiculos.objects.get(id_vehiculo=i["id_ruta"]["id_vehiculo"])
-        r["patente"] = vehiculo.patente
         conductor = Usuario.objects.get(id_usuario=i["id_ruta"]["id_conductor"])
-        r["conductor"] = f"{conductor.nombre_usuario} {conductor.apellido_usuario}"
-        r["fecha"] = i["inicio_real"]
         origen = i["id_ruta"]["origen"]
         destino = i["id_ruta"]["destino"]
+        r["patente"] = vehiculo.patente
+        r["conductor"] = f"{conductor.nombre_usuario} {conductor.apellido_usuario}"
+        r["fecha"] = i["inicio_real"][:19].replace("T", " ")
         r["origen"] = origen
         r["destino"] = destino
         linea = f"""<tr>
-    <td>{r['conductor']}</td>
-    <td>{r['patente']}</td>
-    <td>{r['fecha']}</td>
-    <td>{r['origen']}</td>
-    <td>{r['destino']}</td>
-  </tr>"""
+                        <td>{r['conductor']}</td>
+                        <td>{r['patente']}</td>
+                        <td>{r['fecha']}</td>
+                        <td>{r['origen']}</td>
+                        <td>{r['destino']}</td>
+                    </tr>"""
         tabla = f"{tabla} {linea}"
         respuesta.append(r)
-
-    print(respuesta)
 
     tabla = f"{tabla} </table>"
 
     asunto = f" {usuario.nombre_usuario} {usuario.apellido_usuario} necesita ayuda"
 
-    mensaje = f""" <div>Este es un mensaje de auxilio de parte de {usuario.nombre_usuario} {usuario.apellido_usuario}</div></br>
-    <div>comunicate con el lo antes posible para saber si se encuentra bien.</div></br></br> {tabla} """
+    mensaje = f""" <div>Este es un mensaje de auxilio de parte de {usuario.nombre_usuario} {usuario.apellido_usuario} 
+                    comunicate con el lo antes posible para saber si se encuentra bien. Podria encontrarse en alguno 
+                    de los vehiculos con los siguientes datos: </div></br></br> {tabla} </br> 
+                    <div>Geolocalización de {usuario.nombre_usuario}</div></br> 
+                    <div>Latitud: {latitud}</div></br> <div>Longitud: {longitud}</div></br>
+                    <div>Hora de evio de alerta: {timestamp}</div>"""
 
     contactos = ContactosEmergencia.objects.filter(id_usuario=usuario)
     serializer = ContactosEmergenciaSerializer(contactos, many=True)
@@ -630,3 +642,34 @@ def obtener_ubicacion(request):
     serializer = UbicacionSerializer(ubicaciones)
     print(serializer.data)
     return Response(serializer.data)
+
+
+@api_view(["GET"])
+def miembros_ruta(request):
+    id_ruta = request.query_params.get("id_ruta")
+    ruta = Rutas.objects.get(id_ruta=id_ruta)
+
+    # Filtra las rutas basadas en el origen y destino
+    miembros = MiembrosRuta.objects.filter(id_ruta=ruta)
+    serializer = MiembrosRutaSerializer(miembros, many=True)
+    member_list = []
+    
+    for member in serializer.data:
+        member_list.append(member["id_miembro"])
+
+    return Response(member_list)
+
+@api_view(["GET"])
+def miembros_comunidad(request):
+    id_comunidad = request.query_params.get("id_comunidad")
+    comunidad = Comunidades.objects.get(id_comunidad=id_comunidad)
+
+    # Filtra las rutas basadas en el origen y destino
+    miembros = MiembrosComunidad.objects.filter(id_comunidad=comunidad)
+    serializer = MiembrosComunidadSerializer(miembros, many=True)
+    member_list = []
+    
+    for member in serializer.data:
+        member_list.append(member["id_miembro"])
+
+    return Response(member_list)

@@ -4,6 +4,9 @@ import VerRuta from "../../components/mapas/VerRuta";
 import React, { useEffect, useState } from "react";
 import { BACKEND_URL } from "../../Utils/Variables";
 import axios from "axios";
+import SelectorSearch from "../../components/selectores/SelectorSearch";
+import SimpleSelectLocation from "../../components/selectores/SimpleSelectLocation";
+import { format } from "ol/coordinate";
 
 const columns = [
   { id: "nombre_ruta", label: "Nombre" },
@@ -13,11 +16,22 @@ const columns = [
   { id: "hora_salida", label: "Salida" },
 ];
 
+const columnsMembers = [
+  { id: "nombre_usuario", label: "Nombre" },
+  { id: "telefono", label: "Telefono" },
+];
+
 export default function MisRutas() {
   const [rutas, setRutas] = useState([]);
-  const [dataTrayectoria, setDataTrayectoria] = useState({});
+  const [nombresRutas, setNombresRutas] = useState([]);
+  const [dataMembers, setDataMembers] = useState([]);
   const [ordenTrayectoria, setOrdenTrayectoria] = useState([]);
   const [dataExist, setDataExist] = useState(false);
+  const [formData, setformData] = useState({});
+
+  useEffect(() => {
+    console.log(formData);
+  }, [formData]);
 
   useEffect(() => {
     const email = localStorage.getItem("email");
@@ -30,6 +44,11 @@ export default function MisRutas() {
           const rutas = response.data.rutas;
           if (rutas) {
             //console.log(rutas);
+            const getNames = rutas.map((item) => ({
+              label: item.nombre_ruta,
+              value: item.id_ruta,
+            }));
+            setNombresRutas(getNames);
             setRutas(rutas);
           }
         })
@@ -39,6 +58,10 @@ export default function MisRutas() {
     }
   }, []);
 
+  const handleDataChange = (event, name) => {
+    setformData({ ...formData, [name]: event });
+  };
+
   const handleButtonCreate = () => {
     window.location.href = "/mis-rutas/crear";
   };
@@ -46,6 +69,25 @@ export default function MisRutas() {
   const handleButtonEdit = () => {
     window.location.href = "/mis-rutas/editar";
   };
+
+  const handleInfoMembers = () => {
+    axios
+      .get(BACKEND_URL + "/db-manager/miembros-ruta/", {
+        params: { id_ruta: formData.nombre_ruta.value },
+        withCredentials: true,
+      })
+      .then((response) => {
+        console.log(response.data);
+        setDataMembers(response.data);
+      })
+      .catch((error) => {
+        console.error("error al obtener los datos", error);
+      });
+  };
+
+  useEffect(() => {
+    console.log(dataMembers);
+  }, [dataMembers]);
 
   const hadleSelectRoute = (row) => {
     axios
@@ -104,12 +146,36 @@ export default function MisRutas() {
         {dataExist ? (
           <VerRuta
             width="100%"
-            height="450px"
+            height="300px"
             ordenTrayectoria={ordenTrayectoria}
           />
         ) : (
-          <VerRuta width="100%" height="450px" />
+          <VerRuta width="100%" height="300px" />
         )}
+        <Grid container spacing={2} sx={{ mt: 2 }}>
+          <Grid item xs={6} sm={6}>
+            <SimpleSelectLocation
+              required
+              fullWidth
+              label="Miembros de ruta"
+              name="nombre_ruta"
+              values={nombresRutas}
+              onChange={handleDataChange}
+              formData={formData}
+            />
+          </Grid>
+          <Grid item xs={6} sm={6}>
+            <Button
+              color="primary"
+              variant="contained"
+              fullWidth
+              onClick={handleInfoMembers}
+            >
+              ver miembros
+            </Button>
+          </Grid>
+        </Grid>
+        <ReadList columns={columnsMembers} rows={dataMembers} height={150} />
       </Box>
     </Container>
   );

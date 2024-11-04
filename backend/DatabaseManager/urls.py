@@ -85,4 +85,6 @@ urlpatterns = [
     path("boton-de-panico/", boton_de_panico, name="boton_de_panico"),
     path("compartir-ubicacion/", compartir_ubicacion, name="compartir_ubicacion"),
     path("obtener-ubicacion/", obtener_ubicacion, name="obtener_ubucacion"),
+    path("miembros-ruta/", miembros_ruta, name="miembros_ruta"),
+    path("miembros-comunidad/", miembros_comunidad, name="miembros_comunidad"),
 ]

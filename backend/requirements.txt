@@ -1,0 +1,5 @@
+Django==5.0.4
+djangorestframework==3.15.1  # Version típica; ajusta si usas una diferente.
+djangorestframework-simplejwt==5.3.1  # Ajusta según la versión necesaria.
+psycopg2==2.9.9  # Necesario para conectar con PostgreSQL.
+django-cors-headers==4.3.1 # Para manejar CORS.

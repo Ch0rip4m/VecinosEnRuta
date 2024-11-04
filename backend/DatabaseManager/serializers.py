@@ -366,6 +366,7 @@ class MiembrosComunidadSerializer(serializers.ModelSerializer):
         fields = "__all__"
         
 class MiembrosRutaSerializer(serializers.ModelSerializer):
+    id_miembro = UsuarioSerializer()
     class Meta:
         model = MiembrosRuta
         fields = "__all__"

@@ -6,6 +6,7 @@ import React, { useEffect, useState } from "react";
 import { BACKEND_URL } from "../../Utils/Variables";
 import axios from "axios";
 import { useSnackbar } from "../../contexts/SnackbarContext";
+import SimpleSelectLocation from "../../components/selectores/SimpleSelectLocation";
 
 const csrfToken = document.cookie
   .split("; ")
@@ -17,12 +18,20 @@ const columns = [
   { id: "comunas", label: "Ubicación" },
 ];
 
+const columnsMembers = [
+  { id: "nombre_usuario", label: "Nombre" },
+  { id: "telefono", label: "Telefono" },
+];
+
 export default function Comunidades() {
   const [comunidades, setComunidades] = useState([]);
+  const [nombresComunidades, setNombresComunidades] = useState([]);
   const [userCommunity, setUserCommunity] = useState([]);
+  const [dataMembers, setDataMembers] = useState([]);
   const [mapValues, setMapValues] = useState([]);
   const [selectCommunity, setSelectCommunity] = useState([]);
   const [dataExist, setDataExist] = useState(false);
+  const [formData, setformData] = useState({});
   const snackbar = useSnackbar(); 
 
   useEffect(() => {
@@ -71,6 +80,11 @@ export default function Comunidades() {
           const user_community = response.data.comunidad;
           if (user_community) {
             setUserCommunity(user_community);
+            const getNames = user_community.map((item) => ({
+              label: item.nombre_comunidad,
+              value: item.id_comunidad,
+            }));
+            setNombresComunidades(getNames)
           }
         })
         .catch((error) =>
@@ -81,6 +95,21 @@ export default function Comunidades() {
 
   const handleButtonCreate = () => {
     window.location.href = "/comunidades/crear";
+  };
+
+  const handleInfoMembers = () => {
+    axios
+      .get(BACKEND_URL + "/db-manager/miembros-comunidad/", {
+        params: { id_comunidad: formData.nombre_comunidad.value },
+        withCredentials: true,
+      })
+      .then((response) => {
+        console.log(response.data);
+        setDataMembers(response.data);
+      })
+      .catch((error) => {
+        console.error("error al obtener los datos", error);
+      });
   };
 
   const handleButtonRequest = (row) => {
@@ -112,6 +141,17 @@ export default function Comunidades() {
     }
   };
 
+  const handleDataChange = (event, name) => {
+    setformData({ ...formData, [name]: event });
+  };
+
+  useEffect(() => {
+    console.log("formData:", formData)
+    console.log("comunidades:", comunidades)
+    console.log("nombresComunidades:", nombresComunidades)
+    console.log("dataMembers:", dataMembers)
+  },[comunidades, nombresComunidades, dataMembers, formData])
+
   return (
     <Container maxWidth="xs">
       <Box
@@ -139,6 +179,30 @@ export default function Comunidades() {
           Mis comunidades
         </Typography>
         <ReadList columns={columns} rows={userCommunity} height={550} />
+        <Grid container spacing={2} sx={{ mt: 2 }}>
+          <Grid item xs={6} sm={6}>
+            <SimpleSelectLocation
+              required
+              fullWidth
+              label="Miembros de comunidad"
+              name="nombre_comunidad"
+              values={nombresComunidades}
+              onChange={handleDataChange}
+              formData={formData}
+            />
+          </Grid>
+          <Grid item xs={6} sm={6}>
+            <Button
+              color="primary"
+              variant="contained"
+              fullWidth
+              onClick={handleInfoMembers}
+            >
+              ver miembros
+            </Button>
+          </Grid>
+        </Grid>
+        <ReadList columns={columnsMembers} rows={dataMembers} height={150} />
         {dataExist ? (
           <VerComunidades
             width="100%"

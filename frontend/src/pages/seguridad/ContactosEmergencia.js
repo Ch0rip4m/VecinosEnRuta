@@ -32,6 +32,7 @@ export default function Contactos(props) {
   const [value, setValue] = useState(0);
   const [isShearing, setIsShearing] = useState(false);
   const [locationInterval, setLocationInterval] = useState(null);
+  //const [panicLocation, setPanicLocation] = useState({});
   const snackbar = useSnackbar();
 
   const handleChange = (event, newValue) => {
@@ -146,24 +147,43 @@ export default function Contactos(props) {
   };
 
   const handleSendAlert = () => {
-    axios
-      .post(
-        BACKEND_URL + "/db-manager/boton-de-panico/",
-        {},
-        {
-          params: { id_usuario: localStorage.getItem("user_id") },
-          headers: { "X-CSRFToken": csrfToken },
-          withCredentials: true,
-        }
-      )
-      .then((response) => {
-        console.log("Alerta enviada con exito");
-        snackbar.success("Alerta enviada con exito");
-      })
-      .catch((error) => {
-        console.error("Error al enviar alerta", error);
-        snackbar.error("Error al enviar alerta");
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        const { latitude, longitude } = position.coords;
+
+        // Formatear la marca de tiempo de manera legible
+        const timestamp = new Date(position.timestamp);
+        const formattedTimestamp = timestamp.toLocaleString("es-ES", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        });
+
+        const panicLocation = {
+          latitud: latitude,
+          longitud: longitude,
+          timestamp: formattedTimestamp,
+        };
+        console.log("panicLocation", panicLocation);
+        axios
+          .post(BACKEND_URL + "/db-manager/boton-de-panico/", panicLocation, {
+            params: { id_usuario: localStorage.getItem("user_id") },
+            headers: { "X-CSRFToken": csrfToken },
+            withCredentials: true,
+          })
+          .then((response) => {
+            console.log("Alerta enviada con exito");
+            snackbar.success("Alerta enviada con exito");
+          })
+          .catch((error) => {
+            console.error("Error al enviar alerta", error);
+            snackbar.error("Error al enviar alerta");
+          });
       });
+    }
   };
 
   return (
