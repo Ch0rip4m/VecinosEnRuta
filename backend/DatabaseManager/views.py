@@ -8,6 +8,7 @@ from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from django.core.mail import send_mail
 from django.conf import settings
+from django.db.models import Prefetch
 
 # Create your views here.
 
@@ -43,8 +44,6 @@ class RegistroUsuarioView(APIView):
             )
             rol_list = nombre_rol[0].split(",")
             location = comuna[0].split(",")
-            print(rol_list)
-            print(location)
             user.assign_roles(rol_list)
             user.assign_location(location)
 
@@ -115,19 +114,19 @@ class TrayectoriaViewSet(viewsets.ModelViewSet):
     serializer_class = TrayectoriaSerializer
 
 
-class RecepcionPasajerosViewSet(viewsets.ModelViewSet):
-    queryset = RecepcionPasajeros.objects.all()
-    serializer_class = RecepcionPasajeroSerializer
+# class RecepcionPasajerosViewSet(viewsets.ModelViewSet):
+#     queryset = RecepcionPasajeros.objects.all()
+#     serializer_class = RecepcionPasajeroSerializer
 
 
-class TrayectoriaRealViewSet(viewsets.ModelViewSet):
-    queryset = TrayectoriaReal.objects.all()
-    serializer_class = TrayectoriaRealSerializer
+# class TrayectoriaRealViewSet(viewsets.ModelViewSet):
+#     queryset = TrayectoriaReal.objects.all()
+#     serializer_class = TrayectoriaRealSerializer
 
 
-class RecepcionRealViewSet(viewsets.ModelViewSet):
-    queryset = RecepecionReal.objects.all()
-    serializer_class = RecepcionRealSerializer
+# class RecepcionRealViewSet(viewsets.ModelViewSet):
+#     queryset = RecepecionReal.objects.all()
+#     serializer_class = RecepcionRealSerializer
 
 
 class RutaEjecutadaViewSet(viewsets.ModelViewSet):
@@ -170,9 +169,9 @@ class OrdenTrayectoriaViewSet(viewsets.ModelViewSet):
     serializer_class = OrdenTrayectoriaSerializer
 
 
-class OrdenTrayectoriaRealViewSet(viewsets.ModelViewSet):
-    queryset = OrdenTrayectoriaReal.objects.all()
-    serializer_class = OrdenTrayectoriaRealSerializer
+# class OrdenTrayectoriaRealViewSet(viewsets.ModelViewSet):
+#     queryset = OrdenTrayectoriaReal.objects.all()
+#     serializer_class = OrdenTrayectoriaRealSerializer
 
 
 class ComunaViewSet(viewsets.ModelViewSet):
@@ -229,16 +228,14 @@ def info_usuario(request, email):
     try:
         usuario = get_object_or_404(Usuario, email=email)
         serializer = UsuarioSerializer(usuario)
-        # print(serializer)
+
         roles = usuario.rolusuario_set.values_list("id_rol__nombre_rol", flat=True)
         roles = list(roles)
-        # print(roles)
 
         comunidad_usuario = ComunidadesUsuario.objects.filter(id_usuario=usuario)
         comunidad_serializer = ComunidadSerializer(
             [com.id_comunidad for com in comunidad_usuario], many=True
         )
-        # print(comunidad)
 
         vehiculo_usuario = VehiculoUsuario.objects.filter(id_usuario=usuario).first()
         vehiculo = None
@@ -279,9 +276,7 @@ def buscar_rutas(request):
         .exclude(id_conductor=id_usuario)
         .exclude(cupos=0)
     )
-    print(rutas)
     serializer = RutaSerializer(rutas, many=True)
-    print(serializer.data)
 
     return Response(serializer.data)
 
@@ -335,9 +330,13 @@ def mostrar_solicitudes(request, id_usuario):
     try:
         usuario_propietario = Usuario.objects.get(id_usuario=id_usuario)
 
-        solicitudes = Notificaciones.objects.filter(
-            id_propietario=usuario_propietario
-        ).select_related("id_ruta", "id_comunidad", "id_solicitante")
+        solicitudes = (
+            Notificaciones.objects.filter(
+                id_propietario=usuario_propietario
+            ).select_related("id_ruta", "id_comunidad", "id_solicitante")
+            # Selecciona la comuna relacionad
+        )
+
         solicitudes_serializer = NotificacionesSerializer(solicitudes, many=True)
 
         return Response(solicitudes_serializer.data)
@@ -351,7 +350,6 @@ def mostrar_solicitudes(request, id_usuario):
 def mostrar_comunidades(request):
     id_usuario = request.query_params.get("id_usuario")
 
-    
     comunidades_usuario = ComunidadesUsuario.objects.filter(
         id_usuario=id_usuario
     ).values("id_comunidad")
@@ -359,12 +357,14 @@ def mostrar_comunidades(request):
     comunidad_miembro = MiembrosComunidad.objects.filter(id_miembro=id_usuario)
     ser = MiembrosComunidadSerializer(comunidad_miembro, many=True)
     serializer = ComunidadSerializer(comunidades, many=True)
-    
-    ids_comunidades_miembro = {item['id_comunidad'] for item in ser.data}
-    filtered_data = [comunidad for comunidad in serializer.data if comunidad['id_comunidad'] not in ids_comunidades_miembro]
-    
-    print(filtered_data)
-            
+
+    ids_comunidades_miembro = {item["id_comunidad"] for item in ser.data}
+    filtered_data = [
+        comunidad
+        for comunidad in serializer.data
+        if comunidad["id_comunidad"] not in ids_comunidades_miembro
+    ]
+
     return Response(filtered_data)
 
 
@@ -512,15 +512,24 @@ def iniciar_ruta(request):
 def contactos_usuario(request):
     id_usuario = request.query_params.get("id_usuario")
     usuario = Usuario.objects.get(id_usuario=id_usuario)
-    comunidad_usuario = MiembrosComunidad.objects.get(id_miembro=usuario)
+    comunidad_usuario = MiembrosComunidad.objects.filter(id_miembro=usuario)
+    serializer_comunidades = MiembrosComunidadSerializer(comunidad_usuario, many=True)
+    lista_comunidades = []
 
-    # Filtra las rutas basadas en el origen y destino
-    contactos = MiembrosComunidad.objects.filter(
-        id_comunidad=comunidad_usuario.id_comunidad
-    ).exclude(id_miembro=usuario)
-    serializer = MiembrosComunidadSerializer(contactos, many=True)
+    for comunidad in serializer_comunidades.data:
+        lista_comunidades.append(comunidad["id_comunidad"])
 
-    return Response(serializer.data)
+    lista_contactos = []
+
+    for com in lista_comunidades:
+        contactos = MiembrosComunidad.objects.filter(id_comunidad=com).exclude(
+            id_miembro=usuario
+        )
+        serializer = MiembrosComunidadSerializer(contactos, many=True)
+        for cont in serializer.data:
+            lista_contactos.append(cont["id_miembro"])
+
+    return Response(lista_contactos)
 
 
 @api_view(["POST"])
@@ -633,14 +642,12 @@ def compartir_ubicacion(request):
 def obtener_ubicacion(request):
     id_receptor = request.query_params.get("id_receptor")
     receptor = Usuario.objects.get(id_usuario=id_receptor)
-    print(receptor)
     ubicaciones = (
         Ubicacion.objects.filter(id_receptor=receptor)
         .order_by("-tiempo_registro")
         .first()
     )
     serializer = UbicacionSerializer(ubicaciones)
-    print(serializer.data)
     return Response(serializer.data)
 
 
@@ -649,27 +656,43 @@ def miembros_ruta(request):
     id_ruta = request.query_params.get("id_ruta")
     ruta = Rutas.objects.get(id_ruta=id_ruta)
 
-    # Filtra las rutas basadas en el origen y destino
     miembros = MiembrosRuta.objects.filter(id_ruta=ruta)
     serializer = MiembrosRutaSerializer(miembros, many=True)
     member_list = []
-    
+
     for member in serializer.data:
         member_list.append(member["id_miembro"])
 
     return Response(member_list)
+
 
 @api_view(["GET"])
 def miembros_comunidad(request):
     id_comunidad = request.query_params.get("id_comunidad")
     comunidad = Comunidades.objects.get(id_comunidad=id_comunidad)
 
-    # Filtra las rutas basadas en el origen y destino
     miembros = MiembrosComunidad.objects.filter(id_comunidad=comunidad)
     serializer = MiembrosComunidadSerializer(miembros, many=True)
     member_list = []
-    
+
     for member in serializer.data:
         member_list.append(member["id_miembro"])
 
     return Response(member_list)
+
+
+@api_view(["GET"])
+def mis_comunidades(request):
+    id_usuario = request.query_params.get("id_usuario")
+    usuario = Usuario.objects.get(id_usuario=id_usuario)
+
+    comunidad_usuario = MiembrosComunidad.objects.filter(id_miembro=usuario)
+    comunidad_serializer = MiembrosComunidadSerializer(comunidad_usuario, many=True)
+
+    lista_comunidades = []
+    for com in comunidad_serializer.data:
+        comunidad = Comunidades.objects.get(id_comunidad=com["id_comunidad"])
+        serializer_data = ComunidadSerializer(comunidad)
+        lista_comunidades.append(serializer_data.data)
+
+    return Response(lista_comunidades)

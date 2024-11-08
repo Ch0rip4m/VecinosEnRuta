@@ -117,6 +117,7 @@ export default function Solicitudes() {
   };
 
   const handleSelectRow = (row) => {
+    console.log(row)
     setSelectedRow(row); // Guardar la fila seleccionada
     setOpenModal(true); // Abrir el modal
   };
@@ -152,13 +153,15 @@ export default function Solicitudes() {
                   onClickRowFunction={handleSelectRow}
                 />
               ) : (
-                <Typography variant="body2">No hay solicitudes</Typography>
+                <Grid item xs={12}>
+                  <Typography variant="body2">No hay solicitudes</Typography>
+                </Grid>
               )}
             </Grid>
           )}
 
           {value === 1 && (
-            <Grid container spacing={2}>
+            <Grid container spacing={2} sx={{ textAlign: "center" }}>
               {solicitudesDeComunidad.length > 0 ? (
                 <ListaSolicitud
                   columns={columnsCommunityRequest}
@@ -169,7 +172,9 @@ export default function Solicitudes() {
                   onClickRowFunction={handleSelectRow}
                 />
               ) : (
-                <Typography variant="body2">No hay solicitudes</Typography>
+                <Grid item xs={12}>
+                  <Typography variant="body2">No hay solicitudes</Typography>
+                </Grid>
               )}
             </Grid>
           )}
@@ -184,6 +189,7 @@ export default function Solicitudes() {
           imgURL={selectedRow.id_solicitante.imagen_perfil}
           title="DETALLE DE LA SOLICITUD"
           description={selectedRow.id_solicitante}
+          auxProp={selectedRow.comuna_solicitante}
         />
       )}
     </Container>

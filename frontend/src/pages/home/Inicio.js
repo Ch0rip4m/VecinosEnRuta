@@ -5,11 +5,12 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import VerRuta from "../../components/mapas/VerRuta";
-import ListaSolicitud from "../../components/listas/ListaBoton";
+import ListaBotonInfo from "../../components/listas/ListaInfo";
 import axios from "axios";
 import { BACKEND_URL } from "../../Utils/Variables";
 import SelectorSearch from "../../components/selectores/SelectorSearch";
 import { useSnackbar } from "../../contexts/SnackbarContext";
+import BasicModal from "../../components/modals/InfoModal";
 
 const csrfToken = document.cookie
   .split("; ")
@@ -21,6 +22,15 @@ const columns = [
   { id: "dias", label: "Días" },
   { id: "hora_salida", label: "Salida" },
   { id: "cupos", label: "Cupos" },
+];
+
+const modalInfo = [
+  { id: "marca_vehiculo", label: "Marca" },
+  { id: "modelo_vehiculo", label: "Modelo" },
+  { id: "tipo_de_vehiculo", label: "Tipo de vehículo" },
+  { id: "color_vehiculo", label: "Color" },
+  { id: "patente", label: "Patente" },
+  { id: "ano_vehiculo", label: "Año" },
 ];
 
 function GetSelectorData() {
@@ -46,17 +56,16 @@ function GetSelectorData() {
 export default function Inicio() {
   const [formData, setformData] = useState({});
   const [rutas, setRutas] = useState([]);
-  const [dataTrayectoria, setDataTrayectoria] = useState({});
   const [ordenTrayectoria, setOrdenTrayectoria] = useState([]);
   const [dataExist, setDataExist] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedRow, setSelectedRow] = useState(null);
   const comunas = GetSelectorData();
   const snackbar = useSnackbar();
 
-  // useEffect(() => {
-  //   console.log("Rutas:", rutas);
-  //   console.log("formData:", formData);
-  //   console.log("dataTrayectoria:", dataTrayectoria);
-  // }, [rutas, formData, dataTrayectoria]);
+  useEffect(() => {
+    console.log("Rutas:", rutas);
+  }, [rutas]);
 
   useEffect(() => {
     const email = localStorage.getItem("email");
@@ -76,6 +85,15 @@ export default function Inicio() {
         );
     }
   }, []);
+
+  const handleSelectRow = (row) => {
+    setSelectedRow(row); // Guardar la fila seleccionada
+    setOpenModal(true); // Abrir el modal
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false); // Cerrar el modal
+  };
 
   const hadleSelectRoute = (row) => {
     axios
@@ -207,15 +225,26 @@ export default function Inicio() {
         ) : (
           <VerRuta width="100%" height="320px" />
         )}
-        <ListaSolicitud
+        <ListaBotonInfo
           columns={columns}
           rows={rutas}
           height={550}
           buttonLabel="Unirse"
           onClickRowFunction={hadleSelectRoute}
           onClickButtonFunction={handleRequestRoute}
+          onClickInfoButton={handleSelectRow}
         />
       </Box>
+      {selectedRow && (
+        <BasicModal
+          open={openModal}
+          handleClose={handleCloseModal}
+          modalInfo={modalInfo}
+          imgURL={selectedRow.id_vehiculo.imagen_perfil}
+          title="INFO DEL VEHÍCULO"
+          description={selectedRow.id_vehiculo}
+        />
+      )}
     </Container>
   );
 }

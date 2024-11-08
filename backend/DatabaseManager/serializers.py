@@ -86,7 +86,9 @@ class ComunidadSerializer(serializers.ModelSerializer):
                 ComunidadesUsuario.objects.create(
                     id_usuario=usuario, id_comunidad=comunidad
                 )
-                MiembrosComunidad.objects.create(id_comunidad=comunidad, id_miembro=usuario)
+                MiembrosComunidad.objects.create(
+                    id_comunidad=comunidad, id_miembro=usuario
+                )
             except Comuna.DoesNotExist or Usuario.DoesNotExist:
                 raise serializers.ValidationError(
                     f"La comuna {nombre_comuna} no existe"
@@ -131,6 +133,7 @@ class CalificacionSerializer(serializers.ModelSerializer):
 class RutaSerializer(serializers.ModelSerializer):
     dias = serializers.SerializerMethodField()
     cupos = serializers.SerializerMethodField()
+    id_vehiculo = VehiculoSerializer()
 
     class Meta:
         model = Rutas
@@ -204,27 +207,27 @@ class TrayectoriaSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class RecepcionPasajeroSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = RecepcionPasajeros
-        fields = "__all__"
+# class RecepcionPasajeroSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = RecepcionPasajeros
+#         fields = "__all__"
 
 
-class TrayectoriaRealSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TrayectoriaReal
-        fields = "__all__"
+# class TrayectoriaRealSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = TrayectoriaReal
+#         fields = "__all__"
 
 
-class RecepcionRealSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = RecepecionReal
-        fields = "__all__"
+# class RecepcionRealSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = RecepecionReal
+#         fields = "__all__"
 
 
 class RutaEjecutadaSerializer(serializers.ModelSerializer):
     id_ruta = RutaSerializer()
-    
+
     class Meta:
         model = RutasEjecutadas
         fields = "__all__"
@@ -272,10 +275,10 @@ class OrdenTrayectoriaSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class OrdenTrayectoriaRealSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = OrdenTrayectoriaReal
-        fields = "__all__"
+# class OrdenTrayectoriaRealSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = OrdenTrayectoriaReal
+#         fields = "__all__"
 
 
 class ComunaSerializer(serializers.ModelSerializer):
@@ -353,24 +356,47 @@ class NotificacionesSerializer(serializers.ModelSerializer):
     id_solicitante = UsuarioSerializer()
     id_ruta = RutaSerializer()
     id_comunidad = ComunidadSerializer()
+    comuna_solicitante = serializers.SerializerMethodField()
 
     class Meta:
         model = Notificaciones
-        fields = "__all__"
+        fields = [
+            "id_notificacion",
+            "id_propietario",
+            "id_solicitante",
+            "id_comunidad",
+            "id_ruta",
+            "aceptada",
+            "es_ruta",
+            "es_comunidad",
+            "comuna_solicitante",
+            "tiempo_registro",
+        ]
+        
+    def get_comuna_solicitante(self, obj):
+        # Buscar la relación entre el solicitante y su comuna
+        comuna_usuario = ComunaUsuario.objects.filter(id_usuario=obj.id_solicitante).select_related('id_comuna').first()
+        if comuna_usuario and comuna_usuario.id_comuna:
+            return ComunaSerializer(comuna_usuario.id_comuna).data
+        return None
+
 
 class MiembrosComunidadSerializer(serializers.ModelSerializer):
     id_miembro = UsuarioSerializer()
-    
+
     class Meta:
         model = MiembrosComunidad
         fields = "__all__"
-        
+
+
 class MiembrosRutaSerializer(serializers.ModelSerializer):
     id_miembro = UsuarioSerializer()
+
     class Meta:
         model = MiembrosRuta
         fields = "__all__"
-        
+
+
 class UbicacionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ubicacion

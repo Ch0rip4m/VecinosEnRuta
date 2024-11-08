@@ -80,7 +80,7 @@ export default function CrearRuta() {
         snackbar.success("Ruta creada exitosamente");
         setTimeout(() => {
           window.location.href = "/mis-rutas";
-        }, 2000); 
+        }, 2000);
       })
       .catch((error) => {
         console.error("Error al ingresar la ruta", error);
@@ -128,7 +128,7 @@ export default function CrearRuta() {
         <Typography component="h1" variant="overline" sx={{}}>
           ¡Ingresa los datos de tu ruta!
         </Typography>
-        <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+        <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3, textAlign:"center" }}>
           <Grid container spacing={2} sx={{ mb: 1 }}>
             <Grid item xs={12}>
               <TextField
@@ -197,13 +197,12 @@ export default function CrearRuta() {
             onRouteChange={handleRouteChange}
           />
           <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2, bgcolor: "var(--navbar-color)" }}
-          >
-            Guardar ruta
-          </Button>
+          type="submit"
+          variant="contained"
+          sx={{ mt: 3, mb: 2, bgcolor: "var(--navbar-color)" }}
+        >
+          Guardar ruta
+        </Button>
         </Box>
       </Box>
     </Container>

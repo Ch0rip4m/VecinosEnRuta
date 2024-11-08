@@ -138,7 +138,7 @@ export default function MapaUbicacion() {
       <Button
         color="primary"
         variant="contained"
-        sx={{ mt: 2 }}
+        sx={{ mt: 2 ,bgcolor: "var(--navbar-color)"}}
         onClick={handleStopShareLocation}
       >
         Dejar de ver ubicación

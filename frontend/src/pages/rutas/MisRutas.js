@@ -122,6 +122,7 @@ export default function MisRutas() {
               variant="contained"
               fullWidth
               onClick={handleButtonCreate}
+              sx={{bgcolor: "var(--navbar-color)"}}
             >
               Crear Ruta
             </Button>
@@ -132,6 +133,7 @@ export default function MisRutas() {
               variant="contained"
               fullWidth
               onClick={handleButtonEdit}
+              sx={{bgcolor: "var(--navbar-color)"}}
             >
               Editar Ruta
             </Button>
@@ -157,7 +159,7 @@ export default function MisRutas() {
             <SimpleSelectLocation
               required
               fullWidth
-              label="Miembros de ruta"
+              label="Selec. Ruta"
               name="nombre_ruta"
               values={nombresRutas}
               onChange={handleDataChange}
@@ -170,6 +172,7 @@ export default function MisRutas() {
               variant="contained"
               fullWidth
               onClick={handleInfoMembers}
+              sx={{bgcolor: "var(--navbar-color)"}}
             >
               ver miembros
             </Button>

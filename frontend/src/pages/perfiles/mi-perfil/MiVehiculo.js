@@ -168,6 +168,7 @@ export default function MiVehiculo() {
                   variant="contained"
                   color="primary"
                   onClick={() => setIsEditing(false)}
+                  sx={{bgcolor: "red"}}
                 >
                   Cancelar Edición
                 </Button>
@@ -176,6 +177,7 @@ export default function MiVehiculo() {
                   variant="contained"
                   color="primary"
                   onClick={() => setIsEditing(true)}
+                  sx={{bgcolor: "var(--navbar-color)"}}
                 >
                   Editar vehículo
                 </Button>
@@ -275,7 +277,7 @@ export default function MiVehiculo() {
                   type="submit"
                   variant="contained"
                   color="primary"
-                  sx={{ mt: 2 }}
+                  sx={{ mt: 2, bgcolor: "var(--navbar-color)" }}
                 >
                   Guardar Cambios
                 </Button>
@@ -296,6 +298,7 @@ export default function MiVehiculo() {
                   variant="contained"
                   color="primary"
                   onClick={() => setIsEditing(false)}
+                  sx={{bgcolor: "red"}}
                 >
                   Cancelar
                 </Button>
@@ -304,6 +307,7 @@ export default function MiVehiculo() {
                   variant="contained"
                   color="primary"
                   onClick={() => setIsEditing(true)}
+                  sx={{bgcolor: "var(--navbar-color)"}}
                 >
                   Añadir vehículo
                 </Button>
@@ -437,7 +441,7 @@ export default function MiVehiculo() {
                   type="submit"
                   variant="contained"
                   color="primary"
-                  sx={{ mt: 2 }}
+                  sx={{ mt: 2, bgcolor: "var(--navbar-color)" }}
                 >
                   Guardar Cambios
                 </Button>

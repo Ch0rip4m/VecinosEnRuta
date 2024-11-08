@@ -7,8 +7,9 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Button from "@mui/material/Button"; // Importamos Button de Material-UI
+import { Box } from "@mui/material";
 
-export default function ListaSolicitud(props) {
+export default function ListaBotonInfo(props) {
   const handleRowClick = (row) => {
     if (props.onClickRowFunction) {
       props.onClickRowFunction(row);
@@ -22,6 +23,13 @@ export default function ListaSolicitud(props) {
     }
   };
 
+  const handleInfoClick = (e, row) => {
+    e.stopPropagation();
+    if (props.onClickInfoButton) {
+      props.onClickInfoButton(row);
+    }
+  };
+
   return (
     <Paper sx={{ width: "100%", overflow: "hidden" }}>
       <TableContainer sx={{ maxHeight: props.height, mt: 1 }}>
@@ -32,7 +40,7 @@ export default function ListaSolicitud(props) {
                 <TableCell
                   key={column.id}
                   align="center"
-                  sx={{ padding: "4px 8px" }}
+                  sx={{ padding: "2px 5px" }}
                 >
                   {column.label}
                 </TableCell>
@@ -55,7 +63,7 @@ export default function ListaSolicitud(props) {
                       <TableCell
                         key={`${column.id}-${rowIndex}`}
                         align="center"
-                        sx={{ padding: "4px 8px" }}
+                        sx={{ padding: "2px 5px" }}
                       >
                         {Array.isArray(value)
                           ? value.join(", ")
@@ -67,14 +75,30 @@ export default function ListaSolicitud(props) {
                   })}
                   {/* Aquí agregamos el botón en cada fila */}
                   <TableCell align="center">
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={(e) => handleButtonClick(e,row)}
-                      sx={{bgcolor: "var(--navbar-color)"}}
-                    >
-                      {props.buttonLabel}
-                    </Button>
+                    <Box sx= {{display:"flex", gap: 0.5}}>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={(e) => handleInfoClick(e, row)}
+                        sx={{
+                          bgcolor: "var(--navbar-color)",
+                          padding: "1px 2px",
+                        }}
+                      >
+                        INFO
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={(e) => handleButtonClick(e, row)}
+                        sx={{
+                          bgcolor: "var(--navbar-color)",
+                          padding: "1px 2px",
+                        }}
+                      >
+                        {props.buttonLabel}
+                      </Button>
+                    </Box>
                   </TableCell>
                 </TableRow>
               );

@@ -27,6 +27,7 @@ export default function BasicModal({
   description,
   imgURL,
   modalInfo,
+  auxProp
 }) {
   return (
     <div>
@@ -46,6 +47,11 @@ export default function BasicModal({
               <Typography sx={{ textAlign: "center" }}>{label}: {value}</Typography>
             );
           })}
+          {auxProp && (
+            <Typography sx={{ textAlign: "center" }}>
+              Comuna: {auxProp.nombre_comuna}
+            </Typography>
+          )}
         </Box>
       </Modal>
     </div>

@@ -190,8 +190,6 @@ class Region(models.Model):
 class Comuna(models.Model):
     id_comuna = models.AutoField(primary_key=True, verbose_name="ID de la comuna")
     nombre_comuna = models.CharField(max_length=50, verbose_name="Nombre de la comuna")
-    latitud = models.FloatField(verbose_name="Latitud", default=0)
-    longitud = models.FloatField(verbose_name="Longitud", default=0)
 
     class Meta:
         verbose_name = "Comuna"
@@ -631,32 +629,32 @@ class OrdenTrayectoria(models.Model):
         return f"{self.orden} - {self.latitud} - {self.longitud}"
 
 
-class RecepcionPasajeros(models.Model):
-    id_recepcion = models.AutoField(primary_key=True, verbose_name="ID del a recepcion")
-    id_pasajero = models.ForeignKey(
-        Usuario,
-        to_field="id_usuario",
-        on_delete=models.CASCADE,
-        verbose_name="ID del pasajero",
-    )
-    id_ruta = models.ForeignKey(
-        Rutas,
-        to_field="id_ruta",
-        on_delete=models.CASCADE,
-        verbose_name="ID de la ruta",
-    )
-    latitud = models.FloatField(verbose_name="Latitud")
-    longitud = models.FloatField(verbose_name="Longitud")
-    tiempo_registro = models.DateTimeField(
-        auto_now_add=True, verbose_name="Registro del momento el recepcion"
-    )
+# class RecepcionPasajeros(models.Model):
+#     id_recepcion = models.AutoField(primary_key=True, verbose_name="ID del a recepcion")
+#     id_pasajero = models.ForeignKey(
+#         Usuario,
+#         to_field="id_usuario",
+#         on_delete=models.CASCADE,
+#         verbose_name="ID del pasajero",
+#     )
+#     id_ruta = models.ForeignKey(
+#         Rutas,
+#         to_field="id_ruta",
+#         on_delete=models.CASCADE,
+#         verbose_name="ID de la ruta",
+#     )
+#     latitud = models.FloatField(verbose_name="Latitud")
+#     longitud = models.FloatField(verbose_name="Longitud")
+#     tiempo_registro = models.DateTimeField(
+#         auto_now_add=True, verbose_name="Registro del momento el recepcion"
+#     )
 
-    class Meta:
-        verbose_name = "RecepcionPasajero"
-        verbose_name_plural = "RecepcionPasajeros"
+#     class Meta:
+#         verbose_name = "RecepcionPasajero"
+#         verbose_name_plural = "RecepcionPasajeros"
 
-    def __str__(self):
-        return f"{self.id_recepcion} - {self.latitud} - {self.longitud}"
+#     def __str__(self):
+#         return f"{self.id_recepcion} - {self.latitud} - {self.longitud}"
 
 
 class Notificaciones(models.Model):
@@ -709,93 +707,93 @@ class Notificaciones(models.Model):
 # EJECUCIÓN
 
 
-class TrayectoriaReal(models.Model):
-    id_trayectoria = models.AutoField(
-        primary_key=True, verbose_name="ID de la trayectoria"
-    )
-    id_ruta = models.ForeignKey(
-        Rutas,
-        to_field="id_ruta",
-        on_delete=models.CASCADE,
-        verbose_name="ID de la ruta",
-    )
-    tiempo_registro = models.DateTimeField(
-        auto_now_add=True, verbose_name="Fecha de creacion de trayectoria"
-    )
+# class TrayectoriaReal(models.Model):
+#     id_trayectoria = models.AutoField(
+#         primary_key=True, verbose_name="ID de la trayectoria"
+#     )
+#     id_ruta = models.ForeignKey(
+#         Rutas,
+#         to_field="id_ruta",
+#         on_delete=models.CASCADE,
+#         verbose_name="ID de la ruta",
+#     )
+#     tiempo_registro = models.DateTimeField(
+#         auto_now_add=True, verbose_name="Fecha de creacion de trayectoria"
+#     )
 
-    class Meta:
-        verbose_name = "TrayectoriaReal"
-        verbose_name_plural = "TrayectoriasReales"
+#     class Meta:
+#         verbose_name = "TrayectoriaReal"
+#         verbose_name_plural = "TrayectoriasReales"
 
-    def __str__(self):
-        return self.id_trayectoria
-
-
-class OrdenTrayectoriaReal(models.Model):
-    id_trayec_real = models.AutoField(
-        primary_key=True, verbose_name="ID de la trayectoria real"
-    )
-    id_trayectoria = models.ForeignKey(
-        TrayectoriaReal,
-        to_field="id_trayectoria",
-        on_delete=models.CASCADE,
-        verbose_name="ID de trayectoria",
-    )
-    orden_real = models.IntegerField(verbose_name="Orden real de la trayectoria")
-    latitud = models.FloatField(verbose_name="Latitud")
-    longitud = models.FloatField(verbose_name="Longitud")
-
-    class Meta:
-        verbose_name = "OrdenTrayectoriaReal"
-        verbose_name_plural = "OrdenTrayectoriasReales"
-
-    def __str__(self):
-        return f"{self.orden_real} - {self.latitud} - {self.longitud}"
+#     def __str__(self):
+#         return self.id_trayectoria
 
 
-@receiver(post_save, sender=TrayectoriaReal)
-def reiniciar_contador(sender, instance, created, **kwargs):
-    if created:
-        # Si se creó una nueva instancia de TrayectoriaReal, reiniciar el contador de OrdenTrayectoriaReal
-        OrdenTrayectoriaReal.objects.filter(id_trayectoria=instance).update(
-            orden_real=1
-        )
+# class OrdenTrayectoriaReal(models.Model):
+#     id_trayec_real = models.AutoField(
+#         primary_key=True, verbose_name="ID de la trayectoria real"
+#     )
+#     id_trayectoria = models.ForeignKey(
+#         TrayectoriaReal,
+#         to_field="id_trayectoria",
+#         on_delete=models.CASCADE,
+#         verbose_name="ID de trayectoria",
+#     )
+#     orden_real = models.IntegerField(verbose_name="Orden real de la trayectoria")
+#     latitud = models.FloatField(verbose_name="Latitud")
+#     longitud = models.FloatField(verbose_name="Longitud")
+
+#     class Meta:
+#         verbose_name = "OrdenTrayectoriaReal"
+#         verbose_name_plural = "OrdenTrayectoriasReales"
+
+#     def __str__(self):
+#         return f"{self.orden_real} - {self.latitud} - {self.longitud}"
 
 
-class RecepecionReal(models.Model):
-    id_recepecion_real = models.AutoField(
-        primary_key=True, verbose_name="ID de la recepcion real"
-    )
-    id_recepcion = models.ForeignKey(
-        RecepcionPasajeros,
-        to_field="id_recepcion",
-        on_delete=models.CASCADE,
-        verbose_name="ID de la recepcion",
-    )
-    id_pasajero = models.ForeignKey(
-        Usuario,
-        to_field="id_usuario",
-        on_delete=models.CASCADE,
-        verbose_name="ID del pasajero",
-    )
-    id_ruta = models.ForeignKey(
-        Rutas,
-        to_field="id_ruta",
-        on_delete=models.CASCADE,
-        verbose_name="ID de la ruta",
-    )
-    latitud = models.FloatField(verbose_name="Latitud")
-    longitud = models.FloatField(verbose_name="Longitud")
-    tiempo_registro = models.DateTimeField(
-        auto_now_add=True, verbose_name="Registro del momento el recepcion real"
-    )
+# @receiver(post_save, sender=TrayectoriaReal)
+# def reiniciar_contador(sender, instance, created, **kwargs):
+#     if created:
+#         # Si se creó una nueva instancia de TrayectoriaReal, reiniciar el contador de OrdenTrayectoriaReal
+#         OrdenTrayectoriaReal.objects.filter(id_trayectoria=instance).update(
+#             orden_real=1
+#         )
 
-    class Meta:
-        verbose_name = "RecepecionReal"
-        verbose_name_plural = "RecepcionesReales"
 
-    def __str__(self):
-        return f"{self.id_recepecion_real} - {self.latitud} - {self.longitud}"
+# class RecepecionReal(models.Model):
+#     id_recepecion_real = models.AutoField(
+#         primary_key=True, verbose_name="ID de la recepcion real"
+#     )
+#     id_recepcion = models.ForeignKey(
+#         RecepcionPasajeros,
+#         to_field="id_recepcion",
+#         on_delete=models.CASCADE,
+#         verbose_name="ID de la recepcion",
+#     )
+#     id_pasajero = models.ForeignKey(
+#         Usuario,
+#         to_field="id_usuario",
+#         on_delete=models.CASCADE,
+#         verbose_name="ID del pasajero",
+#     )
+#     id_ruta = models.ForeignKey(
+#         Rutas,
+#         to_field="id_ruta",
+#         on_delete=models.CASCADE,
+#         verbose_name="ID de la ruta",
+#     )
+#     latitud = models.FloatField(verbose_name="Latitud")
+#     longitud = models.FloatField(verbose_name="Longitud")
+#     tiempo_registro = models.DateTimeField(
+#         auto_now_add=True, verbose_name="Registro del momento el recepcion real"
+#     )
+
+#     class Meta:
+#         verbose_name = "RecepecionReal"
+#         verbose_name_plural = "RecepcionesReales"
+
+#     def __str__(self):
+#         return f"{self.id_recepecion_real} - {self.latitud} - {self.longitud}"
 
 
 class RutasEjecutadas(models.Model):

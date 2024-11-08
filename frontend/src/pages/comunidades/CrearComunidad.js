@@ -43,7 +43,7 @@ export default function CrearComunidad() {
   const [formData, setformData] = useState({});
   const [ubicacion, setUbicacion] = useState({});
   const comunas = GetSelectorData("comunas");
-  const snackbar = useSnackbar()
+  const snackbar = useSnackbar();
 
   useEffect(() => {
     console.log("formData: ", formData);
@@ -73,11 +73,11 @@ export default function CrearComunidad() {
         snackbar.success("Comunidad creada exitosamente");
         setTimeout(() => {
           window.location.href = "/comunidades";
-        }, 2000); 
+        }, 2000);
       })
       .catch((error) => {
         console.error("Error al ingresar la comunidad", error);
-        snackbar.error("Error al crear la comunidad")
+        snackbar.error("Error al crear la comunidad");
       });
   };
 
@@ -109,8 +109,8 @@ export default function CrearComunidad() {
         <Typography component="h1" variant="overline" sx={{}}>
           ¡Ingresa los datos de tu comunidad!
         </Typography>
-        <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
-          <Grid container spacing={2} sx={{ mb: 1 }}>
+        <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3, textAlign: "center" }}>
+          <Grid container spacing={2} sx={{ mb: 1}}>
             <Grid item xs={12}>
               <TextField
                 value={formData.nombre_comunidad || ""}
@@ -132,6 +132,11 @@ export default function CrearComunidad() {
                 name="nombre_comuna"
               />
             </Grid>
+            <Grid item xs={12}>
+              <Typography variant="overline" aling="center" sx={{ mt: 1 }}>
+                ¡Ubica tu comunidad!
+              </Typography>
+            </Grid>
           </Grid>
           <UbicarComunidad
             width="100%"
@@ -140,9 +145,8 @@ export default function CrearComunidad() {
           />
           <Button
             type="submit"
-            fullWidth
             variant="contained"
-            sx={{ mt: 3, mb: 2, bgcolor: "var(--navbar-color)" }}
+            sx={{ mt: 3, mb: 2, bgcolor: "var(--navbar-color)", textAlign:"center"}}
           >
             Crear comunidad
           </Button>

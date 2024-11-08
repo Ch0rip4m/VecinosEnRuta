@@ -21,7 +21,7 @@ const csrfToken = document.cookie
   ?.split("=")[1];
 
 const columns = [
-  { id: "id_miembro", obj_id: "nombre_usuario", label: "Contacto" },
+  { id: "nombre_usuario", label: "Contacto" },
 ];
 
 export default function Contactos(props) {
@@ -51,8 +51,8 @@ export default function Contactos(props) {
           setContacts(response.data);
 
           const contactOptions = response.data.map((contact) => ({
-            label: contact.id_miembro.nombre_usuario,
-            value: contact.id_miembro.id_usuario,
+            label: contact.nombre_usuario,
+            value: contact.id_usuario,
           }));
           setOptions(contactOptions);
         }

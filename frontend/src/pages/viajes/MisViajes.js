@@ -87,7 +87,10 @@ export default function MisViajes() {
   useEffect(() => {
     // Redirigir a la nueva página cuando los datos de trayectoria estén listos
     if (dataExist && ordenTrayectoria.length > 0) {
-      localStorage.setItem("ordenTrayectoria", JSON.stringify(ordenTrayectoria));
+      localStorage.setItem(
+        "ordenTrayectoria",
+        JSON.stringify(ordenTrayectoria)
+      );
       window.location.href = "/ruta-en-ejecucion";
     }
   }, [dataExist, ordenTrayectoria]);
@@ -99,7 +102,10 @@ export default function MisViajes() {
         `${BACKEND_URL}/db-manager/iniciar-ruta/`,
         {},
         {
-          params: { id_ruta: row.id_ruta, id_usuario: localStorage.getItem("user_id") },
+          params: {
+            id_ruta: row.id_ruta,
+            id_usuario: localStorage.getItem("user_id"),
+          },
           headers: { "X-CSRFToken": csrfToken },
           withCredentials: true,
         }
@@ -118,10 +124,12 @@ export default function MisViajes() {
         }
       })
       .catch((error) => {
-        console.error("Error al iniciar la ruta o obtener los datos de trayectoria:", error);
+        console.error(
+          "Error al iniciar la ruta o obtener los datos de trayectoria:",
+          error
+        );
       });
   };
-
 
   return (
     <Container component="main" maxWidth="xs">
@@ -149,7 +157,9 @@ export default function MisViajes() {
                   onClickButtonFunction={handleStartRoute}
                 />
               ) : (
-                <Typography variant="body2">No hay solicitudes</Typography>
+                <Grid item xs={12}>
+                  <Typography variant="body2">No hay viajes programados</Typography>
+                </Grid>
               )}
             </Grid>
           )}
@@ -163,7 +173,9 @@ export default function MisViajes() {
                   height={550}
                 />
               ) : (
-                <Typography variant="body2">No hay solicitudes</Typography>
+                <Grid item xs={12}>
+                  <Typography variant="body2">No has realizado viajes</Typography>
+                </Grid>
               )}
             </Grid>
           )}

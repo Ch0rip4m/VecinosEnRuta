@@ -1,4 +1,10 @@
-import { Container, Box, Grid, Button, Typography, Snackbar } from "@mui/material";
+import {
+  Container,
+  Box,
+  Grid,
+  Button,
+  Typography,
+} from "@mui/material";
 import ReadList from "../../components/listas/ListaLectura";
 import ListaSolicitud from "../../components/listas/ListaBoton";
 import VerComunidades from "../../components/mapas/MapaComunidades";
@@ -32,7 +38,7 @@ export default function Comunidades() {
   const [selectCommunity, setSelectCommunity] = useState([]);
   const [dataExist, setDataExist] = useState(false);
   const [formData, setformData] = useState({});
-  const snackbar = useSnackbar(); 
+  const snackbar = useSnackbar();
 
   useEffect(() => {
     axios
@@ -80,11 +86,6 @@ export default function Comunidades() {
           const user_community = response.data.comunidad;
           if (user_community) {
             setUserCommunity(user_community);
-            const getNames = user_community.map((item) => ({
-              label: item.nombre_comunidad,
-              value: item.id_comunidad,
-            }));
-            setNombresComunidades(getNames)
           }
         })
         .catch((error) =>
@@ -92,6 +93,25 @@ export default function Comunidades() {
         );
     }
   }, []);
+
+  useEffect(() => {
+    axios
+      .get(BACKEND_URL + "/db-manager/mis-comunidades/", {
+        params: { id_usuario: localStorage.getItem("user_id") },
+        withCredentials: true,
+      })
+      .then((response) => {
+        console.log(response.data);
+        const getNames = response.data.map((item) => ({
+          label: item.nombre_comunidad,
+          value: item.id_comunidad,
+        }));
+        setNombresComunidades(getNames);
+      })
+      .catch((error) => {
+        console.error("error al obtener los datos", error);
+      });
+  },[])
 
   const handleButtonCreate = () => {
     window.location.href = "/comunidades/crear";
@@ -118,18 +138,21 @@ export default function Comunidades() {
         BACKEND_URL + "/db-manager/solicitar-unirse/",
         {},
         {
-          params: { id_comunidad: row.id_comunidad, id_solicitante: localStorage.getItem('user_id') },
+          params: {
+            id_comunidad: row.id_comunidad,
+            id_solicitante: localStorage.getItem("user_id"),
+          },
           headers: { "X-CSRFToken": csrfToken },
           withCredentials: true,
         }
       )
       .then((response) => {
         console.log(response.data);
-        snackbar.success("Solicitud enviada")
+        snackbar.success("Solicitud enviada");
       })
       .catch((error) => {
         console.error("Error al hacer la solicitud", error);
-        snackbar.error("Error al enviar la solicitud")
+        snackbar.error("Error al enviar la solicitud");
       });
   };
 
@@ -146,11 +169,11 @@ export default function Comunidades() {
   };
 
   useEffect(() => {
-    console.log("formData:", formData)
-    console.log("comunidades:", comunidades)
-    console.log("nombresComunidades:", nombresComunidades)
-    console.log("dataMembers:", dataMembers)
-  },[comunidades, nombresComunidades, dataMembers, formData])
+    console.log("formData:", formData);
+    console.log("comunidades:", comunidades);
+    console.log("nombresComunidades:", nombresComunidades);
+    console.log("dataMembers:", dataMembers);
+  }, [comunidades, nombresComunidades, dataMembers, formData]);
 
   return (
     <Container maxWidth="xs">
@@ -165,12 +188,18 @@ export default function Comunidades() {
               variant="contained"
               fullWidth
               onClick={handleButtonCreate}
+              sx={{ bgcolor: "var(--navbar-color)" }}
             >
               crear comunidad
             </Button>
           </Grid>
           <Grid item xs={6} sm={6}>
-            <Button color="primary" variant="contained" fullWidth>
+            <Button
+              color="primary"
+              variant="contained"
+              fullWidth
+              sx={{ bgcolor: "var(--navbar-color)" }}
+            >
               Editar comunidad
             </Button>
           </Grid>
@@ -184,7 +213,7 @@ export default function Comunidades() {
             <SimpleSelectLocation
               required
               fullWidth
-              label="Miembros de comunidad"
+              label="Select. Comunidad"
               name="nombre_comunidad"
               values={nombresComunidades}
               onChange={handleDataChange}
@@ -197,6 +226,7 @@ export default function Comunidades() {
               variant="contained"
               fullWidth
               onClick={handleInfoMembers}
+              sx={{bgcolor: "var(--navbar-color)"}}
             >
               ver miembros
             </Button>

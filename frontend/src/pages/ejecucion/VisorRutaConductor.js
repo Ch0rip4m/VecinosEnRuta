@@ -144,7 +144,7 @@ export default function VisorConductor() {
       <Button
         variant="contained"
         color="primary"
-        sx={{ mt: 2 }}
+        sx={{ mt: 2, bgcolor: "var(--navbar-color)" }}
         onClick={() =>
           mapInstance.current
             .getView()
@@ -156,7 +156,7 @@ export default function VisorConductor() {
       <Button
         variant="contained"
         color="primary"
-        sx={{ mt: 2 }}
+        sx={{ mt: 2 ,bgcolor: "var(--navbar-color)"}}
         onClick={handleEndRoute}
       >
         Finalizar Ruta
