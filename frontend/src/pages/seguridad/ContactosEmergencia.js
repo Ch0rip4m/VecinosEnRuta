@@ -20,24 +20,23 @@ const csrfToken = document.cookie
   .find((row) => row.startsWith("csrftoken="))
   ?.split("=")[1];
 
-const columns = [
-  { id: "nombre_usuario", label: "Contacto" },
-];
+const columns = [{ id: "nombre_usuario", label: "Contacto" }];
 
 export default function Contactos(props) {
   const [formData, setFormData] = useState({});
+  const [denuncia, setDenuncia] = useState({});
   const [selectContacts, setSelectContacts] = useState({});
   const [contacts, setContacts] = useState([]);
   const [options, setOptions] = useState([]);
+  const [optionsR, setOptionsR] = useState([]);
+  const [selectContactsR, setSelectContactsR] = useState({});
   const [value, setValue] = useState(0);
   const [isShearing, setIsShearing] = useState(false);
   const [locationInterval, setLocationInterval] = useState(null);
-  //const [panicLocation, setPanicLocation] = useState({});
   const snackbar = useSnackbar();
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
-    console.log(value);
   };
 
   useEffect(() => {
@@ -62,6 +61,26 @@ export default function Contactos(props) {
       });
   }, []);
 
+  useEffect(() => {
+    axios
+      .get(`${BACKEND_URL}/db-manager/conductores-rutas/`, {
+        params: { id_usuario: localStorage.getItem("user_id") },
+        withCredentials: true,
+      })
+      .then((response) => {
+        if (response.data) {
+          const contactOptions = response.data.map((contact) => ({
+            label: contact.nombre_usuario,
+            value: contact.id_usuario,
+          }));
+          setOptionsR(contactOptions);
+        }
+      })
+      .catch((error) => {
+        console.error("Error al obtener a los conductores", error);
+      });
+  }, []);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -75,7 +94,6 @@ export default function Contactos(props) {
         withCredentials: true,
       })
       .then((response) => {
-        console.log(response.data);
         snackbar?.success("Correos ingresados exitosamente");
       })
       .catch((error) => {
@@ -91,6 +109,15 @@ export default function Contactos(props) {
 
   const handleDataChange = (selectedContact, name) => {
     setSelectContacts({ ...selectContacts, [name]: selectedContact.value });
+  };
+
+  const handleTextChangeR = (event) => {
+    const { name, value } = event.target;
+    setDenuncia({ ...denuncia, [name]: value });
+  };
+
+  const handleDataChangeR = (selectedContactR, name) => {
+    setDenuncia({ ...denuncia, [name]: selectedContactR.value });
   };
 
   const handleShareLocation = () => {
@@ -167,7 +194,6 @@ export default function Contactos(props) {
           longitud: longitude,
           timestamp: formattedTimestamp,
         };
-        console.log("panicLocation", panicLocation);
         axios
           .post(BACKEND_URL + "/db-manager/boton-de-panico/", panicLocation, {
             params: { id_usuario: localStorage.getItem("user_id") },
@@ -175,7 +201,6 @@ export default function Contactos(props) {
             withCredentials: true,
           })
           .then((response) => {
-            console.log("Alerta enviada con exito");
             snackbar.success("Alerta enviada con exito");
           })
           .catch((error) => {
@@ -184,6 +209,25 @@ export default function Contactos(props) {
           });
       });
     }
+  };
+
+  const handleDenuncia = () => {
+    const denunciaToSend = {
+      ...denuncia,
+      id_denunciante: localStorage.getItem("user_id"),
+    };
+    console.log(denunciaToSend);
+    axios.post(BACKEND_URL + "/db-manager/denuncias/", denunciaToSend, {
+      headers: { "X-CSRFToken": csrfToken },
+      withCredentials: true,
+    })
+    .then((response) => {
+      snackbar.success("Denuncia enviada con exito");
+    })
+    .catch((error) => {
+      console.error("Error al enviar Denuncia", error);
+      snackbar.error("Error al enviar Denuncia");
+    });
   };
 
   return (
@@ -196,10 +240,10 @@ export default function Contactos(props) {
         }}
       >
         <Tabs value={value} onChange={handleChange} variant="scrollable">
-          <Tab label="Contactos" />
           <Tab label="Botón de pánico" />
           <Tab label="Compartir ubicación" />
           <Tab label="Recibir ubicación" />
+          <Tab label="Denuncias" />
         </Tabs>
         <Box sx={{ mt: 2, width: "100%", textAlign: "center" }}>
           {value === 0 && (
@@ -232,19 +276,17 @@ export default function Contactos(props) {
               >
                 Guardar contactos
               </Button>
-            </>
-          )}
-          {value === 1 && (
-            <>
+              <Grid item xs={12}>
               <Typography variant="overline" sx={{ mt: 2 }}>
                 En caso de que te sientas incómodo en tu viaje, presiona este
-                botón.
+                  botón para enviar un correo de alerta automaticamente.
               </Typography>
+              </Grid>
               <Grid container spacing={2} sx={{ mt: 2 }}>
                 <Grid item xs={12}>
                   <Button
                     variant="contained"
-                    sx={{ mt: 2, mb: 2, padding: 10, bgcolor: "red" }}
+                    sx={{ mb: 2, padding: 10, bgcolor: "red" }}
                     onClick={handleSendAlert}
                   >
                     botón de pánico
@@ -253,13 +295,13 @@ export default function Contactos(props) {
               </Grid>
             </>
           )}
-          {value === 2 && (
+          {value === 1 && (
             <>
               <Typography
                 variant="overline"
                 sx={{ mt: 1, mb: 1, textAlign: "center" }}
               >
-                Aquí puedes elegir contacto a los que les compartiras ubicación
+                Aquí puedes elegir el contacto compartiras ubicación (miembros de las comunidades a las que perteneces)
               </Typography>
               <Grid container spacing={2} sx={{ mt: 1 }}>
                 <Grid item xs={12}>
@@ -274,7 +316,6 @@ export default function Contactos(props) {
                   />
                 </Grid>
               </Grid>
-
               <Button
                 variant="contained"
                 sx={{ mt: 2, mb: 2, bgcolor: "var(--navbar-color)" }}
@@ -284,7 +325,7 @@ export default function Contactos(props) {
               </Button>
             </>
           )}
-          {value === 3 && (
+          {value === 2 && (
             <>
               <Typography
                 variant="overline"
@@ -303,6 +344,48 @@ export default function Contactos(props) {
                   />
                 </Grid>
               </Grid>
+            </>
+          )}
+          {value === 3 && (
+            <>
+              <Typography
+                variant="overline"
+                sx={{ mt: 1, mb: 1, textAlign: "center" }}
+              >
+                Aquí puedes registrar las quejas respecto a los conductores de
+                tus rutas
+              </Typography>
+              <Grid container spacing={2} sx={{ mt: 1 }}>
+                <Grid item xs={12}>
+                  <SimpleSelectLocation
+                    values={optionsR}
+                    formData={selectContactsR}
+                    onChange={handleDataChangeR}
+                    required
+                    fullWidth
+                    label="Nombre conductor"
+                    name="id_denunciado"
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    value={denuncia.info_denuncia || ""}
+                    name="info_denuncia"
+                    fullWidth
+                    onChange={handleTextChangeR}
+                    label="Escriba su denuncia aqui"
+                    maxRows={5}
+                    multiline
+                  />
+                </Grid>
+              </Grid>
+              <Button
+                variant="contained"
+                sx={{ mt: 2, mb: 2, bgcolor: "var(--navbar-color)" }}
+                onClick={handleDenuncia}
+              >
+                Enviar denuncia
+              </Button>
             </>
           )}
         </Box>

@@ -401,3 +401,8 @@ class UbicacionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ubicacion
         fields = "__all__"
+        
+class DenunciasSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Denuncias
+        fields = "__all__"

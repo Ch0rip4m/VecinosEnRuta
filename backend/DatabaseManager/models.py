@@ -868,3 +868,30 @@ class Ubicacion(models.Model):
 
     def __str__(self):
         return f"{self.id_emisor} - {self.id_receptor}"
+    
+class Denuncias(models.Model):
+    id_denunciante = models.ForeignKey(
+        Usuario,
+        to_field="id_usuario",
+        on_delete=models.CASCADE,
+        related_name="usuario_denunciante",
+        verbose_name="id del usuario denunciante",
+    )
+    id_denunciado = models.ForeignKey(
+        Usuario,
+        to_field="id_usuario",
+        on_delete=models.CASCADE,
+        related_name="usuario_denunciado",
+        verbose_name="id del usuario denunciado",
+    )
+    info_denuncia = models.TextField(
+        max_length=1000, verbose_name="Info denuncia", default=None
+    )
+    tiempo_registro = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        verbose_name = "Denuncia"
+        verbose_name_plural = "Denuncias"
+
+    def __str__(self):
+        return f"{self.id_denunciante} - {self.id_denunciado}"

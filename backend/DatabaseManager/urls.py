@@ -48,6 +48,7 @@ router.register(
     r"contactos-emergencia", ContactosEmergeciaViewSet, basename="contactos-emergencia"
 )
 router.register(r"notificaciones", NotificacionesViewSet, basename="notificaciones")
+router.register(r"denuncias", DenunciasViewSet, basename="denuncias")
 
 
 urlpatterns = [
@@ -88,4 +89,5 @@ urlpatterns = [
     path("miembros-ruta/", miembros_ruta, name="miembros_ruta"),
     path("miembros-comunidad/", miembros_comunidad, name="miembros_comunidad"),
     path("mis-comunidades/", mis_comunidades, name="mis_comunidades"),
+    path("conductores-rutas/", conductores_rutas, name="conductores_rutas"),
 ]
