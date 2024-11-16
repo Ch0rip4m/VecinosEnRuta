@@ -442,6 +442,7 @@ export default function MiVehiculo() {
                   variant="contained"
                   color="primary"
                   sx={{ mt: 2, bgcolor: "var(--navbar-color)" }}
+                  disabled={!profileImage}
                 >
                   Guardar Cambios
                 </Button>

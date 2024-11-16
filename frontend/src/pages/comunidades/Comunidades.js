@@ -46,10 +46,9 @@ export default function Comunidades() {
         params: {
           id_usuario: localStorage.getItem("user_id"),
         },
-        withCredentials: true, // Si necesitas enviar cookies
+        withCredentials: true, 
       })
       .then((response) => {
-        //console.log(response.data);
         setComunidades(response.data);
       })
       .catch((error) => {
@@ -63,7 +62,6 @@ export default function Comunidades() {
         withCredentials: true,
       })
       .then((response) => {
-        //console.log(response.data);
         const getCoordinates = response.data.map((item) => [
           item.longitud,
           item.latitud,
@@ -83,7 +81,7 @@ export default function Comunidades() {
           withCredentials: true,
         })
         .then((response) => {
-          const user_community = response.data.comunidad;
+          const user_community = response.data.comunidades;
           if (user_community) {
             setUserCommunity(user_community);
           }
@@ -101,7 +99,6 @@ export default function Comunidades() {
         withCredentials: true,
       })
       .then((response) => {
-        console.log(response.data);
         const getNames = response.data.map((item) => ({
           label: item.nombre_comunidad,
           value: item.id_comunidad,
@@ -124,7 +121,6 @@ export default function Comunidades() {
         withCredentials: true,
       })
       .then((response) => {
-        console.log(response.data);
         setDataMembers(response.data);
       })
       .catch((error) => {
@@ -147,7 +143,6 @@ export default function Comunidades() {
         }
       )
       .then((response) => {
-        console.log(response.data);
         snackbar.success("Solicitud enviada");
       })
       .catch((error) => {
@@ -158,7 +153,6 @@ export default function Comunidades() {
 
   const handleSelectCommunity = (row) => {
     setSelectCommunity([row.longitud, row.latitud]);
-    console.log("selectCommunity", selectCommunity);
     if (selectCommunity.length > 0) {
       setDataExist(true);
     }
@@ -169,11 +163,8 @@ export default function Comunidades() {
   };
 
   useEffect(() => {
-    console.log("formData:", formData);
-    console.log("comunidades:", comunidades);
-    console.log("nombresComunidades:", nombresComunidades);
-    console.log("dataMembers:", dataMembers);
-  }, [comunidades, nombresComunidades, dataMembers, formData]);
+    console.log("userCommunity", userCommunity);
+  }, [userCommunity]);
 
   return (
     <Container maxWidth="xs">
