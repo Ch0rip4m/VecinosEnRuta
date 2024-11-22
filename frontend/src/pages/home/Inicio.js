@@ -87,6 +87,7 @@ export default function Inicio() {
   }, []);
 
   const handleSelectRow = (row) => {
+    console.log(row)
     setSelectedRow(row); // Guardar la fila seleccionada
     setOpenModal(true); // Abrir el modal
   };

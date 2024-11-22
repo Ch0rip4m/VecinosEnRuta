@@ -135,10 +135,15 @@ export default function MiVehiculo() {
       })
       .then((response) => {
         console.log("formulario enviado", response.data);
+        snackbar.success("Vehículo ingresado exitosamente")
         setIsEditing(false);
+        setTimeout(() => {
+          window.location.href = "/inicio";
+        }, 2000);
       })
       .catch((error) => {
         console.error("Error al enviar formulario", error);
+        snackbar.error("Error al ingresar veículo")
       });
   };
 
