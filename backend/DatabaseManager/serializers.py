@@ -133,7 +133,7 @@ class CalificacionSerializer(serializers.ModelSerializer):
 class RutaSerializer(serializers.ModelSerializer):
     dias = serializers.SerializerMethodField()
     cupos = serializers.SerializerMethodField()
-    id_vehiculo = VehiculoSerializer()
+    id_vehiculo = serializers.PrimaryKeyRelatedField(queryset=Vehiculos.objects.all())
 
     class Meta:
         model = Rutas
@@ -148,6 +148,16 @@ class RutaSerializer(serializers.ModelSerializer):
             "hora_salida",
             "cupos",
         ]
+        
+    def to_representation(self, instance):
+        """
+        Modifica la representación del serializador para devolver un diccionario 
+        con la información del vehículo en lugar de solo el ID.
+        """
+        representation = super().to_representation(instance)
+        # Agregamos la representación completa del vehículo
+        representation["id_vehiculo"] = VehiculoSerializer(instance.id_vehiculo).data
+        return representation
 
     def create(self, validated_data):
         request = self.context["request"]
