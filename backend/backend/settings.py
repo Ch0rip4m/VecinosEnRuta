@@ -145,9 +145,9 @@ REST_FRAMEWORK = {
 }
 
 CORS_ALLOWED_ORIGINS = [
-    "http://bevr.robleaustral.cl"  # Agrega aquí la URL de tu aplicación frontend
+    "http://vecinosenruta.robleaustral.cl"  # Agrega aquí la URL de tu aplicación frontend
 ]
-CSRF_TRUSTED_ORIGINS = ["http://bevr.robleaustral.cl"]
+CSRF_TRUSTED_ORIGINS = ["http://vecinosenruta.robleaustral.cl"]
 
 # CSRF_COOKIE_NAME = 'csrftoken'
 # CSRF_HEADER_NAME = 'X-Csrftoken'
