@@ -636,5 +636,5 @@ def conductores_rutas(request):
             visto.add(tupla)
             lista_conductores_final.append(dic)
 
-    print(lista_conductores_final)
     return Response(lista_conductores_final)
+

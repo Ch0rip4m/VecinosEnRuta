@@ -25,9 +25,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-(u3b1$%9bf)$w@30+_p6dgr)2pvudpj#jxbr!*we0*qgvbqvjf"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ["bevr.robleaustral.cl"]
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -167,9 +167,7 @@ AUTH_USER_MODEL = "DatabaseManager.Usuario"
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": datetime.timedelta(minutes=1),
-    "REFRESH_TOKEN_LIFETIME": datetime.timedelta(
-        hours=24
-    ),  # Configura la expiración del token según tus necesidades
+    "REFRESH_TOKEN_LIFETIME": datetime.timedelta(hours=24),
     "BLACKLIST_AFTER_ROTATION": True,
     "ALGORITHM": "HS256",
 }
@@ -177,10 +175,10 @@ SIMPLE_JWT = {
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'vecinos.en.ruta@gmail.com'
-EMAIL_HOST_PASSWORD = 'edaf fyfh mgdg hkjp'
+EMAIL_HOST_USER = "vecinos.en.ruta@gmail.com"
+EMAIL_HOST_PASSWORD = "edaf fyfh mgdg hkjp"
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
